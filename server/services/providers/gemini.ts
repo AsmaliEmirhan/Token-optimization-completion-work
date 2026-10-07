@@ -1,11 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { LLMProvider, LLMResponse } from '../../types/api';
+import type { LLMProvider, LLMResponse } from '../../types/api.js';
 
 export const geminiProvider: LLMProvider = {
   async sendMessage({ apiKey, model, message }) {
     console.log(`[Chat] Provider: gemini`);
     console.log(`[Chat] Model: ${model}`);
-    console.log(`[Gemini] API key configured: ${!!apiKey}`);
     console.log(`[Gemini] Starting request`);
 
     const start = performance.now();
@@ -22,15 +21,22 @@ export const geminiProvider: LLMProvider = {
       
       const usage = response.usageMetadata;
 
+      const inputTokens = typeof usage?.promptTokenCount === 'number' ? usage.promptTokenCount : null;
+      const outputTokens = typeof usage?.candidatesTokenCount === 'number' ? usage.candidatesTokenCount : null;
+      const thinkingTokens = typeof (usage as any)?.thoughtsTokenCount === 'number' 
+        ? (usage as any).thoughtsTokenCount 
+        : null;
+      const totalTokens = typeof usage?.totalTokenCount === 'number' ? usage.totalTokenCount : null;
+
       return {
         content: text,
         usage: {
-          inputTokens: usage?.promptTokenCount ?? null,
-          outputTokens: usage?.candidatesTokenCount ?? null,
-          thinkingTokens: usage && 'thoughtsTokenCount' in usage ? (usage as any).thoughtsTokenCount : null,
-          totalTokens: usage?.totalTokenCount ?? null,
+          inputTokens,
+          outputTokens,
+          thinkingTokens,
+          totalTokens,
         },
-        latencyMs: end - start,
+        latencyMs: Math.round(end - start),
       };
     } catch (error: any) {
       console.error(`[Gemini] Request failed`);

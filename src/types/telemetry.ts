@@ -31,23 +31,25 @@ export interface RequestTelemetry {
   totalCost: number | null;
 }
 
-export interface LLMResponse {
-  content: string;
-  usage: {
-    inputTokens: number | null;
-    outputTokens: number | null;
-    thinkingTokens: number | null;
-    totalTokens: number | null;
-  };
+export interface RequestMetrics {
+  inputTokens: number | null;
+  outputTokens: number | null;
+  thinkingTokens: number | null;
+  totalTokens: number | null;
   latencyMs: number;
 }
 
-export interface LLMProvider {
-  sendMessage(params: {
-    apiKey: string;
-    model: string;
-    message: string;
-  }): Promise<LLMResponse>;
+export interface ExperimentRecord {
+  id: string; // Canonical requestId from backend
+  timestamp: number;
+  mode: 'baseline' | 'optimized';
+  provider: string;
+  model: string;
+  prompt: string;
+  response?: string;
+  comparisonGroupId?: string;
+  telemetry?: RequestTelemetry;
+  metrics: RequestMetrics;
 }
 
 export interface ChatApiResponse {
@@ -58,12 +60,18 @@ export interface ChatApiResponse {
   provider: string;
   model: string;
   telemetry: RequestTelemetry;
-  metrics: {
-    inputTokens: number | null;
-    outputTokens: number | null;
-    thinkingTokens: number | null;
-    totalTokens: number | null;
-    latencyMs: number;
-  };
+  metrics?: RequestMetrics;
+}
+
+export interface RequestAnalysisData {
+  provider: string;
+  model: string;
+
+  inputTokens: number | null;
+  outputTokens: number | null;
+  thinkingTokens: number | null;
+  totalTokens: number | null;
+
+  latencyMs: number;
 }
 

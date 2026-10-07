@@ -8,6 +8,8 @@ import { SparkleIcon } from './SparkleIcon';
 import { MetricsPopover } from './MetricsPopover';
 import type { ExperimentRecord } from './MetricsPopover';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { RequestAnalysis } from './RequestAnalysis';
+import type { RequestAnalysisData } from '../types/telemetry';
 import { ChevronDown, Check } from 'lucide-react';
 
 interface ChatMessage {
@@ -16,6 +18,7 @@ interface ChatMessage {
   content: string;
   createdAt: Date;
   isError?: boolean;
+  requestAnalysis?: RequestAnalysisData;
 }
 
 interface ProviderModel {
@@ -195,28 +198,56 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
           throw new Error(data.error || 'Bilinmeyen bir hata oluştu');
         }
 
+        const assistantContent = data.message?.content || '';
+
+        let requestAnalysis: RequestAnalysisData | undefined = undefined;
+        if (data.telemetry) {
+          requestAnalysis = {
+            provider: data.telemetry.provider || data.provider || selectedProvider,
+            model: data.telemetry.model || data.model || selectedModel,
+            inputTokens: data.telemetry.inputTokens ?? null,
+            outputTokens: data.telemetry.outputTokens ?? null,
+            thinkingTokens: data.telemetry.thinkingTokens ?? null,
+            totalTokens: data.telemetry.totalTokens ?? null,
+            latencyMs: data.telemetry.latencyMs ?? 0,
+          };
+        } else if (data.metrics) {
+          requestAnalysis = {
+            provider: data.provider || selectedProvider,
+            model: data.model || selectedModel,
+            inputTokens: data.metrics.inputTokens ?? null,
+            outputTokens: data.metrics.outputTokens ?? null,
+            thinkingTokens: data.metrics.thinkingTokens ?? null,
+            totalTokens: data.metrics.totalTokens ?? null,
+            latencyMs: data.metrics.latencyMs ?? 0,
+          };
+        }
+
         setMessages(prev => [...prev, {
           id: `ast-${Date.now()}`,
           role: 'assistant',
-          content: data.message.content,
-          createdAt: new Date()
+          content: assistantContent,
+          createdAt: new Date(),
+          requestAnalysis,
         }]);
 
-        if (data.metrics) {
+        if (data.telemetry) {
+          const telemetry = data.telemetry;
           const newRecord: ExperimentRecord = {
-            id: crypto.randomUUID(),
-            timestamp: Date.now(),
+            id: telemetry.requestId,
+            timestamp: telemetry.timestamp ?? Date.now(),
             mode: 'baseline',
-            provider: data.provider,
-            model: data.model,
+            provider: telemetry.provider || data.provider || selectedProvider,
+            model: telemetry.model || data.model || selectedModel,
             prompt: content,
-            response: data.message.content,
+            response: assistantContent,
+            telemetry,
             metrics: {
-              inputTokens: data.metrics.inputTokens,
-              outputTokens: data.metrics.outputTokens,
-              thinkingTokens: data.metrics.thinkingTokens,
-              totalTokens: data.metrics.totalTokens,
-              latencyMs: data.metrics.latencyMs
+              inputTokens: telemetry.inputTokens ?? null,
+              outputTokens: telemetry.outputTokens ?? null,
+              thinkingTokens: telemetry.thinkingTokens ?? null,
+              totalTokens: telemetry.totalTokens ?? null,
+              latencyMs: telemetry.latencyMs ?? 0
             }
           };
           setExperimentRecords(prev => [...prev, newRecord]);
@@ -309,23 +340,35 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
                       </div>
                     )}
                     
-                    <div
-                      className={`
-                        ${msg.role === 'user' 
-                          ? 'px-4 py-3 rounded-[20px] rounded-br-[6px] bg-[#EEF3FB] dark:bg-[#1A1F27] border border-[#D8E4F2] dark:border-[#1677FF]/20 text-[#071A3D] dark:text-[#F4F4F5] shadow-[0_2px_8px_rgba(7,26,61,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] text-[15px] leading-relaxed whitespace-pre-wrap break-words' 
-                          : msg.isError
-                            ? 'px-4 py-3 rounded-[20px] rounded-bl-[6px] bg-[#FEF2F2] dark:bg-[#3F1D1D] border border-[#FCA5A5] dark:border-[#DC2626]/30 text-[#991B1B] dark:text-[#FECACA] text-[15px] leading-relaxed whitespace-pre-wrap break-words'
-                            : 'px-5 py-4 rounded-[20px] rounded-bl-[6px] bg-white dark:bg-[#0B0D10] border border-[#E8E5DC] dark:border-white/[0.08] shadow-sm w-full min-w-0'
-                        }
-                        font-normal theme-transition select-text
-                      `}
-                    >
-                      {msg.role === 'assistant' && !msg.isError ? (
-                        <MarkdownRenderer content={msg.content} />
-                      ) : (
-                        msg.content
-                      )}
-                    </div>
+                    {msg.role === 'assistant' ? (
+                      <div className="flex flex-col w-full min-w-0">
+                        <div
+                          className={`
+                            ${msg.isError
+                              ? 'px-4 py-3 rounded-[20px] rounded-bl-[6px] bg-[#FEF2F2] dark:bg-[#3F1D1D] border border-[#FCA5A5] dark:border-[#DC2626]/30 text-[#991B1B] dark:text-[#FECACA] text-[15px] leading-relaxed whitespace-pre-wrap break-words'
+                              : 'px-5 py-4 rounded-[20px] rounded-bl-[6px] bg-white dark:bg-[#0B0D10] border border-[#E8E5DC] dark:border-white/[0.08] shadow-sm w-full min-w-0'
+                            }
+                            font-normal theme-transition select-text
+                          `}
+                        >
+                          {!msg.isError ? (
+                            <MarkdownRenderer content={msg.content} />
+                          ) : (
+                            msg.content
+                          )}
+                        </div>
+
+                        {!msg.isError && msg.requestAnalysis && (
+                          <RequestAnalysis {...msg.requestAnalysis} />
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        className="px-4 py-3 rounded-[20px] rounded-br-[6px] bg-[#EEF3FB] dark:bg-[#1A1F27] border border-[#D8E4F2] dark:border-[#1677FF]/20 text-[#071A3D] dark:text-[#F4F4F5] shadow-[0_2px_8px_rgba(7,26,61,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] text-[15px] leading-relaxed whitespace-pre-wrap break-words font-normal theme-transition select-text"
+                      >
+                        {msg.content}
+                      </div>
+                    )}
 
                     {msg.role === 'user' && (
                       <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#1677FF] via-[#123CBA] to-[#071A3D] flex items-center justify-center shrink-0 shadow-[0_2px_8px_rgba(22,119,255,0.2)]">

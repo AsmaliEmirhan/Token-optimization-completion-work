@@ -1,9 +1,10 @@
+import crypto from 'node:crypto';
 import express from 'express';
 import cors from 'cors';
 import { openaiProvider } from './services/providers/openai.js';
 import { geminiProvider } from './services/providers/gemini.js';
 import { groqProvider } from './services/providers/groq.js';
-import { LLMProvider } from './types/api.js';
+import type { LLMProvider, RequestTelemetry, ChatApiResponse } from './types/api.js';
 
 const app = express();
 app.use(cors());
@@ -140,26 +141,74 @@ app.post('/api/chat', async (req, res) => {
     res.status(400).json({ error: 'Önce Ayarlar > API bölümünden bir API sağlayıcısı yapılandır.' });
     return;
   }
-  
+
+  // Generate canonical requestId before calling provider
+  const requestId = crypto.randomUUID();
+  const requestTimestamp = Date.now();
+
   try {
     const providerService = providers[provider];
     const result = await providerService.sendMessage({ apiKey, model, message });
     
-    res.json({
+    const telemetry: RequestTelemetry = {
+      requestId,
+      timestamp: requestTimestamp,
+
+      provider,
+      model,
+
+      inputTokens: result.usage.inputTokens,
+      outputTokens: result.usage.outputTokens,
+      thinkingTokens: result.usage.thinkingTokens,
+      totalTokens: result.usage.totalTokens,
+
+      latencyMs: result.latencyMs,
+
+      cacheHit: false,
+      cacheType: null,
+
+      compressionUsed: false,
+      compressionRatio: null,
+
+      validatorPassed: null,
+      escalated: false,
+
+      routerPolicy: null,
+      routerConfidence: null,
+
+      inputCost: null,
+      outputCost: null,
+      totalCost: null,
+    };
+
+    console.log(`[Telemetry]
+requestId: ${telemetry.requestId}
+provider: ${telemetry.provider}
+model: ${telemetry.model}
+inputTokens: ${telemetry.inputTokens}
+outputTokens: ${telemetry.outputTokens}
+thinkingTokens: ${telemetry.thinkingTokens}
+totalTokens: ${telemetry.totalTokens}
+latencyMs: ${telemetry.latencyMs}`);
+
+    const responsePayload: ChatApiResponse = {
       message: {
         role: 'assistant',
-        content: result.content
+        content: result.content,
       },
       provider,
       model,
+      telemetry,
       metrics: {
-        inputTokens: result.usage.inputTokens,
-        outputTokens: result.usage.outputTokens,
-        thinkingTokens: result.usage.thinkingTokens,
-        totalTokens: result.usage.totalTokens,
-        latencyMs: result.latencyMs
-      }
-    });
+        inputTokens: telemetry.inputTokens,
+        outputTokens: telemetry.outputTokens,
+        thinkingTokens: telemetry.thinkingTokens,
+        totalTokens: telemetry.totalTokens,
+        latencyMs: telemetry.latencyMs,
+      },
+    };
+
+    res.json(responsePayload);
   } catch (error: any) {
     console.error('Provider API Error:', error.message);
     const msg = error.message?.toLowerCase() || '';
