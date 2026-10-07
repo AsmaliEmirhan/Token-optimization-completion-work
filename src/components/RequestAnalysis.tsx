@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, Info } from 'lucide-react';
 import type { RequestAnalysisData } from '../types/telemetry';
+import { formatCost } from '../utils/metrics';
 
 export type RequestAnalysisProps = RequestAnalysisData;
 
@@ -31,6 +32,7 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
   thinkingTokens,
   totalTokens,
   latencyMs,
+  totalCost,
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -119,12 +121,32 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
             </div>
           </div>
 
-          {/* Latency row */}
-          <div className="flex items-center justify-between text-[11.5px]">
-            <span className="text-[#596E8A] dark:text-[#9299A6]">Yanıt Süresi</span>
-            <span className="font-semibold tabular-nums">
-              {formatLatency(latencyMs)}
-            </span>
+          {/* Latency & Cost rows */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[11.5px]">
+              <span className="text-[#596E8A] dark:text-[#9299A6]">Yanıt Süresi</span>
+              <span className="font-semibold tabular-nums">
+                {formatLatency(latencyMs)}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between text-[11.5px]">
+              <div className="flex items-center gap-1">
+                <span className="text-[#596E8A] dark:text-[#9299A6]">Tahmini API Maliyeti</span>
+                <div className="group relative inline-flex items-center">
+                  <Info
+                    size={11}
+                    className="text-[#596E8A] dark:text-[#9299A6] cursor-help"
+                  />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-52 p-2 bg-[#071A3D] dark:bg-white text-white dark:text-[#071A3D] text-[10px] leading-relaxed rounded-lg shadow-lg text-center z-50 pointer-events-none">
+                    Bu değer sağlayıcının yapılandırılmış token fiyatları ve gerçek kullanım metrikleri üzerinden hesaplanır.
+                  </div>
+                </div>
+              </div>
+              <span className="font-semibold tabular-nums">
+                {formatCost(totalCost)}
+              </span>
+            </div>
           </div>
         </div>
       )}

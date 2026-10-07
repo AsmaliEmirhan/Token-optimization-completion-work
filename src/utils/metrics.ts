@@ -135,3 +135,95 @@ export const calculateAggregatePairSavings = (
   return { savedTokens, savingsPercentage };
 };
 
+export interface CostSavingsResult {
+  savedCost: number;
+  savingsPercentage: number;
+}
+
+/**
+ * Pure utility to calculate cost savings between baseline and optimized requests.
+ * Returns null unless both costs are valid numbers and baselineCost > 0.
+ */
+export const calculateCostSavings = (
+  baselineCost: number | null | undefined,
+  optimizedCost: number | null | undefined
+): CostSavingsResult | null => {
+  if (
+    typeof baselineCost !== 'number' ||
+    typeof optimizedCost !== 'number' ||
+    Number.isNaN(baselineCost) ||
+    Number.isNaN(optimizedCost) ||
+    baselineCost <= 0
+  ) {
+    return null;
+  }
+  const savedCost = Number((baselineCost - optimizedCost).toFixed(8));
+  const savingsPercentage = Number((((baselineCost - optimizedCost) / baselineCost) * 100).toFixed(2));
+  return { savedCost, savingsPercentage };
+};
+
+/**
+ * Reusable USD cost formatter.
+ * Handles large values ($12.34) and preserves precision for micro LLM costs ($0.002341, $0.000012)
+ * without rounding down to $0.00.
+ * Returns '—' for null or undefined.
+ */
+export const formatCost = (cost: number | null | undefined): string => {
+  if (cost === null || cost === undefined || Number.isNaN(cost)) {
+    return '—';
+  }
+  if (cost === 0) {
+    return '$0.00';
+  }
+  if (cost >= 1) {
+    return `$${cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  if (cost >= 0.01) {
+    const formatted = cost.toFixed(4).replace(/0+$/, '');
+    const parts = formatted.split('.');
+    if (parts[1] && parts[1].length < 2) {
+      return `$${parts[0]}.${parts[1].padEnd(2, '0')}`;
+    }
+    return `$${formatted}`;
+  }
+  const precision = cost < 0.00001 ? 8 : 6;
+  const formatted = cost.toFixed(precision).replace(/0+$/, '');
+  return `$${formatted}`;
+};
+
+export interface CostAggregateResult {
+  totalKnownCost: number | null;
+  knownCostRecordCount: number;
+  unknownCostRecordCount: number;
+  hasPartialCoverage: boolean;
+}
+
+/**
+ * Calculates aggregate cost from experiment records, tracking coverage.
+ */
+export const calculateCostAggregate = (records: ExperimentRecord[]): CostAggregateResult => {
+  let knownCostRecordCount = 0;
+  let unknownCostRecordCount = 0;
+  let totalCostSum = 0;
+
+  for (const record of records) {
+    const cost = record.metrics.totalCost;
+    if (typeof cost === 'number' && !Number.isNaN(cost)) {
+      totalCostSum += cost;
+      knownCostRecordCount++;
+    } else {
+      unknownCostRecordCount++;
+    }
+  }
+
+  const totalKnownCost = knownCostRecordCount > 0 ? Number(totalCostSum.toFixed(8)) : null;
+  const hasPartialCoverage = knownCostRecordCount > 0 && unknownCostRecordCount > 0;
+
+  return {
+    totalKnownCost,
+    knownCostRecordCount,
+    unknownCostRecordCount,
+    hasPartialCoverage,
+  };
+};
+

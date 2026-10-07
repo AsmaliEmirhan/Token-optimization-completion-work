@@ -37,6 +37,9 @@ export interface RequestMetrics {
   thinkingTokens: number | null;
   totalTokens: number | null;
   latencyMs: number;
+  inputCost?: number | null;
+  outputCost?: number | null;
+  totalCost?: number | null;
 }
 
 export interface ExperimentRecord {
@@ -73,5 +76,10 @@ export interface RequestAnalysisData {
   totalTokens: number | null;
 
   latencyMs: number;
+
+  inputCost?: number | null;
+  outputCost?: number | null;
+  totalCost?: number | null;
 }
+
 
