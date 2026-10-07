@@ -4,6 +4,7 @@ import cors from 'cors';
 import { openaiProvider } from './services/providers/openai.js';
 import { geminiProvider } from './services/providers/gemini.js';
 import { groqProvider } from './services/providers/groq.js';
+import { calculateRequestCost } from './services/cost/costEngine.js';
 import type { LLMProvider, RequestTelemetry, ChatApiResponse } from './types/api.js';
 
 const app = express();
@@ -150,6 +151,8 @@ app.post('/api/chat', async (req, res) => {
     const providerService = providers[provider];
     const result = await providerService.sendMessage({ apiKey, model, message });
     
+    const cost = calculateRequestCost(provider, model, result.usage);
+
     const telemetry: RequestTelemetry = {
       requestId,
       timestamp: requestTimestamp,
@@ -176,10 +179,12 @@ app.post('/api/chat', async (req, res) => {
       routerPolicy: null,
       routerConfidence: null,
 
-      inputCost: null,
-      outputCost: null,
-      totalCost: null,
+      inputCost: cost.inputCost,
+      outputCost: cost.outputCost,
+      totalCost: cost.totalCost,
     };
+
+    const costLog = telemetry.totalCost !== null ? `\ntotalCost: $${telemetry.totalCost.toFixed(6)}` : '';
 
     console.log(`[Telemetry]
 requestId: ${telemetry.requestId}
@@ -189,7 +194,7 @@ inputTokens: ${telemetry.inputTokens}
 outputTokens: ${telemetry.outputTokens}
 thinkingTokens: ${telemetry.thinkingTokens}
 totalTokens: ${telemetry.totalTokens}
-latencyMs: ${telemetry.latencyMs}`);
+latencyMs: ${telemetry.latencyMs}${costLog}`);
 
     const responsePayload: ChatApiResponse = {
       message: {
