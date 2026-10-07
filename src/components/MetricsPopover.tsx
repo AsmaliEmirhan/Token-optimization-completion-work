@@ -4,6 +4,8 @@ import type { ExperimentRecord, RequestMetrics, RequestTelemetry } from '../type
 import { 
   filterRecordsByTimeRange, 
   getTimeRangeLabel, 
+  formatCost,
+  calculateCostAggregate,
   type MetricsTimeRange 
 } from '../utils/metrics';
 
@@ -95,6 +97,10 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
       ? filteredRecords.reduce((acc, rec) => acc + rec.metrics.latencyMs, 0) / totalRequests 
       : 0;
   }, [filteredRecords, totalRequests]);
+
+  const costAggregate = useMemo(() => {
+    return calculateCostAggregate(filteredRecords);
+  }, [filteredRecords]);
 
   return (
     <div 
@@ -217,6 +223,47 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
               </div>
             </div>
 
+            {/* Maliyet */}
+            <div className="border-t border-[#EAE7DC] dark:border-white/[0.08] pt-3.5">
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center gap-1.5">
+                  <DollarSign size={13} className="text-[#596E8A] dark:text-[#9299A6]" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#596E8A] dark:text-[#9299A6]">
+                    MALİYET
+                  </span>
+                </div>
+                {costAggregate.hasPartialCoverage && (
+                  <div className="group relative inline-flex items-center">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-400/15 text-amber-700 dark:text-amber-400 border border-amber-500/20 dark:border-amber-400/20 cursor-help">
+                      Kısmi veri
+                    </span>
+                    <div className="absolute bottom-full right-0 mb-1.5 hidden group-hover:block w-56 p-2 bg-[#071A3D] dark:bg-white text-white dark:text-[#071A3D] text-[10px] leading-relaxed rounded-lg shadow-lg text-center z-50 pointer-events-none">
+                      Seçili zaman aralığındaki bazı modeller için fiyat bilgisi bulunmadığından yalnızca bilinen maliyetler toplanmıştır.
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#14171C] border border-[#EAE7DC] dark:border-white/[0.04]">
+                <div className="flex items-center justify-between text-[11.5px]">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[#596E8A] dark:text-[#9299A6]">Toplam Harcanan</span>
+                    {costAggregate.hasPartialCoverage && (
+                      <div className="group relative inline-flex items-center">
+                        <Info size={11} className="text-amber-600 dark:text-amber-400 cursor-help" />
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-52 p-2 bg-[#071A3D] dark:bg-white text-white dark:text-[#071A3D] text-[10px] leading-relaxed rounded-lg shadow-lg text-center z-50 pointer-events-none">
+                          Seçili zaman aralığındaki bazı modeller için fiyat bilgisi bulunmadığından yalnızca bilinen maliyetler toplanmıştır.
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5] tabular-nums">
+                    {formatCost(costAggregate.totalKnownCost)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* Optimizasyon Analizi */}
             <div className="border-t border-[#EAE7DC] dark:border-white/[0.08] pt-3.5">
               <div className="flex items-center gap-1.5 mb-2.5">
@@ -251,33 +298,6 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
 
                 <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6] pt-1 italic">
                   Optimizasyon verileri kullanılabilir olduğunda burada gösterilecek.
-                </p>
-              </div>
-            </div>
-
-            {/* Maliyet */}
-            <div className="border-t border-[#EAE7DC] dark:border-white/[0.08] pt-3.5">
-              <div className="flex items-center gap-1.5 mb-2.5">
-                <DollarSign size={13} className="text-[#596E8A] dark:text-[#9299A6]" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#596E8A] dark:text-[#9299A6]">
-                  MALİYET
-                </span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#14171C] border border-[#EAE7DC] dark:border-white/[0.04]">
-                <div className="grid grid-cols-2 gap-2 text-[11.5px] mb-2">
-                  <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Toplam Harcanan</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Kurtarılan Maliyet</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
-                  </div>
-                </div>
-
-                <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6] italic">
-                  Maliyet motoru etkinleştirildiğinde hesaplanacak.
                 </p>
               </div>
             </div>

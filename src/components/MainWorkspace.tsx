@@ -210,6 +210,9 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             thinkingTokens: data.telemetry.thinkingTokens ?? null,
             totalTokens: data.telemetry.totalTokens ?? null,
             latencyMs: data.telemetry.latencyMs ?? 0,
+            inputCost: data.telemetry.inputCost !== undefined ? data.telemetry.inputCost : null,
+            outputCost: data.telemetry.outputCost !== undefined ? data.telemetry.outputCost : null,
+            totalCost: data.telemetry.totalCost !== undefined ? data.telemetry.totalCost : null,
           };
         } else if (data.metrics) {
           requestAnalysis = {
@@ -220,6 +223,9 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             thinkingTokens: data.metrics.thinkingTokens ?? null,
             totalTokens: data.metrics.totalTokens ?? null,
             latencyMs: data.metrics.latencyMs ?? 0,
+            inputCost: data.metrics.inputCost !== undefined ? data.metrics.inputCost : null,
+            outputCost: data.metrics.outputCost !== undefined ? data.metrics.outputCost : null,
+            totalCost: data.metrics.totalCost !== undefined ? data.metrics.totalCost : null,
           };
         }
 
@@ -247,7 +253,10 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
               outputTokens: telemetry.outputTokens ?? null,
               thinkingTokens: telemetry.thinkingTokens ?? null,
               totalTokens: telemetry.totalTokens ?? null,
-              latencyMs: telemetry.latencyMs ?? 0
+              latencyMs: telemetry.latencyMs ?? 0,
+              inputCost: telemetry.inputCost !== undefined ? telemetry.inputCost : null,
+              outputCost: telemetry.outputCost !== undefined ? telemetry.outputCost : null,
+              totalCost: telemetry.totalCost !== undefined ? telemetry.totalCost : null,
             }
           };
           setExperimentRecords(prev => [...prev, newRecord]);
@@ -259,7 +268,8 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             outputTokens: newRecord.metrics.outputTokens,
             thinkingTokens: newRecord.metrics.thinkingTokens,
             totalTokens: newRecord.metrics.totalTokens,
-            latencyMs: newRecord.metrics.latencyMs
+            latencyMs: newRecord.metrics.latencyMs,
+            totalCost: newRecord.metrics.totalCost
           });
         }
 
