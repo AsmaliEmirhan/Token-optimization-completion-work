@@ -138,8 +138,8 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
                     size={11}
                     className="text-[#596E8A] dark:text-[#9299A6] cursor-help"
                   />
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-52 p-2 bg-[#071A3D] dark:bg-white text-white dark:text-[#071A3D] text-[10px] leading-relaxed rounded-lg shadow-lg text-center z-50 pointer-events-none">
-                    Bu değer sağlayıcının yapılandırılmış token fiyatları ve gerçek kullanım metrikleri üzerinden hesaplanır.
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-56 p-2 bg-[#071A3D] dark:bg-white text-white dark:text-[#071A3D] text-[10px] leading-relaxed rounded-lg shadow-lg text-center z-50 pointer-events-none">
+                    Tahmini maliyet, sağlayıcının yapılandırılmış standart liste fiyatına göre hesaplanır; gerçek fatura ücretsiz katman, kredi, indirim veya özel sözleşmelere göre farklı olabilir.
                   </div>
                 </div>
               </div>

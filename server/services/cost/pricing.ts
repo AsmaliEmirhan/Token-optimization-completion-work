@@ -9,6 +9,13 @@
  * 5. Unknown or unverified models return null (never 0).
  */
 
+export type ThinkingBillingMode =
+  | 'billed_at_output_rate'     // Thinking tokens are reported separately and billed at output rate (e.g. Gemini 3.5 Flash)
+  | 'already_in_output_tokens'  // Thinking/reasoning tokens are already counted in output tokens (e.g. OpenAI o1/o3)
+  | 'separate_rate'             // Thinking tokens are billed at an explicit dedicated thinking rate
+  | 'not_billed'                // Thinking tokens are not billed or model does not produce thinking tokens
+  | 'unknown';                  // Unknown billing mode; if thinking tokens > 0, totalCost must be null
+
 export interface ModelPricing {
   provider: string;
   model: string;
@@ -16,14 +23,14 @@ export interface ModelPricing {
   inputPerMillionTokens: number | null;
   outputPerMillionTokens: number | null;
 
-  thinkingBillingMode: 'included_in_output' | 'separate' | 'unknown';
-
+  thinkingBillingMode: ThinkingBillingMode;
   thinkingPerMillionTokens?: number | null;
 
+  serviceTier?: string; // e.g. 'standard'
   currency: 'USD';
 
-  source?: string;
-  verifiedAt?: string;
+  source: string;
+  verifiedAt: string;
 }
 
 /**
@@ -32,216 +39,278 @@ export interface ModelPricing {
  */
 const PRICING_REGISTRY: Record<string, ModelPricing> = {
   // ==========================================
-  // OpenAI
-  // Source: https://openai.com/api/pricing/
-  // Verified: 2025-01 / 2025-02
-  // Currency: USD
-  // ==========================================
-  'openai:gpt-4o': {
-    provider: 'openai',
-    model: 'gpt-4o',
-    inputPerMillionTokens: 2.50,
-    outputPerMillionTokens: 10.00,
-    thinkingBillingMode: 'included_in_output',
-    currency: 'USD',
-    source: 'https://openai.com/api/pricing/',
-    verifiedAt: '2025-02-01',
-  },
-  'openai:gpt-4o-mini': {
-    provider: 'openai',
-    model: 'gpt-4o-mini',
-    inputPerMillionTokens: 0.15,
-    outputPerMillionTokens: 0.60,
-    thinkingBillingMode: 'included_in_output',
-    currency: 'USD',
-    source: 'https://openai.com/api/pricing/',
-    verifiedAt: '2025-02-01',
-  },
-  'openai:gpt-4-turbo': {
-    provider: 'openai',
-    model: 'gpt-4-turbo',
-    inputPerMillionTokens: 10.00,
-    outputPerMillionTokens: 30.00,
-    thinkingBillingMode: 'included_in_output',
-    currency: 'USD',
-    source: 'https://openai.com/api/pricing/',
-    verifiedAt: '2025-02-01',
-  },
-  'openai:gpt-3.5-turbo': {
-    provider: 'openai',
-    model: 'gpt-3.5-turbo',
-    inputPerMillionTokens: 0.50,
-    outputPerMillionTokens: 1.50,
-    thinkingBillingMode: 'included_in_output',
-    currency: 'USD',
-    source: 'https://openai.com/api/pricing/',
-    verifiedAt: '2025-02-01',
-  },
-  'openai:o1': {
-    provider: 'openai',
-    model: 'o1',
-    inputPerMillionTokens: 15.00,
-    outputPerMillionTokens: 60.00,
-    // OpenAI includes reasoning tokens in completion_tokens and bills them at the output rate
-    thinkingBillingMode: 'included_in_output',
-    currency: 'USD',
-    source: 'https://openai.com/api/pricing/',
-    verifiedAt: '2025-02-01',
-  },
-  'openai:o1-mini': {
-    provider: 'openai',
-    model: 'o1-mini',
-    inputPerMillionTokens: 3.00,
-    outputPerMillionTokens: 12.00,
-    thinkingBillingMode: 'included_in_output',
-    currency: 'USD',
-    source: 'https://openai.com/api/pricing/',
-    verifiedAt: '2025-02-01',
-  },
-  'openai:o3-mini': {
-    provider: 'openai',
-    model: 'o3-mini',
-    inputPerMillionTokens: 1.10,
-    outputPerMillionTokens: 4.40,
-    thinkingBillingMode: 'included_in_output',
-    currency: 'USD',
-    source: 'https://openai.com/api/pricing/',
-    verifiedAt: '2025-02-01',
-  },
-
-  // ==========================================
   // Google Gemini
-  // Source: https://ai.google.dev/pricing
-  // Verified: 2025-01 / 2025-02
-  // Currency: USD (Prompts <= 128k context)
+  // Source: https://ai.google.dev/gemini-api/docs/pricing
+  // Verified: 2026-10-07
+  // Currency: USD (Standard paid tier list prices)
+  // Note: Gemini official billing explicitly states output price includes thinking tokens.
   // ==========================================
-  'gemini:gemini-1.5-flash': {
+  'gemini:gemini-3.5-flash': {
     provider: 'gemini',
-    model: 'gemini-1.5-flash',
-    inputPerMillionTokens: 0.075,
-    outputPerMillionTokens: 0.30,
-    thinkingBillingMode: 'included_in_output',
+    model: 'gemini-3.5-flash',
+    inputPerMillionTokens: 1.50,
+    outputPerMillionTokens: 9.00,
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
     currency: 'USD',
-    source: 'https://ai.google.dev/pricing',
-    verifiedAt: '2025-02-01',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
   },
-  'gemini:gemini-1.5-flash-8b': {
+  'gemini:gemini-3.5-flash-lite': {
     provider: 'gemini',
-    model: 'gemini-1.5-flash-8b',
-    inputPerMillionTokens: 0.0375,
-    outputPerMillionTokens: 0.15,
-    thinkingBillingMode: 'included_in_output',
+    model: 'gemini-3.5-flash-lite',
+    inputPerMillionTokens: 0.30,
+    outputPerMillionTokens: 2.50,
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
     currency: 'USD',
-    source: 'https://ai.google.dev/pricing',
-    verifiedAt: '2025-02-01',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
   },
-  'gemini:gemini-1.5-pro': {
+  'gemini:gemini-3.6-flash': {
     provider: 'gemini',
-    model: 'gemini-1.5-pro',
-    inputPerMillionTokens: 1.25,
-    outputPerMillionTokens: 5.00,
-    thinkingBillingMode: 'included_in_output',
+    model: 'gemini-3.6-flash',
+    inputPerMillionTokens: 1.50,
+    outputPerMillionTokens: 7.50,
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
     currency: 'USD',
-    source: 'https://ai.google.dev/pricing',
-    verifiedAt: '2025-02-01',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'gemini:gemini-3.7-flash': {
+    provider: 'gemini',
+    model: 'gemini-3.7-flash',
+    inputPerMillionTokens: 0.75, // Introductory standard rate through Dec 31, 2026 ($1.50 standard starting 2027)
+    outputPerMillionTokens: 3.75, // Introductory standard rate through Dec 31, 2026 ($7.50 standard starting 2027)
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'gemini:gemini-3.8-flash': {
+    provider: 'gemini',
+    model: 'gemini-3.8-flash',
+    inputPerMillionTokens: 0.75, // Introductory standard rate through Dec 31, 2026 ($1.50 standard starting 2027)
+    outputPerMillionTokens: 3.75, // Introductory standard rate through Dec 31, 2026 ($7.50 standard starting 2027)
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
   },
   'gemini:gemini-2.0-flash': {
     provider: 'gemini',
     model: 'gemini-2.0-flash',
     inputPerMillionTokens: 0.10,
     outputPerMillionTokens: 0.40,
-    // Google Gemini bills thoughtsTokenCount as part of candidate tokens at output rate
-    thinkingBillingMode: 'included_in_output',
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
     currency: 'USD',
-    source: 'https://ai.google.dev/pricing',
-    verifiedAt: '2025-02-01',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
   },
   'gemini:gemini-2.0-flash-lite': {
     provider: 'gemini',
     model: 'gemini-2.0-flash-lite',
     inputPerMillionTokens: 0.075,
     outputPerMillionTokens: 0.30,
-    thinkingBillingMode: 'included_in_output',
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
     currency: 'USD',
-    source: 'https://ai.google.dev/pricing',
-    verifiedAt: '2025-02-01',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'gemini:gemini-1.5-flash': {
+    provider: 'gemini',
+    model: 'gemini-1.5-flash',
+    inputPerMillionTokens: 0.075,
+    outputPerMillionTokens: 0.30,
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'gemini:gemini-1.5-flash-8b': {
+    provider: 'gemini',
+    model: 'gemini-1.5-flash-8b',
+    inputPerMillionTokens: 0.0375,
+    outputPerMillionTokens: 0.15,
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'gemini:gemini-1.5-pro': {
+    provider: 'gemini',
+    model: 'gemini-1.5-pro',
+    inputPerMillionTokens: 1.25,
+    outputPerMillionTokens: 5.00,
+    thinkingBillingMode: 'billed_at_output_rate',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+
+  // ==========================================
+  // OpenAI
+  // Source: https://developers.openai.com/api/docs/pricing
+  // Verified: 2026-10-07
+  // Currency: USD (Standard synchronous API list prices)
+  // ==========================================
+  'openai:gpt-4o': {
+    provider: 'openai',
+    model: 'gpt-4o',
+    inputPerMillionTokens: 2.50,
+    outputPerMillionTokens: 10.00,
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://developers.openai.com/api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'openai:gpt-4o-mini': {
+    provider: 'openai',
+    model: 'gpt-4o-mini',
+    inputPerMillionTokens: 0.15,
+    outputPerMillionTokens: 0.60,
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://developers.openai.com/api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'openai:gpt-4-turbo': {
+    provider: 'openai',
+    model: 'gpt-4-turbo',
+    inputPerMillionTokens: 10.00,
+    outputPerMillionTokens: 30.00,
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://developers.openai.com/api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'openai:gpt-3.5-turbo': {
+    provider: 'openai',
+    model: 'gpt-3.5-turbo',
+    inputPerMillionTokens: 0.50,
+    outputPerMillionTokens: 1.50,
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://developers.openai.com/api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'openai:o1': {
+    provider: 'openai',
+    model: 'o1',
+    inputPerMillionTokens: 15.00,
+    outputPerMillionTokens: 60.00,
+    thinkingBillingMode: 'already_in_output_tokens',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://developers.openai.com/api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'openai:o1-mini': {
+    provider: 'openai',
+    model: 'o1-mini',
+    inputPerMillionTokens: 3.00,
+    outputPerMillionTokens: 12.00,
+    thinkingBillingMode: 'already_in_output_tokens',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://developers.openai.com/api/docs/pricing',
+    verifiedAt: '2026-10-07',
+  },
+  'openai:o3-mini': {
+    provider: 'openai',
+    model: 'o3-mini',
+    inputPerMillionTokens: 1.10,
+    outputPerMillionTokens: 4.40,
+    thinkingBillingMode: 'already_in_output_tokens',
+    serviceTier: 'standard',
+    currency: 'USD',
+    source: 'https://developers.openai.com/api/docs/pricing',
+    verifiedAt: '2026-10-07',
   },
 
   // ==========================================
   // Groq
   // Source: https://groq.com/pricing/
-  // Verified: 2025-01 / 2025-02
-  // Currency: USD
+  // Verified: 2026-10-07
+  // Currency: USD (Standard on-demand API list prices)
   // ==========================================
   'groq:llama3-70b-8192': {
     provider: 'groq',
     model: 'llama3-70b-8192',
     inputPerMillionTokens: 0.59,
     outputPerMillionTokens: 0.79,
-    thinkingBillingMode: 'included_in_output',
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
     currency: 'USD',
     source: 'https://groq.com/pricing/',
-    verifiedAt: '2025-02-01',
+    verifiedAt: '2026-10-07',
   },
   'groq:llama3-8b-8192': {
     provider: 'groq',
     model: 'llama3-8b-8192',
     inputPerMillionTokens: 0.05,
     outputPerMillionTokens: 0.08,
-    thinkingBillingMode: 'included_in_output',
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
     currency: 'USD',
     source: 'https://groq.com/pricing/',
-    verifiedAt: '2025-02-01',
-  },
-  'groq:llama-3.1-70b-versatile': {
-    provider: 'groq',
-    model: 'llama-3.1-70b-versatile',
-    inputPerMillionTokens: 0.59,
-    outputPerMillionTokens: 0.79,
-    thinkingBillingMode: 'included_in_output',
-    currency: 'USD',
-    source: 'https://groq.com/pricing/',
-    verifiedAt: '2025-02-01',
+    verifiedAt: '2026-10-07',
   },
   'groq:llama-3.1-8b-instant': {
     provider: 'groq',
     model: 'llama-3.1-8b-instant',
     inputPerMillionTokens: 0.05,
     outputPerMillionTokens: 0.08,
-    thinkingBillingMode: 'included_in_output',
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
     currency: 'USD',
     source: 'https://groq.com/pricing/',
-    verifiedAt: '2025-02-01',
+    verifiedAt: '2026-10-07',
   },
   'groq:llama-3.3-70b-versatile': {
     provider: 'groq',
     model: 'llama-3.3-70b-versatile',
     inputPerMillionTokens: 0.59,
     outputPerMillionTokens: 0.79,
-    thinkingBillingMode: 'included_in_output',
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
     currency: 'USD',
     source: 'https://groq.com/pricing/',
-    verifiedAt: '2025-02-01',
+    verifiedAt: '2026-10-07',
   },
   'groq:mixtral-8x7b-32768': {
     provider: 'groq',
     model: 'mixtral-8x7b-32768',
     inputPerMillionTokens: 0.24,
     outputPerMillionTokens: 0.24,
-    thinkingBillingMode: 'included_in_output',
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
     currency: 'USD',
     source: 'https://groq.com/pricing/',
-    verifiedAt: '2025-02-01',
+    verifiedAt: '2026-10-07',
   },
   'groq:gemma2-9b-it': {
     provider: 'groq',
     model: 'gemma2-9b-it',
     inputPerMillionTokens: 0.20,
     outputPerMillionTokens: 0.20,
-    thinkingBillingMode: 'included_in_output',
+    thinkingBillingMode: 'not_billed',
+    serviceTier: 'standard',
     currency: 'USD',
     source: 'https://groq.com/pricing/',
-    verifiedAt: '2025-02-01',
+    verifiedAt: '2026-10-07',
   },
 };
 
@@ -256,7 +325,12 @@ const MODEL_ALIASES: Record<string, string> = {
   'openai:gpt-4-turbo-2024-04-09': 'openai:gpt-4-turbo',
   'openai:gpt-3.5-turbo-0125': 'openai:gpt-3.5-turbo',
   'gemini:gemini-1.5-flash-latest': 'gemini:gemini-1.5-flash',
+  'gemini:gemini-flash-latest': 'gemini:gemini-1.5-flash',
+  'gemini:gemini-flash-lite-latest': 'gemini:gemini-2.0-flash-lite',
   'gemini:gemini-1.5-pro-latest': 'gemini:gemini-1.5-pro',
+  'gemini:gemini-pro-latest': 'gemini:gemini-1.5-pro',
+  'gemini:gemini-2.0-flash-exp': 'gemini:gemini-2.0-flash',
+  'gemini:gemini-2.0-flash-lite-preview': 'gemini:gemini-2.0-flash-lite',
 };
 
 /**
