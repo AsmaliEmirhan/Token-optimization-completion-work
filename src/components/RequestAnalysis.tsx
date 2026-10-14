@@ -33,6 +33,13 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
   totalTokens,
   latencyMs,
   totalCost,
+  cacheHit,
+  cacheEligible,
+  responseSource,
+  sourceProvider,
+  sourceModel,
+  avoidedEstimatedTokens,
+  avoidedEstimatedApiCost,
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -79,6 +86,29 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
             </div>
           </div>
 
+          <div className="space-y-1.5 pb-2.5 mb-2.5 border-b border-[#EAE7DC] dark:border-white/[0.06]">
+            <div className="flex items-center justify-between text-[11.5px]">
+              <span className="text-[#596E8A] dark:text-[#9299A6]">Yanıt Kaynağı</span>
+              <span className="font-semibold text-right">
+                {responseSource === 'l1_exact_cache' ? 'L1 Exact Cache' : friendlyProvider}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-[11.5px]">
+              <span className="text-[#596E8A] dark:text-[#9299A6]">Cache Durumu</span>
+              <span className={`font-semibold ${cacheHit ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
+                {cacheHit ? 'Hit' : cacheEligible ? 'Miss' : 'Bypass'}
+              </span>
+            </div>
+            {cacheHit && (
+              <div className="flex items-center justify-between gap-3 text-[11.5px]">
+                <span className="text-[#596E8A] dark:text-[#9299A6]">Orijinal Kaynak</span>
+                <span className="font-semibold truncate" title={`${sourceProvider} / ${sourceModel}`}>
+                  {getProviderDisplayName(sourceProvider)} / {sourceModel}
+                </span>
+              </div>
+            )}
+          </div>
+
           {/* Metrics grid */}
           <div className="space-y-1.5 pb-2.5 mb-2.5 border-b border-[#EAE7DC] dark:border-white/[0.06]">
             <div className="flex items-center justify-between text-[11.5px]">
@@ -88,12 +118,32 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
               </span>
             </div>
 
+            {cacheHit && (
+              <div className="flex items-center justify-between text-[11.5px]">
+                <span className="text-[#596E8A] dark:text-[#9299A6]">Yeni LLM Tokenı</span>
+                <span className="font-semibold tabular-nums">0</span>
+              </div>
+            )}
+
             <div className="flex items-center justify-between text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Çıktı Token</span>
               <span className="font-semibold tabular-nums">
                 {formatNumber(outputTokens)}
               </span>
             </div>
+
+            {cacheHit && (
+              <>
+                <div className="flex items-center justify-between text-[11.5px]">
+                  <span className="text-[#596E8A] dark:text-[#9299A6]">Önlenen Tahmini Token</span>
+                  <span className="font-semibold tabular-nums">{formatNumber(avoidedEstimatedTokens)}</span>
+                </div>
+                <div className="flex items-center justify-between text-[11.5px]">
+                  <span className="text-[#596E8A] dark:text-[#9299A6]">Önlenen Tahmini API Maliyeti</span>
+                  <span className="font-semibold tabular-nums">{formatCost(avoidedEstimatedApiCost)}</span>
+                </div>
+              </>
+            )}
 
             <div className="flex items-center justify-between text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Düşünme Tokenı</span>

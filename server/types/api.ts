@@ -1,3 +1,10 @@
+import type {
+  ConversationMessage,
+  GenerationParameters,
+  SecurityScope,
+  StableExternalContext,
+} from '../services/cache/cacheTypes.js';
+
 export interface RequestTelemetry {
   requestId: string;
   timestamp: number;
@@ -15,6 +22,22 @@ export interface RequestTelemetry {
   // Reserved for future optimization stages
   cacheHit: boolean;
   cacheType: null | 'exact' | 'semantic';
+  cacheEligible: boolean;
+  cacheBypassReason: string | null;
+  responseSource: 'provider' | 'l1_exact_cache';
+  sourceProvider: string;
+  sourceModel: string;
+  sourceRequestId: string;
+  cacheEntryId: string | null;
+  cacheLookupLatencyMs: number | null;
+
+  // Geçmişteki kaynak kullanım ile bu isteğin gerçek kullanımını ayrı tutuyoruz.
+  sourceInputTokens: number | null;
+  sourceOutputTokens: number | null;
+  sourceThinkingTokens: number | null;
+  sourceTotalTokens: number | null;
+  avoidedEstimatedTokens: number | null;
+  avoidedEstimatedApiCost: number | null;
 
   compressionUsed: boolean;
   compressionRatio: number | null;
@@ -33,6 +56,7 @@ export interface RequestTelemetry {
 
 export interface LLMResponse {
   content: string;
+  cacheable: boolean;
   usage: {
     inputTokens: number | null;
     outputTokens: number | null;
@@ -47,7 +71,25 @@ export interface LLMProvider {
     apiKey: string;
     model: string;
     message: string;
+    systemInstructions?: string;
+    conversation?: ConversationMessage[];
+    generationParameters?: GenerationParameters;
   }): Promise<LLMResponse>;
+}
+
+export interface ChatApiRequest {
+  provider: string;
+  model: string;
+  message: string;
+  systemInstructions?: string;
+  conversation?: ConversationMessage[];
+  generationParameters?: GenerationParameters;
+  securityScope?: SecurityScope;
+  toolContext?: StableExternalContext | null;
+  retrievalContext?: StableExternalContext | null;
+  stream?: boolean;
+  hasExternalSideEffects?: boolean;
+  forceCacheBypass?: boolean;
 }
 
 export interface ChatApiResponse {

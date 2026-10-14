@@ -6,6 +6,7 @@ import {
   getTimeRangeLabel, 
   formatCost,
   calculateCostAggregate,
+  calculateCacheAggregate,
   type MetricsTimeRange 
 } from '../utils/metrics';
 
@@ -101,6 +102,8 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
   const costAggregate = useMemo(() => {
     return calculateCostAggregate(filteredRecords);
   }, [filteredRecords]);
+
+  const cacheAggregate = useMemo(() => calculateCacheAggregate(filteredRecords), [filteredRecords]);
 
   return (
     <div 
@@ -276,28 +279,32 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
               <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#14171C] border border-[#EAE7DC] dark:border-white/[0.04] space-y-2">
                 <div className="grid grid-cols-2 gap-2 text-[11.5px]">
                   <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Kurtarılan Token</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
+                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">L1 Hit / Miss</span>
+                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">
+                      {formatNumber(cacheAggregate.hits)} / {formatNumber(cacheAggregate.misses)}
+                    </span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Token Tasarrufu</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
+                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">L1 Hit Oranı</span>
+                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">
+                      {cacheAggregate.hitRate === null ? '—' : `%${cacheAggregate.hitRate.toLocaleString('tr-TR')}`}
+                    </span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-[11.5px] pt-1.5 border-t border-[#EAE7DC]/60 dark:border-white/[0.04]">
                   <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Kurtarılan Maliyet</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
+                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Önlenen Token</span>
+                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">{formatNumber(cacheAggregate.avoidedTokens)}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Maliyet Tasarrufu</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
+                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Önlenen API Maliyeti</span>
+                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">{formatCost(cacheAggregate.avoidedApiCost)}</span>
                   </div>
                 </div>
 
                 <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6] pt-1 italic">
-                  Optimizasyon verileri kullanılabilir olduğunda burada gösterilecek.
+                  {formatNumber(cacheAggregate.bypasses)} istek güvenlik/güncellik politikası nedeniyle cache dışında kaldı.
                 </p>
               </div>
             </div>

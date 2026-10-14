@@ -49,6 +49,15 @@ interface MainWorkspaceProps {
 
 type ViewState = 'welcome' | 'transitioning' | 'conversation';
 
+const getCacheSessionId = (): string => {
+  const storageKey = 'tokenai-cache-session-id';
+  const existing = sessionStorage.getItem(storageKey);
+  if (existing) return existing;
+  const created = crypto.randomUUID();
+  sessionStorage.setItem(storageKey, created);
+  return created;
+};
+
 export const MainWorkspace: React.FC<MainWorkspaceProps> = ({ 
   onToggleSidebar,
   isProfileOpen,
@@ -188,7 +197,9 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
           body: JSON.stringify({
             provider: selectedProvider,
             model: selectedModel,
-            message: content
+            message: content,
+            // Oturum kapsamı, farklı tarayıcı oturumları arasında yetkisiz cache paylaşımını engeller.
+            securityScope: { sessionId: getCacheSessionId() },
           })
         });
 
@@ -213,6 +224,13 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             inputCost: data.telemetry.inputCost !== undefined ? data.telemetry.inputCost : null,
             outputCost: data.telemetry.outputCost !== undefined ? data.telemetry.outputCost : null,
             totalCost: data.telemetry.totalCost !== undefined ? data.telemetry.totalCost : null,
+            cacheHit: data.telemetry.cacheHit === true,
+            cacheEligible: data.telemetry.cacheEligible === true,
+            responseSource: data.telemetry.responseSource || 'provider',
+            sourceProvider: data.telemetry.sourceProvider || data.telemetry.provider || selectedProvider,
+            sourceModel: data.telemetry.sourceModel || data.telemetry.model || selectedModel,
+            avoidedEstimatedTokens: data.telemetry.avoidedEstimatedTokens ?? null,
+            avoidedEstimatedApiCost: data.telemetry.avoidedEstimatedApiCost ?? null,
           };
         } else if (data.metrics) {
           requestAnalysis = {
@@ -226,6 +244,13 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             inputCost: data.metrics.inputCost !== undefined ? data.metrics.inputCost : null,
             outputCost: data.metrics.outputCost !== undefined ? data.metrics.outputCost : null,
             totalCost: data.metrics.totalCost !== undefined ? data.metrics.totalCost : null,
+            cacheHit: false,
+            cacheEligible: false,
+            responseSource: 'provider',
+            sourceProvider: data.provider || selectedProvider,
+            sourceModel: data.model || selectedModel,
+            avoidedEstimatedTokens: null,
+            avoidedEstimatedApiCost: null,
           };
         }
 

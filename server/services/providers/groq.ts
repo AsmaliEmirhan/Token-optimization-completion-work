@@ -1,14 +1,25 @@
 import Groq from 'groq-sdk';
-import type { LLMProvider, LLMResponse } from '../../types/api.js';
+import type { LLMProvider } from '../../types/api.js';
 
 export const groqProvider: LLMProvider = {
-  async sendMessage({ apiKey, model, message }) {
+  async sendMessage({ apiKey, model, message, systemInstructions, conversation = [], generationParameters = {} }) {
     const start = performance.now();
     const groq = new Groq({ apiKey });
 
+    const messages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
+      ...(systemInstructions ? [{ role: 'system' as const, content: systemInstructions }] : []),
+      ...conversation.map((item) => ({ role: item.role, content: item.content })),
+      { role: 'user', content: message },
+    ];
+
     const response = await groq.chat.completions.create({
       model,
-      messages: [{ role: 'user', content: message }],
+      messages,
+      temperature: generationParameters.temperature,
+      top_p: generationParameters.topP,
+      max_tokens: generationParameters.maxOutputTokens,
+      stop: generationParameters.stopSequences,
+      seed: generationParameters.seed,
     });
 
     const end = performance.now();
@@ -23,6 +34,7 @@ export const groqProvider: LLMProvider = {
 
     return {
       content: response.choices[0]?.message?.content || '',
+      cacheable: response.choices[0]?.finish_reason === 'stop',
       usage: {
         inputTokens,
         outputTokens,

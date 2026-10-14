@@ -1,11 +1,11 @@
-import crypto from 'node:crypto';
 import express from 'express';
 import cors from 'cors';
 import { openaiProvider } from './services/providers/openai.js';
 import { geminiProvider } from './services/providers/gemini.js';
 import { groqProvider } from './services/providers/groq.js';
-import { calculateRequestCost } from './services/cost/costEngine.js';
-import type { LLMProvider, RequestTelemetry, ChatApiResponse } from './types/api.js';
+import { InMemoryExactCache } from './services/cache/exactCache.js';
+import { ChatService } from './services/chat/chatService.js';
+import type { ChatApiRequest, LLMProvider } from './types/api.js';
 
 const app = express();
 app.use(cors());
@@ -19,6 +19,18 @@ const providers: Record<string, LLMProvider> = {
   gemini: geminiProvider,
   groq: groqProvider,
 };
+
+const parsePositiveInteger = (value: string | undefined, fallback: number): number => {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const cacheTtlMs = parsePositiveInteger(process.env.L1_CACHE_TTL_MS, 30 * 60 * 1000);
+const exactCache = new InMemoryExactCache({
+  ttlMs: cacheTtlMs,
+  maxEntries: parsePositiveInteger(process.env.L1_CACHE_MAX_ENTRIES, 500),
+});
+const chatService = new ChatService({ providers, cache: exactCache, cacheTtlMs });
 
 // Available models per provider (mocked for selector)
 const providerModels: Record<string, { id: string; name: string }[]> = {
@@ -35,7 +47,7 @@ const providerModels: Record<string, { id: string; name: string }[]> = {
   ],
 };
 
-app.get('/api/providers', (req, res) => {
+app.get('/api/providers', (_req, res) => {
   const result = Object.keys(providers).map(id => ({
     id,
     name: id === 'openai' ? 'OpenAI' : id === 'gemini' ? 'Google Gemini' : 'Groq',
@@ -130,7 +142,12 @@ app.post('/api/providers/:provider/configure', async (req, res) => {
 });
 
 app.post('/api/chat', async (req, res) => {
-  const { provider, model, message } = req.body;
+  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+    res.status(400).json({ error: 'Geçerli bir JSON istek gövdesi gereklidir.' });
+    return;
+  }
+  const request = req.body as ChatApiRequest;
+  const { provider, model, message } = request;
   
   if (!providers[provider]) {
     res.status(400).json({ error: 'Bilinmeyen sağlayıcı' });
@@ -143,46 +160,29 @@ app.post('/api/chat', async (req, res) => {
     return;
   }
 
-  // Generate canonical requestId before calling provider
-  const requestId = crypto.randomUUID();
-  const requestTimestamp = Date.now();
+  if (typeof model !== 'string' || !model || typeof message !== 'string' || !message) {
+    res.status(400).json({ error: 'Model ve mesaj alanları zorunludur.' });
+    return;
+  }
+  if (
+    request.conversation !== undefined &&
+    (!Array.isArray(request.conversation) || request.conversation.some((item) =>
+      !item || (item.role !== 'user' && item.role !== 'assistant') || typeof item.content !== 'string'))
+  ) {
+    res.status(400).json({ error: 'Konuşma bağlamı geçersiz.' });
+    return;
+  }
+  if (
+    (request.securityScope !== undefined && (typeof request.securityScope !== 'object' || request.securityScope === null)) ||
+    (request.generationParameters !== undefined && (typeof request.generationParameters !== 'object' || request.generationParameters === null))
+  ) {
+    res.status(400).json({ error: 'Cache kapsamı veya üretim parametreleri geçersiz.' });
+    return;
+  }
 
   try {
-    const providerService = providers[provider];
-    const result = await providerService.sendMessage({ apiKey, model, message });
-    
-    const cost = calculateRequestCost(provider, model, result.usage);
-
-    const telemetry: RequestTelemetry = {
-      requestId,
-      timestamp: requestTimestamp,
-
-      provider,
-      model,
-
-      inputTokens: result.usage.inputTokens,
-      outputTokens: result.usage.outputTokens,
-      thinkingTokens: result.usage.thinkingTokens,
-      totalTokens: result.usage.totalTokens,
-
-      latencyMs: result.latencyMs,
-
-      cacheHit: false,
-      cacheType: null,
-
-      compressionUsed: false,
-      compressionRatio: null,
-
-      validatorPassed: null,
-      escalated: false,
-
-      routerPolicy: null,
-      routerConfidence: null,
-
-      inputCost: cost.inputCost,
-      outputCost: cost.outputCost,
-      totalCost: cost.totalCost,
-    };
+    const responsePayload = await chatService.execute(request, { apiKey });
+    const { telemetry } = responsePayload;
 
     const costLog = telemetry.totalCost !== null ? `\ntotalCost: $${telemetry.totalCost.toFixed(6)}` : '';
 
@@ -195,23 +195,6 @@ outputTokens: ${telemetry.outputTokens}
 thinkingTokens: ${telemetry.thinkingTokens}
 totalTokens: ${telemetry.totalTokens}
 latencyMs: ${telemetry.latencyMs}${costLog}`);
-
-    const responsePayload: ChatApiResponse = {
-      message: {
-        role: 'assistant',
-        content: result.content,
-      },
-      provider,
-      model,
-      telemetry,
-      metrics: {
-        inputTokens: telemetry.inputTokens,
-        outputTokens: telemetry.outputTokens,
-        thinkingTokens: telemetry.thinkingTokens,
-        totalTokens: telemetry.totalTokens,
-        latencyMs: telemetry.latencyMs,
-      },
-    };
 
     res.json(responsePayload);
   } catch (error: any) {
@@ -232,4 +215,6 @@ latencyMs: ${telemetry.latencyMs}${costLog}`);
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
+  // L1 bellek içindedir; sunucu yeniden başlatıldığında tüm kayıtlar kaybolur.
+  console.log(`[L1 Cache] in-memory, ttlMs=${cacheTtlMs}, maxEntries=${exactCache.maxEntries}`);
 });
