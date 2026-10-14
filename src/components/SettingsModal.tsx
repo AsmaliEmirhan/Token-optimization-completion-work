@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   X, 
   SlidersHorizontal, 
@@ -43,20 +43,53 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
   // API options state
   const [providers, setProviders] = useState<ProviderConfig[]>([]);
+  const [isLoadingProviders, setIsLoadingProviders] = useState(false);
+  const [providerLoadError, setProviderLoadError] = useState<string | null>(null);
   const [keyInputs, setKeyInputs] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState<Record<string, boolean>>({});
   const [saveErrors, setSaveErrors] = useState<Record<string, string | null>>({});
 
-  useEffect(() => {
-    if (isOpen) {
-      fetch('/api/providers')
-        .then(res => res.json())
-        .then(data => {
-          if (data.providers) setProviders(data.providers);
-        })
-        .catch(err => console.error('Error fetching providers:', err));
+  const loadProviders = useCallback(async (signal?: AbortSignal) => {
+    if (signal?.aborted) return;
+    setIsLoadingProviders(true);
+    setProviderLoadError(null);
+    const requestController = new AbortController();
+    const abortFromCaller = () => requestController.abort();
+    signal?.addEventListener('abort', abortFromCaller, { once: true });
+    const timeoutId = window.setTimeout(() => requestController.abort(), 8_000);
+
+    try {
+      const res = await fetch('/api/providers', { signal: requestController.signal });
+      if (!res.ok) {
+        throw new Error(`Provider listesi alınamadı (${res.status})`);
+      }
+
+      const data = await res.json();
+      if (!Array.isArray(data.providers)) {
+        throw new Error('Provider yanıtı geçersiz.');
+      }
+      setProviders(data.providers);
+    } catch (err) {
+      if (signal?.aborted) return;
+      console.error('Error fetching providers:', err);
+      setProviders([]);
+      setProviderLoadError('API sunucusuna ulaşılamadı. Sunucunun çalıştığını kontrol edip yeniden deneyin.');
+    } finally {
+      window.clearTimeout(timeoutId);
+      signal?.removeEventListener('abort', abortFromCaller);
+      if (!signal?.aborted) setIsLoadingProviders(false);
     }
-  }, [isOpen]);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const controller = new AbortController();
+    const timerId = window.setTimeout(() => void loadProviders(controller.signal), 0);
+    return () => {
+      window.clearTimeout(timerId);
+      controller.abort();
+    };
+  }, [isOpen, loadProviders]);
 
   const handleSaveKey = async (providerId: string) => {
     const apiKey = keyInputs[providerId];
@@ -337,9 +370,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                         )}
                       </div>
                     ))}
-                    {providers.length === 0 && (
+                    {isLoadingProviders && (
                       <div className="text-[13px] text-[#596E8A] dark:text-[#9299A6] py-4 text-center">
                         Yükleniyor...
+                      </div>
+                    )}
+                    {!isLoadingProviders && providerLoadError && (
+                      <div className="rounded-2xl border border-[#D93838]/20 bg-[#FEF2F2] dark:bg-[#3F1D1D]/50 p-4 text-center">
+                        <p className="text-[12.5px] text-[#991B1B] dark:text-[#FECACA] leading-relaxed">
+                          {providerLoadError}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => void loadProviders()}
+                          className="mt-3 px-3.5 py-1.5 rounded-xl bg-[#1677FF] hover:bg-[#123CBA] text-white text-[12px] font-semibold transition-colors cursor-pointer"
+                        >
+                          Yeniden Dene
+                        </button>
+                      </div>
+                    )}
+                    {!isLoadingProviders && !providerLoadError && providers.length === 0 && (
+                      <div className="text-[13px] text-[#596E8A] dark:text-[#9299A6] py-4 text-center">
+                        Kullanılabilir API sağlayıcısı bulunamadı.
                       </div>
                     )}
                   </div>

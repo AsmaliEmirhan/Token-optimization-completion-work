@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev.mjs",
+    "client": "vite",
     "server": "tsx server/index.ts",
     "typecheck": "tsc -b && tsc -p tsconfig.server.json",
     "test": "tsx --test server/services/cost/costEngine.test.ts server/services/cache/cache.test.ts",
