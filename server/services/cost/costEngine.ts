@@ -1,4 +1,4 @@
-import { getModelPricing, type ModelPricing } from './pricing.js';
+import { getModelPricing } from './pricing.js';
 
 export interface UsageTokens {
   inputTokens: number | null;
@@ -10,7 +10,7 @@ export interface UsageTokens {
 export interface CalculatedCost {
   inputCost: number | null;
   outputCost: number | null;
-  thinkingCost?: number | null;
+  thinkingCost: number | null;
   totalCost: number | null;
   billableInputTokens?: number | null;
   billableOutputTokens?: number | null;

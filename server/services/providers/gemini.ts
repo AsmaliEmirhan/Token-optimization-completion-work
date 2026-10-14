@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { LLMProvider, LLMResponse } from '../../types/api.js';
+import type { LLMProvider } from '../../types/api.js';
 
 export const geminiProvider: LLMProvider = {
-  async sendMessage({ apiKey, model, message }) {
+  async sendMessage({ apiKey, model, message, systemInstructions, conversation = [], generationParameters = {} }) {
     console.log(`[Chat] Provider: gemini`);
     console.log(`[Chat] Model: ${model}`);
     console.log(`[Gemini] Starting request`);
@@ -10,9 +10,25 @@ export const geminiProvider: LLMProvider = {
     const start = performance.now();
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const genModel = genAI.getGenerativeModel({ model });
+      const genModel = genAI.getGenerativeModel({
+        model,
+        ...(systemInstructions ? { systemInstruction: systemInstructions } : {}),
+        generationConfig: {
+          temperature: generationParameters.temperature,
+          topP: generationParameters.topP,
+          maxOutputTokens: generationParameters.maxOutputTokens,
+          stopSequences: generationParameters.stopSequences,
+        },
+      });
 
-      const result = await genModel.generateContent(message);
+      const contents = [
+        ...conversation.map((item) => ({
+          role: item.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: item.content }],
+        })),
+        { role: 'user', parts: [{ text: message }] },
+      ];
+      const result = await genModel.generateContent({ contents });
       const response = await result.response;
       const text = response.text();
 
@@ -30,6 +46,7 @@ export const geminiProvider: LLMProvider = {
 
       return {
         content: text,
+        cacheable: response.candidates?.[0]?.finishReason === 'STOP',
         usage: {
           inputTokens,
           outputTokens,

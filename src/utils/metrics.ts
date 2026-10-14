@@ -227,3 +227,49 @@ export const calculateCostAggregate = (records: ExperimentRecord[]): CostAggrega
   };
 };
 
+export interface CacheAggregateResult {
+  hits: number;
+  misses: number;
+  bypasses: number;
+  hitRate: number | null;
+  avoidedTokens: number;
+  avoidedApiCost: number | null;
+}
+
+export const calculateCacheAggregate = (records: ExperimentRecord[]): CacheAggregateResult => {
+  let hits = 0;
+  let misses = 0;
+  let bypasses = 0;
+  let avoidedTokens = 0;
+  let avoidedApiCost = 0;
+  let knownAvoidedCostCount = 0;
+
+  for (const record of records) {
+    const telemetry = record.telemetry;
+    if (!telemetry?.cacheEligible) {
+      bypasses++;
+      continue;
+    }
+    if (telemetry.cacheHit && telemetry.cacheType === 'exact') {
+      hits++;
+      if (typeof telemetry.avoidedEstimatedTokens === 'number') avoidedTokens += telemetry.avoidedEstimatedTokens;
+      if (typeof telemetry.avoidedEstimatedApiCost === 'number') {
+        avoidedApiCost += telemetry.avoidedEstimatedApiCost;
+        knownAvoidedCostCount++;
+      }
+    } else {
+      misses++;
+    }
+  }
+
+  const lookupCount = hits + misses;
+  return {
+    hits,
+    misses,
+    bypasses,
+    hitRate: lookupCount > 0 ? Number(((hits / lookupCount) * 100).toFixed(2)) : null,
+    avoidedTokens,
+    avoidedApiCost: knownAvoidedCostCount > 0 ? Number(avoidedApiCost.toFixed(8)) : null,
+  };
+};
+

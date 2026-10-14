@@ -15,6 +15,21 @@ export interface RequestTelemetry {
   // Reserved for future optimization stages
   cacheHit: boolean;
   cacheType: null | 'exact' | 'semantic';
+  cacheEligible: boolean;
+  cacheBypassReason: string | null;
+  responseSource: 'provider' | 'l1_exact_cache';
+  sourceProvider: string;
+  sourceModel: string;
+  sourceRequestId: string;
+  cacheEntryId: string | null;
+  cacheLookupLatencyMs: number | null;
+
+  sourceInputTokens: number | null;
+  sourceOutputTokens: number | null;
+  sourceThinkingTokens: number | null;
+  sourceTotalTokens: number | null;
+  avoidedEstimatedTokens: number | null;
+  avoidedEstimatedApiCost: number | null;
 
   compressionUsed: boolean;
   compressionRatio: number | null;
@@ -80,6 +95,14 @@ export interface RequestAnalysisData {
   inputCost?: number | null;
   outputCost?: number | null;
   totalCost?: number | null;
+
+  cacheHit: boolean;
+  cacheEligible: boolean;
+  responseSource: 'provider' | 'l1_exact_cache';
+  sourceProvider: string;
+  sourceModel: string;
+  avoidedEstimatedTokens: number | null;
+  avoidedEstimatedApiCost: number | null;
 }
 
 
