@@ -11,6 +11,7 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 import { RequestAnalysis } from './RequestAnalysis';
 import type { RequestAnalysisData } from '../types/telemetry';
 import { ChevronDown, Check } from 'lucide-react';
+import { apiFetch } from '../utils/api';
 
 interface ChatMessage {
   id: string;
@@ -49,15 +50,6 @@ interface MainWorkspaceProps {
 
 type ViewState = 'welcome' | 'transitioning' | 'conversation';
 
-const getCacheSessionId = (): string => {
-  const storageKey = 'tokenai-cache-session-id';
-  const existing = sessionStorage.getItem(storageKey);
-  if (existing) return existing;
-  const created = crypto.randomUUID();
-  sessionStorage.setItem(storageKey, created);
-  return created;
-};
-
 export const MainWorkspace: React.FC<MainWorkspaceProps> = ({ 
   onToggleSidebar,
   isProfileOpen,
@@ -91,7 +83,7 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 
   // Fetch providers
   const fetchProviders = useCallback(() => {
-    fetch('/api/providers')
+    apiFetch('/api/providers')
       .then(res => res.json())
       .then(data => {
         if (data.providers) {
@@ -113,6 +105,10 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 
               return providerToUse.id;
             });
+          } else {
+            // Oturum süresi dolduğunda eski oturumun sağlayıcı seçimini geçerli göstermiyoruz.
+            setSelectedProvider(null);
+            setSelectedModel(null);
           }
         }
       })
@@ -191,15 +187,14 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
     const runChat = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch('/api/chat', {
+        const res = await apiFetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             provider: selectedProvider,
             model: selectedModel,
             message: content,
-            // Oturum kapsamı, farklı tarayıcı oturumları arasında yetkisiz cache paylaşımını engeller.
-            securityScope: { sessionId: getCacheSessionId() },
+            // Güvenlik kapsamını sunucu HttpOnly oturumundan türetir.
           })
         });
 
@@ -226,6 +221,10 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             totalCost: data.telemetry.totalCost !== undefined ? data.telemetry.totalCost : null,
             cacheHit: data.telemetry.cacheHit === true,
             cacheEligible: data.telemetry.cacheEligible === true,
+            cacheStatus: data.telemetry.cacheStatus ?? 'bypass',
+            cacheBypassReason: data.telemetry.cacheBypassReason ?? null,
+            sourceTotalTokens: data.telemetry.sourceTotalTokens ?? null,
+            sourceRequestId: data.telemetry.sourceRequestId ?? '',
             responseSource: data.telemetry.responseSource || 'provider',
             sourceProvider: data.telemetry.sourceProvider || data.telemetry.provider || selectedProvider,
             sourceModel: data.telemetry.sourceModel || data.telemetry.model || selectedModel,
@@ -246,6 +245,10 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             totalCost: data.metrics.totalCost !== undefined ? data.metrics.totalCost : null,
             cacheHit: false,
             cacheEligible: false,
+            cacheStatus: 'bypass',
+            cacheBypassReason: null,
+            sourceTotalTokens: null,
+            sourceRequestId: '',
             responseSource: 'provider',
             sourceProvider: data.provider || selectedProvider,
             sourceModel: data.model || selectedModel,

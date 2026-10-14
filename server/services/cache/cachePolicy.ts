@@ -1,42 +1,35 @@
+import crypto from 'node:crypto';
+import { stableSerialize } from './cacheKey.js';
 import type { CachePolicyDecision, ExactCacheKeyInput } from './cacheTypes.js';
 
 export interface CachePolicyRequest extends Omit<ExactCacheKeyInput, 'schemaVersion'> {
-  stream?: boolean;
-  hasExternalSideEffects?: boolean;
   forceCacheBypass?: boolean;
 }
 
-// Bu liste yalnızca açıkça zamana duyarlı istekleri engelleyen ek bir koruma katmanıdır;
-// semantik doğrulama değildir ve tek başına eksiksiz bir güvenlik mekanizması sayılmaz.
-const DYNAMIC_PATTERNS = [
-  /\b(today|now|current|latest|breaking|live|weather|forecast|news|stock|share price|exchange rate|score)\b/i,
-  /\b(bugün|şimdi|güncel|son dakika|canlı|hava durumu|haber|borsa|hisse|döviz|kur|skor)\b/i,
-];
+// Güven sınırı sunucu kodudur: istemciden kategori/cacheSafe bayrağı kabul etmiyoruz.
+// Bu dar liste zamandan bağımsız eğitim sorularıdır; genel serbest metni sınıflandırmaz.
+export const REVIEWED_STATIC_PROMPTS = [
+  'İkili arama algoritmasını açıkla.',
+  'Pisagor teoremini açıkla.',
+  'Explain the binary search algorithm.',
+] as const;
 
-function hasSecurityScope(scope: CachePolicyRequest['securityScope']): boolean {
-  return [scope.tenantId, scope.userId, scope.sessionId].some(
-    (value) => typeof value === 'string' && value.trim().length > 0,
-  );
+export function cacheSafetyFingerprint(request: Pick<CachePolicyRequest,
+  'message' | 'systemInstructions' | 'conversation' | 'generationParameters'>): string {
+  return crypto.createHash('sha256').update(stableSerialize({
+    message: request.message, systemInstructions: request.systemInstructions,
+    conversation: request.conversation, generationParameters: request.generationParameters,
+  })).digest('hex');
 }
 
-export function evaluateCachePolicy(request: CachePolicyRequest): CachePolicyDecision {
+export const DEFAULT_SAFE_FINGERPRINTS: ReadonlySet<string> = new Set(REVIEWED_STATIC_PROMPTS.map(message =>
+  cacheSafetyFingerprint({ message, systemInstructions: null, conversation: [], generationParameters: {} })));
+
+export function evaluateCachePolicy(request: CachePolicyRequest, approved: ReadonlySet<string> = DEFAULT_SAFE_FINGERPRINTS): CachePolicyDecision {
   if (request.forceCacheBypass) return { eligible: false, reason: 'explicit_bypass' };
-  if (request.stream) return { eligible: false, reason: 'streaming' };
-  if (request.hasExternalSideEffects) return { eligible: false, reason: 'external_side_effects' };
-  if (!hasSecurityScope(request.securityScope)) return { eligible: false, reason: 'missing_security_scope' };
-
-  if (request.toolContext && (!request.toolContext.cacheSafe || !request.toolContext.fingerprint)) {
-    return { eligible: false, reason: 'unstable_tool_context' };
-  }
-  if (request.retrievalContext && (!request.retrievalContext.cacheSafe || !request.retrievalContext.fingerprint)) {
-    return { eligible: false, reason: 'unstable_retrieval_context' };
-  }
-
-  const combinedText = [request.systemInstructions ?? '', ...request.conversation.map((item) => item.content), request.message].join('\n');
-  if (DYNAMIC_PATTERNS.some((pattern) => pattern.test(combinedText))) {
-    // Güncellik gerektiren isteklerde eski bir yanıtı tekrar sunmak yerine normal LLM yolunu kullanıyoruz.
-    return { eligible: false, reason: 'potentially_dynamic_content' };
-  }
-
+  if (!request.securityScope.partitionId) return { eligible: false, reason: 'missing_verified_session' };
+  if (request.toolContext || request.retrievalContext) return { eligible: false, reason: 'unsupported_external_context' };
+  // Anahtar eşleşmesi uygunluk kanıtı değildir. Önce tüm içerik/parametre birleşimi onaylı olmalı.
+  if (!approved.has(cacheSafetyFingerprint(request))) return { eligible: false, reason: 'untrusted_request' };
   return { eligible: true, reason: null };
 }

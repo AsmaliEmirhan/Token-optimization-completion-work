@@ -2,9 +2,10 @@ import Groq from 'groq-sdk';
 import type { LLMProvider } from '../../types/api.js';
 
 export const groqProvider: LLMProvider = {
-  async sendMessage({ apiKey, model, message, systemInstructions, conversation = [], generationParameters = {} }) {
+  async sendMessage({ apiKey, model, message, systemInstructions, conversation = [], generationParameters = {}, signal }) {
     const start = performance.now();
-    const groq = new Groq({ apiKey });
+    // Otomatik tekrarlar yerine ortak sunucu zaman aşımı ve tek çağrı sahipliği kullanılır.
+    const groq = new Groq({ apiKey, maxRetries: 0 });
 
     const messages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
       ...(systemInstructions ? [{ role: 'system' as const, content: systemInstructions }] : []),
@@ -20,7 +21,7 @@ export const groqProvider: LLMProvider = {
       max_tokens: generationParameters.maxOutputTokens,
       stop: generationParameters.stopSequences,
       seed: generationParameters.seed,
-    });
+    }, { signal });
 
     const end = performance.now();
     const usage = response.usage;

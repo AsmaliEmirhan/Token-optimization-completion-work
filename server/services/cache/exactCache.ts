@@ -3,69 +3,92 @@ import type { ExactCacheEntry, ExactCacheStore } from './cacheTypes.js';
 export interface InMemoryExactCacheOptions {
   maxEntries: number;
   ttlMs: number;
+  maxEntryBytes?: number;
+  maxTotalBytes?: number;
   now?: () => number;
 }
 
 export class InMemoryExactCache implements ExactCacheStore {
-  private readonly entries = new Map<string, ExactCacheEntry>();
+  private readonly entries = new Map<string, { entry: ExactCacheEntry; bytes: number }>();
   private readonly now: () => number;
+  private usedBytes = 0;
+  // clear/delete sırasında devam eden bir üretimin eski kaydı yeniden yazmasını engeller.
+  private revision = 0;
   readonly ttlMs: number;
   readonly maxEntries: number;
+  readonly maxEntryBytes: number;
+  readonly maxTotalBytes: number;
 
   constructor(options: InMemoryExactCacheOptions) {
-    if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) throw new Error('maxEntries pozitif bir tam sayı olmalıdır.');
-    if (!Number.isFinite(options.ttlMs) || options.ttlMs <= 0) throw new Error('ttlMs pozitif olmalıdır.');
     this.maxEntries = options.maxEntries;
     this.ttlMs = options.ttlMs;
+    this.maxEntryBytes = options.maxEntryBytes ?? 256 * 1024;
+    this.maxTotalBytes = options.maxTotalBytes ?? 16 * 1024 * 1024;
+    for (const value of [this.maxEntries, this.ttlMs, this.maxEntryBytes, this.maxTotalBytes]) {
+      if (!Number.isSafeInteger(value) || value <= 0) throw new Error('Cache sınırları pozitif güvenli tam sayı olmalıdır.');
+    }
     this.now = options.now ?? Date.now;
   }
 
-  get size(): number {
-    this.removeExpired(this.now());
-    return this.entries.size;
-  }
+  get generation(): number { return this.revision; }
+  get size(): number { this.removeExpired(this.now()); return this.entries.size; }
+  get byteSize(): number { this.removeExpired(this.now()); return this.usedBytes; }
 
   get(key: string, now = this.now()): ExactCacheEntry | null {
-    const entry = this.entries.get(key);
-    if (!entry) return null;
-
-    // Süresi dolan kayıtları kullanmadan hemen siliyoruz; böylece eski yanıtlar geri dönmez.
-    if (entry.expiresAt <= now) {
-      this.entries.delete(key);
+    const stored = this.entries.get(key);
+    if (!stored) return null;
+    if (stored.entry.expiresAt <= now) {
+      this.remove(key);
       return null;
     }
-
-    // Map içindeki sırayı yenileyerek erişilen kaydı LRU kuyruğunun sonuna taşıyoruz.
     this.entries.delete(key);
-    this.entries.set(key, entry);
-    return entry;
+    this.entries.set(key, stored);
+    // Çağıran kodun saklanan kaydı sonradan değiştirmesine izin vermiyoruz.
+    return structuredClone(stored.entry);
   }
 
-  set(entry: ExactCacheEntry): void {
-    this.removeExpired(this.now());
-    // Aynı anahtarı silip yeniden eklemek hem kopyayı engeller hem de kaydı en yeni konuma taşır.
-    this.entries.delete(entry.key);
-    this.entries.set(entry.key, entry);
-
-    while (this.entries.size > this.maxEntries) {
-      const leastRecentlyUsedKey = this.entries.keys().next().value as string | undefined;
-      if (!leastRecentlyUsedKey) break;
-      // Kapasite aşıldığında deterministik olarak en uzun süredir kullanılmayan kayıt çıkarılır.
-      this.entries.delete(leastRecentlyUsedKey);
+  set(entry: ExactCacheEntry): boolean {
+    const now = this.now();
+    this.removeExpired(now);
+    const snapshot = structuredClone(entry);
+    snapshot.expiresAt = Math.min(snapshot.expiresAt, snapshot.createdAt + this.ttlMs);
+    if (!Number.isFinite(snapshot.createdAt) || !Number.isFinite(snapshot.expiresAt) ||
+        snapshot.createdAt > now || snapshot.expiresAt <= now) return false;
+    const bytes = Buffer.byteLength(JSON.stringify(snapshot), 'utf8');
+    // JSON bayt bütçesi bir bellek üst sınırı yaklaşımıdır; V8 nesne ek yükünü ölçmez.
+    this.remove(entry.key);
+    if (bytes > this.maxEntryBytes || bytes > this.maxTotalBytes) return false;
+    this.entries.set(entry.key, { entry: snapshot, bytes });
+    this.usedBytes += bytes;
+    while (this.entries.size > this.maxEntries || this.usedBytes > this.maxTotalBytes) {
+      const oldest = this.entries.keys().next().value;
+      if (oldest === undefined) break;
+      this.remove(oldest);
     }
+    return true;
   }
 
   delete(key: string): boolean {
-    return this.entries.delete(key);
+    this.revision++;
+    return this.remove(key);
   }
 
   clear(): void {
+    this.revision++;
     this.entries.clear();
+    this.usedBytes = 0;
+  }
+
+  private remove(key: string): boolean {
+    const stored = this.entries.get(key);
+    if (!stored) return false;
+    this.usedBytes -= stored.bytes;
+    return this.entries.delete(key);
   }
 
   private removeExpired(now: number): void {
-    for (const [key, entry] of this.entries) {
-      if (entry.expiresAt <= now) this.entries.delete(key);
+    for (const [key, stored] of this.entries) {
+      if (stored.entry.expiresAt <= now) this.remove(key);
     }
   }
 }

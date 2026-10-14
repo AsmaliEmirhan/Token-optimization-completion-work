@@ -1,6 +1,6 @@
 import type { UsageTokens } from '../cost/costEngine.js';
 
-export const CACHE_SCHEMA_VERSION = 1;
+export const CACHE_SCHEMA_VERSION = 2;
 
 export interface ConversationMessage {
   role: 'user' | 'assistant';
@@ -16,13 +16,14 @@ export interface GenerationParameters {
 }
 
 export interface SecurityScope {
-  tenantId?: string;
-  userId?: string;
-  sessionId?: string;
+  // Çerezdeki gizli oturum belirteci değil, sunucunun ayrı ürettiği cache bölümü.
+  partitionId: string;
+  credentialRevision: number;
 }
 
 export interface StableExternalContext {
-  cacheSafe: true;
+  // Şema izi korunur, ancak bu sürüm HTTP'de harici bağlamı bütünüyle reddeder.
+  cacheSafe: boolean;
   fingerprint: string;
 }
 
@@ -55,10 +56,11 @@ export interface ExactCacheEntry {
 
 export interface ExactCacheStore {
   get(key: string, now?: number): ExactCacheEntry | null;
-  set(entry: ExactCacheEntry): void;
+  set(entry: ExactCacheEntry): boolean;
   delete(key: string): boolean;
   clear(): void;
   readonly size: number;
+  readonly generation: number;
 }
 
 export interface CachePolicyDecision {

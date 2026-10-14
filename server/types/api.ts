@@ -1,7 +1,6 @@
 import type {
   ConversationMessage,
   GenerationParameters,
-  SecurityScope,
   StableExternalContext,
 } from '../services/cache/cacheTypes.js';
 
@@ -24,7 +23,10 @@ export interface RequestTelemetry {
   cacheType: null | 'exact' | 'semantic';
   cacheEligible: boolean;
   cacheBypassReason: string | null;
-  responseSource: 'provider' | 'l1_exact_cache';
+  responseSource: 'provider' | 'l1_exact_cache' | 'inflight_shared';
+  cacheStatus: 'miss' | 'hit' | 'bypass' | 'inflight_shared';
+  cacheWriteReason: string | null;
+  cacheInfrastructureCost: number | null;
   sourceProvider: string;
   sourceModel: string;
   sourceRequestId: string;
@@ -74,6 +76,7 @@ export interface LLMProvider {
     systemInstructions?: string;
     conversation?: ConversationMessage[];
     generationParameters?: GenerationParameters;
+    signal?: AbortSignal;
   }): Promise<LLMResponse>;
 }
 
@@ -84,7 +87,6 @@ export interface ChatApiRequest {
   systemInstructions?: string;
   conversation?: ConversationMessage[];
   generationParameters?: GenerationParameters;
-  securityScope?: SecurityScope;
   toolContext?: StableExternalContext | null;
   retrievalContext?: StableExternalContext | null;
   stream?: boolean;

@@ -7,6 +7,7 @@ import {
   formatCost,
   calculateCostAggregate,
   calculateCacheAggregate,
+  sumComplete,
   type MetricsTimeRange 
 } from '../utils/metrics';
 
@@ -66,7 +67,7 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
     };
   }, [onClose, triggerRef]);
 
-  const formatNumber = (num: number) => new Intl.NumberFormat('tr-TR').format(num);
+  const formatNumber = (num: number | null) => num === null ? '—' : new Intl.NumberFormat('tr-TR').format(num);
   const formatLatency = (ms: number) => {
     if (ms < 1000) return `${Math.round(ms)} ms`;
     return `${(ms / 1000).toFixed(2)} sn`;
@@ -78,19 +79,19 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
 
   const totalRequests = filteredRecords.length;
   const totalInputTokens = useMemo(() => {
-    return filteredRecords.reduce((acc, rec) => acc + (rec.metrics.inputTokens || 0), 0);
+    return sumComplete(filteredRecords.map(rec => rec.metrics.inputTokens));
   }, [filteredRecords]);
 
   const totalOutputTokens = useMemo(() => {
-    return filteredRecords.reduce((acc, rec) => acc + (rec.metrics.outputTokens || 0), 0);
+    return sumComplete(filteredRecords.map(rec => rec.metrics.outputTokens));
   }, [filteredRecords]);
 
   const totalThinkingTokens = useMemo(() => {
-    return filteredRecords.reduce((acc, rec) => acc + (rec.metrics.thinkingTokens || 0), 0);
+    return sumComplete(filteredRecords.map(rec => rec.metrics.thinkingTokens));
   }, [filteredRecords]);
 
   const totalTokens = useMemo(() => {
-    return filteredRecords.reduce((acc, rec) => acc + (rec.metrics.totalTokens || 0), 0);
+    return sumComplete(filteredRecords.map(rec => rec.metrics.totalTokens));
   }, [filteredRecords]);
 
   const averageLatencyMs = useMemo(() => {
@@ -219,7 +220,7 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
                   <div className="flex items-center justify-between">
                     <span className="text-[#596E8A] dark:text-[#9299A6]">Düşünme Tokenı</span>
                     <span className="font-medium text-[#071A3D] dark:text-[#F4F4F5] tabular-nums">
-                      {totalThinkingTokens > 0 ? formatNumber(totalThinkingTokens) : '—'}
+                      {formatNumber(totalThinkingTokens)}
                     </span>
                   </div>
                 </div>
@@ -250,7 +251,7 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
               <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#14171C] border border-[#EAE7DC] dark:border-white/[0.04]">
                 <div className="flex items-center justify-between text-[11.5px]">
                   <div className="flex items-center gap-1">
-                    <span className="text-[#596E8A] dark:text-[#9299A6]">Toplam Harcanan</span>
+                    <span className="text-[#596E8A] dark:text-[#9299A6]">Gerçek Kullanımın Tahmini Maliyeti</span>
                     {costAggregate.hasPartialCoverage && (
                       <div className="group relative inline-flex items-center">
                         <Info size={11} className="text-amber-600 dark:text-amber-400 cursor-help" />
@@ -294,17 +295,20 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
 
                 <div className="grid grid-cols-2 gap-2 text-[11.5px] pt-1.5 border-t border-[#EAE7DC]/60 dark:border-white/[0.04]">
                   <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Önlenen Token</span>
+                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Tahmini Önlenen Token</span>
                     <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">{formatNumber(cacheAggregate.avoidedTokens)}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Önlenen API Maliyeti</span>
+                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Tahmini Önlenen API Maliyeti</span>
                     <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">{formatCost(cacheAggregate.avoidedApiCost)}</span>
                   </div>
                 </div>
 
                 <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6] pt-1 italic">
                   {formatNumber(cacheAggregate.bypasses)} istek güvenlik/güncellik politikası nedeniyle cache dışında kaldı.
+                  {' '}{formatNumber(cacheAggregate.inflightShared)} istek eşzamanlı üretimi paylaştı (L1 hit sayılmaz).
+                  {cacheAggregate.unknown > 0 && <> {formatNumber(cacheAggregate.unknown)} kaydın cache sınıflandırması bilinmiyor.</>}
+                  {' '}Tahminler garantili fatura tasarrufu değildir; eksik kullanım/fiyat toplamı “—” gösterilir.
                 </p>
               </div>
             </div>

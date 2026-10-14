@@ -34,7 +34,7 @@ export function calculateTokenCost(
     return null;
   }
 
-  if (tokens < 0 || pricePerMillionTokens < 0) {
+  if (!Number.isFinite(tokens) || !Number.isFinite(pricePerMillionTokens) || tokens < 0 || pricePerMillionTokens < 0) {
     return null;
   }
 
@@ -89,8 +89,10 @@ export function calculateRequestCost(
   switch (pricing.thinkingBillingMode) {
     case 'billed_at_output_rate': {
       // Thinking tokens are reported separately by telemetry but billed at the output rate (e.g. Gemini 3.5 Flash)
-      if (usage.outputTokens !== null && usage.outputTokens !== undefined) {
-        const thinking = usage.thinkingTokens ?? 0;
+      // Ayrı ücretlenen düşünme kullanımı bilinmiyorsa sıfır varsaymak maliyeti eksik gösterir.
+      if (usage.outputTokens !== null && usage.outputTokens !== undefined &&
+          usage.thinkingTokens !== null && usage.thinkingTokens !== undefined) {
+        const thinking = usage.thinkingTokens;
         billableOutputTokens = usage.outputTokens + thinking;
         outputCost = calculateTokenCost(billableOutputTokens, pricing.outputPerMillionTokens);
         thinkingCost = calculateTokenCost(thinking, pricing.outputPerMillionTokens);
@@ -118,7 +120,9 @@ export function calculateRequestCost(
       // Dedicated separate rate for thinking tokens
       billableOutputTokens = usage.outputTokens;
       outputCost = calculateTokenCost(billableOutputTokens, pricing.outputPerMillionTokens);
-      if (usage.thinkingTokens && usage.thinkingTokens > 0) {
+      if (usage.thinkingTokens === null || usage.thinkingTokens === undefined) {
+        thinkingCost = null;
+      } else if (usage.thinkingTokens > 0) {
         if (typeof pricing.thinkingPerMillionTokens === 'number') {
           thinkingCost = calculateTokenCost(usage.thinkingTokens, pricing.thinkingPerMillionTokens);
           thinkingCostToAdd = thinkingCost ?? 0;
@@ -142,7 +146,7 @@ export function calculateRequestCost(
 
     case 'unknown':
     default: {
-      if (usage.thinkingTokens && usage.thinkingTokens > 0) {
+      if (usage.thinkingTokens === null || usage.thinkingTokens === undefined || usage.thinkingTokens > 0) {
         // Unknown billing behavior with active thinking tokens -> do not guess
         billableOutputTokens = usage.outputTokens;
         outputCost = calculateTokenCost(billableOutputTokens, pricing.outputPerMillionTokens);
