@@ -8,7 +8,10 @@
     "client": "vite",
     "server": "tsx server/index.ts",
     "typecheck": "tsc -b && tsc -p tsconfig.server.json",
-    "test": "tsx --test server/services/cost/costEngine.test.ts server/services/cache/cache.test.ts",
+    "test": "npm run test:unit && npm run test:integration && npm run test:frontend",
+    "test:unit": "tsx --test server/services/cost/costEngine.test.ts server/services/cache/cache.test.ts server/services/providers/providers.test.ts",
+    "test:integration": "tsx --test server/app.test.ts",
+    "test:frontend": "tsx --test tests/metrics.test.ts tests/frontend.test.tsx",
     "build": "npm run typecheck && vite build",
     "lint": "oxlint",
     "preview": "vite preview"

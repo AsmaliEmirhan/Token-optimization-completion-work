@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { LLMProvider } from '../../types/api.js';
 
 export const geminiProvider: LLMProvider = {
-  async sendMessage({ apiKey, model, message, systemInstructions, conversation = [], generationParameters = {} }) {
+  async sendMessage({ apiKey, model, message, systemInstructions, conversation = [], generationParameters = {}, signal }) {
     console.log(`[Chat] Provider: gemini`);
     console.log(`[Chat] Model: ${model}`);
     console.log(`[Gemini] Starting request`);
@@ -28,7 +28,8 @@ export const geminiProvider: LLMProvider = {
         })),
         { role: 'user', parts: [{ text: message }] },
       ];
-      const result = await genModel.generateContent({ contents });
+      // Aynı iptal sinyali tüm sağlayıcılarda uygulanır; bekleyen cache istekleri sınırlıdır.
+      const result = await genModel.generateContent({ contents }, { signal });
       const response = await result.response;
       const text = response.text();
 
@@ -58,7 +59,7 @@ export const geminiProvider: LLMProvider = {
     } catch (error: any) {
       console.error(`[Gemini] Request failed`);
       console.error(`Status: ${error.status || 'Unknown'}`);
-      console.error(`Message: ${error.message || 'Unknown provider error'}`);
+      // Sağlayıcı hata metni URL/API anahtarı içerebilir; ham mesajı loglamıyoruz.
       throw error;
     }
   },

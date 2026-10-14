@@ -34,7 +34,10 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
   latencyMs,
   totalCost,
   cacheHit,
-  cacheEligible,
+  cacheStatus,
+  cacheBypassReason,
+  sourceTotalTokens,
+  sourceRequestId,
   responseSource,
   sourceProvider,
   sourceModel,
@@ -90,16 +93,21 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
             <div className="flex items-center justify-between text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Yanıt Kaynağı</span>
               <span className="font-semibold text-right">
-                {responseSource === 'l1_exact_cache' ? 'L1 Exact Cache' : friendlyProvider}
+                {responseSource === 'l1_exact_cache' ? 'L1 Exact Cache' : responseSource === 'inflight_shared' ? 'Eşzamanlı Paylaşım' : friendlyProvider}
               </span>
             </div>
             <div className="flex items-center justify-between text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Cache Durumu</span>
               <span className={`font-semibold ${cacheHit ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
-                {cacheHit ? 'Hit' : cacheEligible ? 'Miss' : 'Bypass'}
+                {cacheStatus === 'hit' ? 'Hit' : cacheStatus === 'inflight_shared' ? 'Paylaşılan Üretim' : cacheStatus === 'miss' ? 'Miss' : 'Bypass'}
               </span>
             </div>
-            {cacheHit && (
+            {cacheBypassReason && (
+              <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6]">
+                {cacheBypassReason === 'untrusted_request' ? 'Bu istek sunucunun cache onay listesinde değil.' : 'İstek cache politikasının dışında.'}
+              </p>
+            )}
+            {responseSource !== 'provider' && (
               <div className="flex items-center justify-between gap-3 text-[11.5px]">
                 <span className="text-[#596E8A] dark:text-[#9299A6]">Orijinal Kaynak</span>
                 <span className="font-semibold truncate" title={`${sourceProvider} / ${sourceModel}`}>
@@ -118,7 +126,7 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
               </span>
             </div>
 
-            {cacheHit && (
+            {responseSource !== 'provider' && (
               <div className="flex items-center justify-between text-[11.5px]">
                 <span className="text-[#596E8A] dark:text-[#9299A6]">Yeni LLM Tokenı</span>
                 <span className="font-semibold tabular-nums">0</span>
@@ -132,8 +140,12 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
               </span>
             </div>
 
-            {cacheHit && (
+            {responseSource !== 'provider' && (
               <>
+                <div className="flex items-center justify-between text-[11.5px]" title={sourceRequestId}>
+                  <span className="text-[#596E8A] dark:text-[#9299A6]">Kaynak Üretim Tokenı</span>
+                  <span className="font-semibold tabular-nums">{formatNumber(sourceTotalTokens)}</span>
+                </div>
                 <div className="flex items-center justify-between text-[11.5px]">
                   <span className="text-[#596E8A] dark:text-[#9299A6]">Önlenen Tahmini Token</span>
                   <span className="font-semibold tabular-nums">{formatNumber(avoidedEstimatedTokens)}</span>
@@ -142,6 +154,7 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
                   <span className="text-[#596E8A] dark:text-[#9299A6]">Önlenen Tahmini API Maliyeti</span>
                   <span className="font-semibold tabular-nums">{formatCost(avoidedEstimatedApiCost)}</span>
                 </div>
+                <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6]">Kaynak üretime dayalı tahmindir; garantili fatura tasarrufu değildir.</p>
               </>
             )}
 

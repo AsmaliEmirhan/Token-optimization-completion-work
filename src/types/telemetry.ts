@@ -17,7 +17,10 @@ export interface RequestTelemetry {
   cacheType: null | 'exact' | 'semantic';
   cacheEligible: boolean;
   cacheBypassReason: string | null;
-  responseSource: 'provider' | 'l1_exact_cache';
+  responseSource: 'provider' | 'l1_exact_cache' | 'inflight_shared';
+  cacheStatus: 'miss' | 'hit' | 'bypass' | 'inflight_shared';
+  cacheWriteReason: string | null;
+  cacheInfrastructureCost: number | null;
   sourceProvider: string;
   sourceModel: string;
   sourceRequestId: string;
@@ -98,7 +101,11 @@ export interface RequestAnalysisData {
 
   cacheHit: boolean;
   cacheEligible: boolean;
-  responseSource: 'provider' | 'l1_exact_cache';
+  responseSource: 'provider' | 'l1_exact_cache' | 'inflight_shared';
+  cacheStatus: 'miss' | 'hit' | 'bypass' | 'inflight_shared';
+  cacheBypassReason: string | null;
+  sourceTotalTokens: number | null;
+  sourceRequestId: string;
   sourceProvider: string;
   sourceModel: string;
   avoidedEstimatedTokens: number | null;

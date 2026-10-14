@@ -177,6 +177,14 @@ function runTests() {
   assert(groqCost.outputCost !== null && Math.abs(groqCost.outputCost - 0.00158) < 1e-10, 'groq output cost');
   assert(groqCost.totalCost !== null && Math.abs(groqCost.totalCost - 0.00748) < 1e-10, 'groq total cost');
 
+  // Eksik düşünme kullanımını sıfır sayarak önlenen maliyeti uydurmamalıyız.
+  const unknownThinking = calculateRequestCost('gemini', 'gemini-3.5-flash', {
+    inputTokens: 7, outputTokens: 23, thinkingTokens: null, totalTokens: null,
+  });
+  assert(unknownThinking.totalCost === null, 'unknown separately billed thinking cost stays null');
+  assert(calculateTokenCost(NaN, 1) === null, 'NaN usage stays null');
+  assert(calculateTokenCost(1, Infinity) === null, 'infinite pricing stays null');
+
   console.log(`ALL ${testsPassed} ASSERTIONS PASSED!`);
 }
 

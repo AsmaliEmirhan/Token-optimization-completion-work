@@ -35,7 +35,7 @@ export const filterRecordsByTimeRange = (
 ): ExperimentRecord[] => {
   const durationMs = getTimeRangeDurationMs(selectedRange);
   const cutoff = now - durationMs;
-  return records.filter((r) => r.timestamp >= cutoff);
+  return records.filter((r) => r.timestamp >= cutoff && r.timestamp <= now);
 };
 
 export const calculateTokenReduction = (baselineTokens: number | null, optimizedTokens: number | null): number | null => {
@@ -208,7 +208,7 @@ export const calculateCostAggregate = (records: ExperimentRecord[]): CostAggrega
 
   for (const record of records) {
     const cost = record.metrics.totalCost;
-    if (typeof cost === 'number' && !Number.isNaN(cost)) {
+    if (typeof cost === 'number' && Number.isFinite(cost) && cost >= 0) {
       totalCostSum += cost;
       knownCostRecordCount++;
     } else {
@@ -231,8 +231,10 @@ export interface CacheAggregateResult {
   hits: number;
   misses: number;
   bypasses: number;
+  inflightShared: number;
+  unknown: number;
   hitRate: number | null;
-  avoidedTokens: number;
+  avoidedTokens: number | null;
   avoidedApiCost: number | null;
 }
 
@@ -240,25 +242,23 @@ export const calculateCacheAggregate = (records: ExperimentRecord[]): CacheAggre
   let hits = 0;
   let misses = 0;
   let bypasses = 0;
-  let avoidedTokens = 0;
-  let avoidedApiCost = 0;
-  let knownAvoidedCostCount = 0;
+  let inflightShared = 0;
+  let unknown = 0;
+  const avoidedTokens: (number | null)[] = [];
+  const avoidedCosts: (number | null)[] = [];
 
   for (const record of records) {
     const telemetry = record.telemetry;
-    if (!telemetry?.cacheEligible) {
-      bypasses++;
-      continue;
+    switch (telemetry?.cacheStatus) {
+      case 'hit': hits++; break;
+      case 'miss': misses++; break;
+      case 'bypass': bypasses++; break;
+      case 'inflight_shared': inflightShared++; break;
+      default: unknown++;
     }
-    if (telemetry.cacheHit && telemetry.cacheType === 'exact') {
-      hits++;
-      if (typeof telemetry.avoidedEstimatedTokens === 'number') avoidedTokens += telemetry.avoidedEstimatedTokens;
-      if (typeof telemetry.avoidedEstimatedApiCost === 'number') {
-        avoidedApiCost += telemetry.avoidedEstimatedApiCost;
-        knownAvoidedCostCount++;
-      }
-    } else {
-      misses++;
+    if (telemetry?.cacheStatus === 'hit' || telemetry?.cacheStatus === 'inflight_shared') {
+      avoidedTokens.push(telemetry.avoidedEstimatedTokens);
+      avoidedCosts.push(telemetry.avoidedEstimatedApiCost);
     }
   }
 
@@ -267,9 +267,17 @@ export const calculateCacheAggregate = (records: ExperimentRecord[]): CacheAggre
     hits,
     misses,
     bypasses,
+    inflightShared,
+    unknown,
     hitRate: lookupCount > 0 ? Number(((hits / lookupCount) * 100).toFixed(2)) : null,
-    avoidedTokens,
-    avoidedApiCost: knownAvoidedCostCount > 0 ? Number(avoidedApiCost.toFixed(8)) : null,
+    avoidedTokens: sumComplete(avoidedTokens),
+    avoidedApiCost: sumComplete(avoidedCosts),
   };
 };
+
+// Bir bileşen bilinmiyorsa toplamı da bilinmiyor kabul ediyoruz; null'u sıfır diye göstermiyoruz.
+export function sumComplete(values: (number | null | undefined)[]): number | null {
+  if (!values.length || values.some(value => typeof value !== 'number' || !Number.isFinite(value))) return null;
+  return values.reduce<number>((sum, value) => sum + (value as number), 0);
+}
 

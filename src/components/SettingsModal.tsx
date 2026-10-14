@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/api';
 import { 
   X, 
   SlidersHorizontal, 
@@ -59,7 +60,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     const timeoutId = window.setTimeout(() => requestController.abort(), 8_000);
 
     try {
-      const res = await fetch('/api/providers', { signal: requestController.signal });
+      const res = await apiFetch('/api/providers', { signal: requestController.signal });
       if (!res.ok) {
         throw new Error(`Provider listesi alınamadı (${res.status})`);
       }
@@ -99,7 +100,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     setSaveErrors(prev => ({ ...prev, [providerId]: null }));
     
     try {
-      const res = await fetch(`/api/providers/${providerId}/configure`, {
+      const res = await apiFetch(`/api/providers/${providerId}/configure`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKey })
