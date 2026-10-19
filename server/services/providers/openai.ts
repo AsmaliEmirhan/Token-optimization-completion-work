@@ -36,6 +36,13 @@ export const openaiProvider: LLMProvider = {
     return {
       content: response.choices[0]?.message?.content || '',
       cacheable: response.choices[0]?.finish_reason === 'stop',
+      safety: {
+        complete: response.choices[0]?.finish_reason === 'stop',
+        hasToolCalls: Boolean(response.choices[0]?.message?.tool_calls?.length || response.choices[0]?.message?.function_call),
+        hasRetrieval: Boolean(response.choices[0]?.message?.annotations?.length),
+        hasPrivateContext: Boolean(systemInstructions || conversation.length),
+        flagged: Boolean(response.choices[0]?.message?.refusal || response.choices[0]?.finish_reason === 'content_filter'),
+      },
       usage: {
         inputTokens,
         outputTokens,

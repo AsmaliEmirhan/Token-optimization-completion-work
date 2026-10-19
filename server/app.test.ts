@@ -1,11 +1,11 @@
 import test, { type TestContext } from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp, type AppOptions } from './app.js';
-import { REVIEWED_STATIC_PROMPTS } from './services/cache/cachePolicy.js';
 import type { LLMProvider, LLMResponse, ChatApiResponse } from './types/api.js';
 
-const request = { provider: 'openai', model: 'gpt-4o', message: REVIEWED_STATIC_PROMPTS[0] };
-const response = (): LLMResponse => ({ content: '**Yanıt**', cacheable: true, latencyMs: 1,
+const request = { provider: 'openai', model: 'gpt-4o', message: "Türkiye'nin başkenti" };
+const response = (): LLMResponse => ({ content: "Türkiye'nin başkenti Ankara'dır.", cacheable: true, latencyMs: 1,
+    safety: { complete: true, hasToolCalls: false, hasRetrieval: false, hasPrivateContext: false, flagged: false },
   usage: { inputTokens: 10, outputTokens: 20, thinkingTokens: 0, totalTokens: 30 } });
 
 async function fixture(t: TestContext, options: AppOptions = {}) {
@@ -83,10 +83,11 @@ test('HTTP sahte kullanıcı/tenant/session kapsamı başka oturuma ve API anaht
   const b = f.client();
   const providers = await (await b.send('/api/providers')).json() as { providers: { configured: boolean }[] };
   assert.ok(providers.providers.every(p => !p.configured));
-  const forged = { ...request, securityScope: { sessionId: a.cookie.split('=')[1], userId: 'admin', tenantId: 'root' } };
+  const privateRequest = { ...request, message: 'Benim favori rengim ne?' };
+  const forged = { ...privateRequest, securityScope: { sessionId: a.cookie.split('=')[1], userId: 'admin', tenantId: 'root' } };
   assert.equal((await b.send('/api/chat', forged)).status, 400);
   await b.send('/api/providers/openai/configure', { apiKey: 'key-b' });
-  const first = await (await a.send('/api/chat', request)).json() as ChatApiResponse;
+  const first = await (await a.send('/api/chat', privateRequest)).json() as ChatApiResponse;
   const other = await (await b.send('/api/chat', forged)).json() as ChatApiResponse;
   assert.equal(first.telemetry.cacheStatus, 'miss');
   assert.equal(other.telemetry.cacheStatus, 'miss');
@@ -96,9 +97,9 @@ test('HTTP sahte kullanıcı/tenant/session kapsamı başka oturuma ve API anaht
 test('API anahtarı yenilenince eski cache paylaşılmaz', async t => {
   const f = await fixture(t);
   const c = await f.configured('old');
-  await c.send('/api/chat', request);
+  await c.send('/api/chat', { ...request, message: 'Benim favori rengim ne?' });
   await c.send('/api/providers/openai/configure', { apiKey: 'new' });
-  const second = await (await c.send('/api/chat', request)).json() as ChatApiResponse;
+  const second = await (await c.send('/api/chat', { ...request, message: 'Benim favori rengim ne?' })).json() as ChatApiResponse;
   assert.equal(second.telemetry.cacheStatus, 'miss');
   assert.deepEqual(f.keys, ['old', 'new']);
 });
@@ -126,7 +127,8 @@ test('HTTP bozuk/uygulanmayan alanlar reddedilir; onaysız serbest sohbet normal
     assert.ok((await res.json() as { requestId: string }).requestId);
   }
   const bypass = await (await c.send('/api/chat', { ...request, message: 'Ne haber?' })).json() as ChatApiResponse;
-  assert.equal(bypass.telemetry.cacheStatus, 'bypass');
+  assert.equal(bypass.telemetry.cacheStatus, 'miss');
+  assert.equal(bypass.telemetry.cacheScope, 'session_private');
   assert.equal(bypass.telemetry.responseSource, 'provider');
   assert.equal(f.calls(), 1);
 });
@@ -224,4 +226,57 @@ test('gerçek Vite proxy Set-Cookie ve Cookie başlıklarını uçtan uca taşı
   assert.equal(chat.status, 200);
   assert.equal((await chat.json() as ChatApiResponse).telemetry.cacheStatus, 'miss');
   assert.deepEqual(f.keys, ['proxy-test']);
+});
+
+test('HTTP gösterimi: iki ayrı çerez ortak L1 kaydını paylaşır, özel istekler ayrılır', async t => {
+  const f = await fixture(t);
+  const a = await f.configured('key-a');
+  const b = await f.configured('key-b');
+  assert.notEqual(a.cookie, b.cookie);
+  const ask = async (client: typeof a, body = request) => {
+    const response = await client.send('/api/chat', body);
+    assert.equal(response.status, 200);
+    return await response.json() as ChatApiResponse;
+  };
+  const first = await ask(a);
+  const hit = await ask(b);
+  assert.equal(first.telemetry.cacheStatus, 'miss');
+  assert.equal(hit.telemetry.responseSource, 'shared_l1_cache');
+  assert.equal(hit.telemetry.cacheScope, 'shared');
+  assert.equal(hit.telemetry.totalTokens, 0);
+  assert.equal(hit.telemetry.totalCost, 0);
+  assert.deepEqual(f.keys, ['key-a']);
+  assert.notEqual(first.telemetry.requestId, hit.telemetry.requestId);
+  const privateQuestion = { ...request, message: 'Benim favori rengim ne?' };
+  assert.equal((await ask(a, privateQuestion)).telemetry.cacheScope, 'session_private');
+  assert.equal((await ask(b, privateQuestion)).telemetry.cacheStatus, 'miss');
+  assert.equal((await ask(b, privateQuestion)).telemetry.responseSource, 'private_l1_cache');
+  assert.equal((await ask(b, { ...request, message: 'Bugün hava nasıl?' })).telemetry.cacheStatus, 'bypass');
+  assert.equal((await ask(b, { ...request, model: 'gpt-4o-mini' })).telemetry.cacheStatus, 'miss');
+  for (const malicious of [{ scope: 'shared' }, { cacheScope: 'shared' }, { cacheSafe: true }]) {
+    assert.equal((await b.send('/api/chat', { ...privateQuestion, ...malicious })).status, 400);
+  }
+  assert.equal(f.calls(), 5);
+  t.diagnostic('A: miss/provider → B: hit/shared_l1_cache; ilk ortak çiftte sağlayıcı çağrısı=1, B token=0, B API maliyeti=0.');
+});
+
+test('HTTP Gemini/OpenAI/Groq kendi model ve sağlayıcı sınırlarında ortak L1 kullanır', async t => {
+  const f = await fixture(t, { discoverGeminiModels: async () => [{ id: 'mock-gemini', name: 'Fixture' }] });
+  const a = f.client();
+  const b = f.client();
+  for (const provider of ['openai', 'gemini', 'groq']) {
+    for (const client of [a, b]) {
+      assert.equal((await client.send('/api/providers/' + provider + '/configure', { apiKey: 'mock-' + provider })).status, 200);
+    }
+    const input = { ...request, provider, model: 'same-raw-model' };
+    const first = await (await a.send('/api/chat', input)).json() as ChatApiResponse;
+    const second = await (await b.send('/api/chat', input)).json() as ChatApiResponse;
+    assert.equal(first.telemetry.cacheStatus, 'miss');
+    assert.equal(second.telemetry.responseSource, 'shared_l1_cache');
+    assert.equal(second.telemetry.sourceProvider, provider);
+    assert.equal(second.telemetry.sourceModel, 'same-raw-model');
+    assert.equal(second.telemetry.avoidedEstimatedApiCost, null);
+    assert.equal(second.telemetry.totalCost, 0);
+  }
+  assert.equal(f.calls(), 3);
 });

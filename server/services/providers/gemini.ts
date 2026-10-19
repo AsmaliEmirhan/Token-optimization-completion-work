@@ -48,6 +48,14 @@ export const geminiProvider: LLMProvider = {
       return {
         content: text,
         cacheable: response.candidates?.[0]?.finishReason === 'STOP',
+        safety: {
+          complete: response.candidates?.[0]?.finishReason === 'STOP',
+          hasToolCalls: Boolean(response.candidates?.[0]?.content?.parts?.some(part =>
+            part.functionCall || part.functionResponse || part.executableCode || part.codeExecutionResult || part.inlineData || part.fileData)),
+          hasRetrieval: Boolean(response.candidates?.[0]?.groundingMetadata || response.candidates?.[0]?.citationMetadata),
+          hasPrivateContext: Boolean(systemInstructions || conversation.length),
+          flagged: Boolean(response.promptFeedback?.blockReason || response.candidates?.[0]?.safetyRatings?.some(rating => ['MEDIUM', 'HIGH'].includes(rating.probability))),
+        },
         usage: {
           inputTokens,
           outputTokens,

@@ -6,6 +6,7 @@ import { geminiProvider } from './services/providers/gemini.js';
 import { groqProvider } from './services/providers/groq.js';
 import { InMemoryExactCache } from './services/cache/exactCache.js';
 import { ChatService } from './services/chat/chatService.js';
+import type { CacheSafetyValidator } from './services/cache/cacheValidation.js';
 import { RequestValidationError, validateChatRequest } from './services/chat/requestValidation.js';
 import { SessionStore } from './security/sessions.js';
 import type { BrowserSession, SessionOptions } from './security/sessions.js';
@@ -24,6 +25,8 @@ export interface AppOptions {
   cache?: InMemoryExactCache;
   providerTimeoutMs?: number;
   cacheEnabled?: boolean;
+  cacheValidator?: CacheSafetyValidator;
+  cachePolicyVersion?: string;
   discoverGeminiModels?: typeof discoverGeminiModels;
 }
 
@@ -75,11 +78,16 @@ export function createApp(options: AppOptions = {}) {
   const cache = options.cache ?? new InMemoryExactCache({
     ttlMs: limit('L1_CACHE_TTL_MS', 30 * 60 * 1000, 24 * 60 * 60 * 1000),
     maxEntries: limit('L1_CACHE_MAX_ENTRIES', 500, 100_000),
+    maxSharedEntries: limit('L1_CACHE_MAX_SHARED_ENTRIES', 250, 100_000),
+    maxPrivateEntries: limit('L1_CACHE_MAX_PRIVATE_ENTRIES', 250, 100_000),
     maxEntryBytes: limit('L1_CACHE_MAX_ENTRY_BYTES', 256 * 1024, 2 * 1024 * 1024),
     maxTotalBytes: limit('L1_CACHE_MAX_TOTAL_BYTES', 16 * 1024 * 1024, 256 * 1024 * 1024),
   });
   const providers = options.providers ?? { openai: openaiProvider, gemini: geminiProvider, groq: groqProvider };
   const chatService = new ChatService({ providers, cache, cacheTtlMs: cache.ttlMs,
+    // Burada varsayılan olarak ücretli veya semantik bir doğrulayıcı başlatılmaz.
+    validator: options.cacheValidator, policyVersion: options.cachePolicyVersion,
+    validatorTimeoutMs: limit('CACHE_VALIDATOR_TIMEOUT_MS', 1000, 30_000),
     providerTimeoutMs: options.providerTimeoutMs ?? limit('PROVIDER_TIMEOUT_MS', 60_000, 300_000),
     maxConcurrentGenerations: limit('L1_MAX_CONCURRENT_GENERATIONS', 100, 1000),
     maxWaitersPerKey: limit('L1_MAX_WAITERS_PER_KEY', 32, 1000),
@@ -136,7 +144,7 @@ export function createApp(options: AppOptions = {}) {
       }
     }
     session.apiKeys.set(provider, cleanKey);
-    // Anahtar değişince eski hesabın cache/üretim sonucuna yeni istek bağlanamaz.
+    // Anahtar değişince eski özel cache/üretime bağlanılmaz; onaylı ortak kayıt kimlikten bağımsızdır.
     session.credentialRevision++;
     res.json({ success: true, configured: true });
   });

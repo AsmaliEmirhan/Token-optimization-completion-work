@@ -16,25 +16,47 @@ Windows PowerShell yürütme politikası npm.ps1'i engelliyorsa aynı komutları
 API anahtarını Ayarlar > API bölümünden mevcut tarayıcı oturumu için girin.
 Anahtar sunucunun süreç belleğinde, yalnızca o oturumda tutulur. Yeniden başlatma veya oturum kaybı sonrası yeniden girilmesi gerekir.
 
-## L1 Exact Cache
+## Hibrit doğrulamalı ortak L1 Exact Cache
 
-L1; **sunucuda onaylı tam istek birleşimlerini**, doğrulanmış tarayıcı oturumu ve tam sağlayıcı/model kimliği içinde tekrar kullanır.
-Serbest sohbet çalışır; onaysız istekler normal sağlayıcı yolunda `bypass` olur. Anahtar kelime bulunmaması güvenlik kanıtı değildir.
+L1; aynı ham soruyu, aynı sağlayıcı/model ve üretim bağlamında tekrar kullanır.
+Üç soruluk sabit onay listesi kaldırıldı. Sunucu önce istek şemasını ve doğrulanmış oturumu,
+sonra deterministik risk kurallarını ve olumlu statik kategori kanıtını değerlendirir.
 
-Varsayılan örnekler (tam metin, sistem talimatı/geçmiş yok, varsayılan üretim parametreleri):
+- **Ortak**: bağlamsız coğrafya, matematik ve programlama dilbilgisi kurallarıyla ortak aday olur.
+  Üretilen yanıt da ayrıca güvenlik metadatası ve tam içerik biçimi üzerinden doğrulanır.
+- **Oturuma özel**: kişisel, sohbet/sistem talimatlı, özel parametreli veya paylaşımı belirsiz istekler
+  yalnız sunucunun doğruladığı oturum ve anahtar revizyonunda tekrar kullanılır.
+- **Kullanıcıya özel**: yalnız gelecekteki gerçek sunucu auth bağlamı için sözleşme hazırdır.
+  Mevcut anonim HTTP uygulaması bu kapsamı üretmez.
+- **Bypass**: dinamik/hassas veya güvenli olmayan istekler önbelleğe girmez.
+  Desteklenmeyen araç, dosya, retrieval ve yan etki alanları HTTP katmanında reddedilir.
 
-- `İkili arama algoritmasını açıkla.`
-- `Pisagor teoremini açıkla.`
-- `Explain the binary search algorithm.`
+Örneğin “Türkiye'nin başkenti” ilk istekte Miss olur. Sağlayıcı “Türkiye'nin başkenti Ankara'dır.”
+biçiminde doğrulanabilen bir yanıt döndürürse başka bir doğrulanmış oturumun **aynı tam sorusu** Shared Hit alır.
+Uzun/serbest açıklama doğrulanamıyorsa özel saklanır; her genel bilgi cevabının ortak saklanacağı vaat edilmez.
 
-İlk uygun istek `miss/provider`, tamamlanmış yanıtın tekrarı `hit/l1_exact_cache`, devam eden aynı üretimin bekleyeni `inflight_shared` olur.
-Benzer cümleler, farklı modeller ve farklı oturumlar paylaşılmaz.
-Ayrı requestId'ler korunur; gerçek sağlayıcı tokenı/maliyeti yalnızca üretimi başlatan isteğe yazılır.
+**Gerçek bir LLM/semantik ek doğrulayıcı kurulmadı.** Sunucuya bağlanabilen iki aşamalı doğrulayıcı arayüzü,
+yapılandırılmış sonuç denetimi, sürüm ve zaman aşımı uygulanmıştır. Varsayılan kurallar semantik anlayış değildir.
+Belirsizlik ortak paylaşım izni vermez; ek ücretli model çağrısı yapılmaz.
 
-SHA-256 anahtarı; şema sürümü, tam mesaj, sistem talimatı, sıralı geçmiş, desteklenen üretim parametreleri,
-sağlayıcı/model ve sunucudaki gizli olmayan cache bölümü + anahtar revizyonunu içerir.
-API anahtarı ve çerez sırrı cache anahtarına girmez.
-Tool/retrieval, streaming ve harici yan etki bu endpoint'te desteklenmez; açıkça istenirse 400 döner.
+SHA-256 anahtarında kapsam, doğrulanmış özel kapsam izi, ham sağlayıcı/model, tam mesaj,
+sistem/geçmiş izleri, üretim parametreleri ve şema/politika/doğrulayıcı sürümü bulunur.
+Ortak anahtarda kullanıcı veya oturum kimliği yoktur. API anahtarları/çerez sırları kayıtlara alınmaz.
+Özel kayıtlar ortak kayda otomatik yükseltilmez. Politika sürümü değişince eski ortak kayıtlar geçersizleşir.
+
+Yanıt kaynakları: provider, shared_l1_cache, private_l1_cache, inflight_shared.
+Eski l1_exact_cache telemetrisi arayüzde okunabilir. Ortak kayıt araması yalnız istek onayından sonra yapılır;
+ortak miss ardından izinli özel kapsam aranır. Cache hit yeni sağlayıcı tokenı ve API maliyeti üretmez.
+Kaynak üretimin kullanımı ayrı tutulur; bilinmeyen önlenen maliyet null kalır.
+
+**Oturumlar arası in-flight paylaşım kapalıdır:** henüz doğrulanmamış çıktı başka kullanıcıya verilemez.
+Aynı özel kapsamdaki eşzamanlı istekler tek üretimi paylaşır. Her HTTP isteğinin ayrı requestId'si vardır;
+gerçek kullanım/maliyet yalnız üretimi başlatan istekte sayılır. İki farklı oturumdaki eşzamanlı soğuk miss
+iki sağlayıcı çağrısı yapabilir; tamamlanmış doğrulanmış kayıt sonraki isteklerde ortak kullanılır.
+
+İstek Analizi ve saatlik/günlük/haftalık/aylık Kullanım Analizi ortak/özel hit, miss, bypass,
+L1 hit oranı, gerçek kullanımın tahmini API maliyeti ve tahmini önlenen kullanımı ayrı gösterir.
+Analitikler mevcut arayüz oturumuyla sınırlıdır; tahminler garantili fatura tasarrufu değildir.
 
 ## Güvenlik ve oturum
 
@@ -59,9 +81,12 @@ HTTPS reverse proxy'yi ayrıca kurun; X-Forwarded başlıkları koşulsuz güven
 | --- | ---: | ---: |
 | L1_CACHE_TTL_MS | 1800000 (30 dk) | 86400000 |
 | L1_CACHE_MAX_ENTRIES | 500 | 100000 |
+| L1_CACHE_MAX_SHARED_ENTRIES | 250 | 100000 |
+| L1_CACHE_MAX_PRIVATE_ENTRIES | 250 | 100000 |
 | L1_CACHE_MAX_ENTRY_BYTES | 262144 (256 KiB) | 2097152 |
 | L1_CACHE_MAX_TOTAL_BYTES | 16777216 (16 MiB) | 268435456 |
 | L1_CACHE_ENABLED | true | false ile kapatılır |
+| CACHE_VALIDATOR_TIMEOUT_MS | 1000 | 30000 |
 | PROVIDER_TIMEOUT_MS | 60000 | 300000 |
 | L1_MAX_CONCURRENT_GENERATIONS | 100 | 1000 |
 | L1_MAX_WAITERS_PER_KEY | 32 | 1000 |
@@ -78,15 +103,17 @@ TTL erişimde/yazmada temizlenir, kapasite ve bayt bütçesi LRU ile korunur. Ot
 ```bash
 npm run typecheck
 npm run test:unit
+npm run test:security
 npm run test:integration
 npm run test:frontend
 npm run lint
 npm run build
 ```
 
-`npm test` üç test grubunu sırayla çalıştırır.
+`npm test` dört test grubunu sırayla çalıştırır.
 Testler mocked provider/HTTP yanıtları kullanır; ücretli API çağrısı yapmaz.
 HTTP entegrasyonu gerçek yerel Express ve Vite proxy üzerinde çerez aktarımını da sınar.
 Frontend testleri hesaplama, React server render ve fetch sözleşmesi testleridir; gerçek tarayıcı etkileşim testi değildir.
 
-Ayrıntılı kararlar, maliyet anlamları, test kapsamı ve sınırlamalar: [L1 stabilizasyon raporu](docs/L1_CACHE_STABILIZATION_TR.md).
+Güncel mimari, test matrisi ve sınırlar: [Hibrit ortak L1 raporu](docs/HYBRID_SHARED_L1_TR.md).
+Önceki sürümün tarihsel kaydı: [L1 stabilizasyon raporu](docs/L1_CACHE_STABILIZATION_TR.md).

@@ -280,13 +280,13 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
               <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#14171C] border border-[#EAE7DC] dark:border-white/[0.04] space-y-2">
                 <div className="grid grid-cols-2 gap-2 text-[11.5px]">
                   <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">L1 Hit / Miss</span>
+                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Ortak / Özel L1 Eşleşmesi</span>
                     <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">
-                      {formatNumber(cacheAggregate.hits)} / {formatNumber(cacheAggregate.misses)}
+                      {formatNumber(cacheAggregate.sharedHits)} / {formatNumber(cacheAggregate.privateHits)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">L1 Hit Oranı</span>
+                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block" title="Tamamlanmış eşleşmeler / (eşleşmeler + bulunamayanlar). Bypass ve eşzamanlı bekleyenler dahil değildir.">L1 Eşleşme Oranı</span>
                     <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">
                       {cacheAggregate.hitRate === null ? '—' : `%${cacheAggregate.hitRate.toLocaleString('tr-TR')}`}
                     </span>
@@ -305,9 +305,11 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
                 </div>
 
                 <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6] pt-1 italic">
-                  {formatNumber(cacheAggregate.bypasses)} istek güvenlik/güncellik politikası nedeniyle cache dışında kaldı.
+                  {formatNumber(cacheAggregate.misses)} istekte kayıt bulunamadı (Miss).{' '}
+                  {formatNumber(cacheAggregate.bypasses)} istek önbellek dışında kaldı (Bypass).
                   {' '}{formatNumber(cacheAggregate.inflightShared)} istek eşzamanlı üretimi paylaştı (L1 hit sayılmaz).
                   {cacheAggregate.unknown > 0 && <> {formatNumber(cacheAggregate.unknown)} kaydın cache sınıflandırması bilinmiyor.</>}
+                  {cacheAggregate.legacyHits > 0 && <> {formatNumber(cacheAggregate.legacyHits)} eski eşleşmenin kapsamı bilinmiyor.</>}
                   {' '}Tahminler garantili fatura tasarrufu değildir; eksik kullanım/fiyat toplamı “—” gösterilir.
                 </p>
               </div>

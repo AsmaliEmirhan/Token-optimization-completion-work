@@ -1,3 +1,6 @@
+export type CacheScope = 'shared' | 'user_private' | 'session_private';
+export type ResponseSource = 'provider' | 'l1_exact_cache' | 'shared_l1_cache' | 'private_l1_cache' | 'inflight_shared';
+
 export interface RequestTelemetry {
   requestId: string;
   timestamp: number;
@@ -17,7 +20,12 @@ export interface RequestTelemetry {
   cacheType: null | 'exact' | 'semantic';
   cacheEligible: boolean;
   cacheBypassReason: string | null;
-  responseSource: 'provider' | 'l1_exact_cache' | 'inflight_shared';
+  // Eski telemetri okunabilir; eksik kapsam ortak olarak varsayılmaz.
+  cacheScope?: CacheScope | null;
+  cacheDecisionReason?: string | null;
+  cachePolicyVersion?: string;
+  cacheValidationStatus?: 'approved' | 'rejected' | 'uncertain';
+  responseSource: ResponseSource;
   cacheStatus: 'miss' | 'hit' | 'bypass' | 'inflight_shared';
   cacheWriteReason: string | null;
   cacheInfrastructureCost: number | null;
@@ -101,7 +109,10 @@ export interface RequestAnalysisData {
 
   cacheHit: boolean;
   cacheEligible: boolean;
-  responseSource: 'provider' | 'l1_exact_cache' | 'inflight_shared';
+  cacheScope?: CacheScope | null;
+  cacheDecisionReason?: string | null;
+  cacheLookupLatencyMs?: number | null;
+  responseSource: ResponseSource;
   cacheStatus: 'miss' | 'hit' | 'bypass' | 'inflight_shared';
   cacheBypassReason: string | null;
   sourceTotalTokens: number | null;

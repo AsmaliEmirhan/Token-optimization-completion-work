@@ -1,19 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateCacheAggregate, calculateCostAggregate, filterRecordsByTimeRange, getTimeRangeDurationMs, sumComplete } from '../src/utils/metrics';
+import { calculateCacheAggregate, calculateCostAggregate, filterRecordsByTimeRange, getTimeRangeDurationMs, sumComplete, uniqueRequestRecords } from '../src/utils/metrics';
 import type { ExperimentRecord } from '../src/types/telemetry';
 import { ChatService } from '../server/services/chat/chatService.js';
 import { InMemoryExactCache } from '../server/services/cache/exactCache.js';
-import { REVIEWED_STATIC_PROMPTS } from '../server/services/cache/cachePolicy.js';
 
 async function records(): Promise<ExperimentRecord[]> {
   const service = new ChatService({ cache: new InMemoryExactCache({ ttlMs: 1000, maxEntries: 10 }), cacheTtlMs: 1000,
     providers: { openai: { async sendMessage() {
-      return { content: 'answer', cacheable: true, latencyMs: 1,
+      return { content: "Türkiye'nin başkenti Ankara'dır.", cacheable: true, latencyMs: 1,
+    safety: { complete: true, hasToolCalls: false, hasRetrieval: false, hasPrivateContext: false, flagged: false },
         usage: { inputTokens: 10, outputTokens: 20, thinkingTokens: 0, totalTokens: 30 } };
     } } },
   });
-  const input = { provider: 'openai', model: 'gpt-4o', message: REVIEWED_STATIC_PROMPTS[0] };
+  const input = { provider: 'openai', model: 'gpt-4o', message: "Türkiye'nin başkenti" };
   const options = { apiKey: 'mock', securityScope: { partitionId: 'server', credentialRevision: 0 } };
   const responses = await Promise.all([service.execute(input, options), service.execute(input, options)]);
   responses.push(await service.execute(input, options));
@@ -32,6 +32,8 @@ test('gerçek backend telemetrisi frontend toplamında provider/shared/hit/bypas
   assert.equal(sumComplete(data.map(r => r.metrics.totalTokens)), 60);
   assert.equal(calculateCostAggregate(data).totalKnownCost, Number((data[0].metrics.totalCost! * 2).toFixed(8)));
   assert.equal(cache.avoidedApiCost, data[0].metrics.totalCost! * 2);
+  assert.equal(cache.sharedHits, 1);
+  assert.equal(cache.privateHits, 0);
 });
 
 test('bilinmeyen veya kısmi kullanım/fiyat sıfır uydurmaz', async () => {
@@ -59,4 +61,26 @@ test('saat/gün/hafta/ay aynı sınıfları toplar; sınır dışı ve gelecek k
     assert.equal(filtered.length, 4);
     assert.equal(calculateCacheAggregate(filtered).inflightShared, 1);
   }
+});
+
+test('aynı requestId tekrar işlendiğinde her zaman aralığında maliyet ve cache sayıları bir kez toplanır', async () => {
+  const data = await records();
+  const duplicate = [...data, ...data];
+  assert.equal(uniqueRequestRecords(duplicate).length, data.length);
+  assert.deepEqual(calculateCostAggregate(duplicate), calculateCostAggregate(data));
+  assert.deepEqual(calculateCacheAggregate(duplicate), calculateCacheAggregate(data));
+  for (const range of ['hour', 'day', 'week', 'month'] as const) {
+    assert.equal(filterRecordsByTimeRange(duplicate, range).length, data.length);
+  }
+});
+
+test('özel/ortak/eski kapsamı bilinmeyen hit sayıları ayrı tutulur', async () => {
+  const data = await records();
+  const shared = data[2];
+  const privateHit = { ...shared, id: 'private', telemetry: { ...shared.telemetry!, requestId: 'private',
+    cacheScope: 'session_private' as const, responseSource: 'private_l1_cache' as const } };
+  const legacy = { ...shared, id: 'legacy', telemetry: { ...shared.telemetry!, requestId: 'legacy',
+    cacheScope: undefined, responseSource: 'l1_exact_cache' as const } };
+  const aggregate = calculateCacheAggregate([...data, privateHit, legacy]);
+  assert.deepEqual([aggregate.sharedHits, aggregate.privateHits, aggregate.legacyHits, aggregate.hits], [1, 1, 1, 3]);
 });
