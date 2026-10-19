@@ -16,48 +16,21 @@ Windows PowerShell yürütme politikası npm.ps1'i engelliyorsa aynı komutları
 API anahtarını Ayarlar > API bölümünden mevcut tarayıcı oturumu için girin.
 Anahtar sunucunun süreç belleğinde, yalnızca o oturumda tutulur. Yeniden başlatma veya oturum kaybı sonrası yeniden girilmesi gerekir.
 
-## Hibrit doğrulamalı ortak L1 Exact Cache
+## Gizlilik öncelikli ortak L1 Exact Cache
 
-L1; aynı ham soruyu, aynı sağlayıcı/model ve üretim bağlamında tekrar kullanır.
-Üç soruluk sabit onay listesi kaldırıldı. Sunucu önce istek şemasını ve doğrulanmış oturumu,
-sonra deterministik risk kurallarını ve olumlu statik kategori kanıtını değerlendirir.
+TokenAI, mevcut sürümde yalnız iki aşamada doğrulanmış `public_shareable` istekleri ortak L1'de saklar. Önce istek, sağlayıcı yanıtından sonra yanıt sınıflandırılır. İstek veya yanıt `user_private`, `session_private`, `sensitive`, `dynamic` ya da `uncertain` ise normal model yanıtı üretilir ve hiçbir cache kaydı yazılmaz. Özel cache kapsamı geçmiş mimariyle uyumluluk için tiplerde kalır; uygulama özel kayıt okumaz veya yazmaz.
 
-- **Ortak**: bağlamsız coğrafya, matematik ve programlama dilbilgisi kurallarıyla ortak aday olur.
-  Üretilen yanıt da ayrıca güvenlik metadatası ve tam içerik biçimi üzerinden doğrulanır.
-- **Oturuma özel**: kişisel, sohbet/sistem talimatlı, özel parametreli veya paylaşımı belirsiz istekler
-  yalnız sunucunun doğruladığı oturum ve anahtar revizyonunda tekrar kullanılır.
-- **Kullanıcıya özel**: yalnız gelecekteki gerçek sunucu auth bağlamı için sözleşme hazırdır.
-  Mevcut anonim HTTP uygulaması bu kapsamı üretmez.
-- **Bypass**: dinamik/hassas veya güvenli olmayan istekler önbelleğe girmez.
-  Desteklenmeyen araç, dosya, retrieval ve yan etki alanları HTTP katmanında reddedilir.
+Yapısal kontroller sohbet geçmişini, sistem talimatını, doğrulanmış kimliği, harici bağlamı ve belirgin hassas/dinamik içerikleri denetler. Anahtar sözcüğün bulunmaması kamusal paylaşım kanıtı sayılmaz. Herhangi bir ülke, şehir, soru veya cevap şablonu üretim politikasında onay listesi olarak kullanılmaz. Semantik olarak belirsiz içerik için varsayılan karar `uncertain` ve Bypass'tır.
 
-Örneğin “Türkiye'nin başkenti” ilk istekte Miss olur. Sağlayıcı “Türkiye'nin başkenti Ankara'dır.”
-biçiminde doğrulanabilen bir yanıt döndürürse başka bir doğrulanmış oturumun **aynı tam sorusu** Shared Hit alır.
-Uzun/serbest açıklama doğrulanamıyorsa özel saklanır; her genel bilgi cevabının ortak saklanacağı vaat edilmez.
+Güvenilir bir semantik sınıflandırıcı sunucuya ayrıca bağlanabilir. Bunun için `AppOptions.cacheClassifier` ve açık `classifierConsent: true` birlikte verilmelidir. Sınıflandırıcı yalnız modelin göreceği isteği/yanıtı alır; kullanıcı sağlayıcısının API anahtarına, çereze veya doğrulanmış oturum bölümüne erişmez. Sonuç; gizlilik sınıfı, güven değeri, sürüm, sabit neden kodu, token kullanımı ve tahmini maliyet içerir. Eksik/bozuk sonuç, düşük kamusal güven, hata veya zaman aşımı paylaşım izni vermez. Hazır uygulamada gerçek semantik sınıflandırıcı ve ek ücretli çağrı yoktur; testlerde yalnız mock kullanılır. Böylece varsayılan kurulumda Shared Hit beklenmez.
 
-**Gerçek bir LLM/semantik ek doğrulayıcı kurulmadı.** Sunucuya bağlanabilen iki aşamalı doğrulayıcı arayüzü,
-yapılandırılmış sonuç denetimi, sürüm ve zaman aşımı uygulanmıştır. Varsayılan kurallar semantik anlayış değildir.
-Belirsizlik ortak paylaşım izni vermez; ek ücretli model çağrısı yapılmaz.
+Onaylı ortak adayın anahtarı SHA-256 ile ham sağlayıcı, tam model, ham soru, sistem/geçmiş izleri, üretim ayarları, kapsam, şema ve politika/sınıflandırıcı sürümünden üretilir. İlk üretimden sonra güvenlik metadatası ve yanıt içeriği yeniden denetlenir. Onaylı kayıt TTL, LRU ve boyut sınırlarıyla tutulur. Ayrı oturumların doğrulanmamış eşzamanlı üretimleri birbirine bağlanmaz. Eski politika sürümündeki ortak kayıtlar, eski özel kayıtlar ve uyumsuz anahtarlar okunmaz.
 
-SHA-256 anahtarında kapsam, doğrulanmış özel kapsam izi, ham sağlayıcı/model, tam mesaj,
-sistem/geçmiş izleri, üretim parametreleri ve şema/politika/doğrulayıcı sürümü bulunur.
-Ortak anahtarda kullanıcı veya oturum kimliği yoktur. API anahtarları/çerez sırları kayıtlara alınmaz.
-Özel kayıtlar ortak kayda otomatik yükseltilmez. Politika sürümü değişince eski ortak kayıtlar geçersizleşir.
+Arayüz ilk turda boş, sonraki turlarda tam sohbet geçmişini gönderir. Yerel hata bildirimleri ve arayüz metadatası modele gitmez. Aynı anda ikinci gönderim engellenir. Sunucu geçmişi sessizce kırpmaz; istek sınırı aşılırsa hata verir. Sohbet geçmişi ve kimlik bağlamı mevcut politikada cache dışıdır.
 
-Yanıt kaynakları: provider, shared_l1_cache, private_l1_cache, inflight_shared.
-Eski l1_exact_cache telemetrisi arayüzde okunabilir. Ortak kayıt araması yalnız istek onayından sonra yapılır;
-ortak miss ardından izinli özel kapsam aranır. Cache hit yeni sağlayıcı tokenı ve API maliyeti üretmez.
-Kaynak üretimin kullanımı ayrı tutulur; bilinmeyen önlenen maliyet null kalır.
+İstek Analizi gizlilik sınıfını, cache kararını, gerçek sağlayıcı tokenlarını, sınıflandırıcı ek yükünü ve toplam işlem maliyetini ayrı gösterir. Kullanım Analizi maliyet toplamına sınıflandırıcı giderini bir kez ekler. Provider çağrısı önlenmiş olsa bile her cache hit'inde istek sınıflandırması tekrar ücretlendirilir; net token/maliyet tahmini bu ek yükü düşer ve negatif olabilir. Eksik fiyat veya sınıflandırma ölçümü sıfır varsayılmaz. Analitik kaydına soru veya yanıt metni kopyalanmaz.
 
-**Oturumlar arası in-flight paylaşım kapalıdır:** henüz doğrulanmamış çıktı başka kullanıcıya verilemez.
-Aynı özel kapsamdaki eşzamanlı istekler tek üretimi paylaşır. Her HTTP isteğinin ayrı requestId'si vardır;
-gerçek kullanım/maliyet yalnız üretimi başlatan istekte sayılır. İki farklı oturumdaki eşzamanlı soğuk miss
-iki sağlayıcı çağrısı yapabilir; tamamlanmış doğrulanmış kayıt sonraki isteklerde ortak kullanılır.
-
-İstek Analizi ve saatlik/günlük/haftalık/aylık Kullanım Analizi ortak/özel hit, miss, bypass,
-L1 hit oranı, gerçek kullanımın tahmini API maliyeti ve tahmini önlenen kullanımı ayrı gösterir.
-Analitikler mevcut arayüz oturumuyla sınırlıdır; tahminler garantili fatura tasarrufu değildir.
-
+Güncel kurtarma ve doğrulama ayrıntıları: [Genel cache gizlilik politikası](docs/CACHE_POLICY_GENERALIZATION_TR.md).
 ## Güvenlik ve oturum
 
 Sunucu 32 rastgele baytlık HttpOnly/SameSite=Strict çerezi oluşturur.
@@ -86,7 +59,7 @@ HTTPS reverse proxy'yi ayrıca kurun; X-Forwarded başlıkları koşulsuz güven
 | L1_CACHE_MAX_ENTRY_BYTES | 262144 (256 KiB) | 2097152 |
 | L1_CACHE_MAX_TOTAL_BYTES | 16777216 (16 MiB) | 268435456 |
 | L1_CACHE_ENABLED | true | false ile kapatılır |
-| CACHE_VALIDATOR_TIMEOUT_MS | 1000 | 30000 |
+| CACHE_CLASSIFIER_TIMEOUT_MS | 1000 (eski `CACHE_VALIDATOR_TIMEOUT_MS` yedek değerdir) | 30000 |
 | PROVIDER_TIMEOUT_MS | 60000 | 300000 |
 | L1_MAX_CONCURRENT_GENERATIONS | 100 | 1000 |
 | L1_MAX_WAITERS_PER_KEY | 32 | 1000 |
@@ -115,5 +88,5 @@ Testler mocked provider/HTTP yanıtları kullanır; ücretli API çağrısı yap
 HTTP entegrasyonu gerçek yerel Express ve Vite proxy üzerinde çerez aktarımını da sınar.
 Frontend testleri hesaplama, React server render ve fetch sözleşmesi testleridir; gerçek tarayıcı etkileşim testi değildir.
 
-Güncel mimari, test matrisi ve sınırlar: [Hibrit ortak L1 raporu](docs/HYBRID_SHARED_L1_TR.md).
+Önceki hibrit mimari kaydı: [Hibrit ortak L1 raporu](docs/HYBRID_SHARED_L1_TR.md).
 Önceki sürümün tarihsel kaydı: [L1 stabilizasyon raporu](docs/L1_CACHE_STABILIZATION_TR.md).

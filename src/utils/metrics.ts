@@ -185,6 +185,7 @@ export const formatCost = (cost: number | null | undefined): string => {
   if (cost === 0) {
     return '$0.00';
   }
+  if (cost < 0) return '-' + formatCost(-cost);
   if (cost >= 1) {
     return `$${cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
@@ -217,7 +218,9 @@ export const calculateCostAggregate = (records: ExperimentRecord[]): CostAggrega
   let totalCostSum = 0;
 
   for (const record of uniqueRequestRecords(records)) {
-    const cost = record.metrics.totalCost;
+    // Yeni telemetride sınıflandırıcı gideri toplam işlem maliyetine dahildir.
+    const cost = record.telemetry?.pipelineTotalCost !== undefined ?
+      record.telemetry.pipelineTotalCost : record.metrics.totalCost;
     if (typeof cost === 'number' && Number.isFinite(cost) && cost >= 0) {
       totalCostSum += cost;
       knownCostRecordCount++;
@@ -249,6 +252,8 @@ export interface CacheAggregateResult {
   hitRate: number | null;
   avoidedTokens: number | null;
   avoidedApiCost: number | null;
+  netAvoidedTokens: number | null;
+  netAvoidedApiCost: number | null;
 }
 
 export const calculateCacheAggregate = (records: ExperimentRecord[]): CacheAggregateResult => {
@@ -262,6 +267,8 @@ export const calculateCacheAggregate = (records: ExperimentRecord[]): CacheAggre
   let unknown = 0;
   const avoidedTokens: (number | null)[] = [];
   const avoidedCosts: (number | null)[] = [];
+  const netAvoidedTokens: (number | null)[] = [];
+  const netAvoidedCosts: (number | null)[] = [];
 
   for (const record of uniqueRequestRecords(records)) {
     const telemetry = record.telemetry;
@@ -280,6 +287,8 @@ export const calculateCacheAggregate = (records: ExperimentRecord[]): CacheAggre
     if (telemetry?.cacheStatus === 'hit' || telemetry?.cacheStatus === 'inflight_shared') {
       avoidedTokens.push(telemetry.avoidedEstimatedTokens);
       avoidedCosts.push(telemetry.avoidedEstimatedApiCost);
+      netAvoidedTokens.push(telemetry.netAvoidedEstimatedTokens ?? null);
+      netAvoidedCosts.push(telemetry.netAvoidedEstimatedApiCost ?? null);
     }
   }
 
@@ -296,6 +305,8 @@ export const calculateCacheAggregate = (records: ExperimentRecord[]): CacheAggre
     hitRate: lookupCount > 0 ? Number(((hits / lookupCount) * 100).toFixed(2)) : null,
     avoidedTokens: sumComplete(avoidedTokens),
     avoidedApiCost: sumComplete(avoidedCosts),
+    netAvoidedTokens: sumComplete(netAvoidedTokens),
+    netAvoidedApiCost: sumComplete(netAvoidedCosts),
   };
 };
 

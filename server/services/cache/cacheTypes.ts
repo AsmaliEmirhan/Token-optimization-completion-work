@@ -1,7 +1,19 @@
 import type { UsageTokens } from '../cost/costEngine.js';
 
 export const CACHE_SCHEMA_VERSION = 3;
-export const CACHE_POLICY_VERSION = 'hybrid-rules-v1';
+export const CACHE_POLICY_VERSION = 'privacy-general-v1';
+
+export type PrivacyClassification = 'public_shareable' | 'user_private' | 'session_private' |
+  'sensitive' | 'dynamic' | 'uncertain';
+
+export interface ClassificationOverhead {
+  calls: number;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  totalTokens: number | null;
+  estimatedCost: number | null;
+  latencyMs: number;
+}
 
 export type CacheScope = 'shared' | 'user_private' | 'session_private';
 export type ValidationStatus = 'approved' | 'rejected' | 'uncertain';
@@ -10,6 +22,8 @@ export interface SafetyValidationResult {
   status: ValidationStatus;
   reasonCode: string;
   validatorVersion: string;
+  classification?: PrivacyClassification;
+  confidence?: number | null;
 }
 
 export interface CacheScopeDecision {
@@ -20,6 +34,9 @@ export interface CacheScopeDecision {
   requiresAdditionalValidation: boolean;
   category: string | null;
   sharing: SafetyValidationResult;
+  classification: PrivacyClassification;
+  confidence: number | null;
+  classificationOverhead: ClassificationOverhead;
 }
 
 // Bu kimliği yalnızca gelecekteki doğrulanmış sunucu auth katmanı sağlayabilir.

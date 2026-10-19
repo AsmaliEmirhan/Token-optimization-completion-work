@@ -9,6 +9,7 @@ import { ThemeProvider } from '../src/context/ThemeContext';
 import { SettingsModal } from '../src/components/SettingsModal';
 import { apiFetch } from '../src/utils/api';
 import type { RequestAnalysisData } from '../src/types/telemetry';
+import { createChatRequest } from '../src/utils/chatRequest';
 
 test('Markdown: başlık/liste/kod/tablo ve güvenli bağlantı render sözleşmesi korunur', () => {
   const markup = renderToStaticMarkup(<MarkdownRenderer content={'# Başlık\n\n**kalın**\n\n- madde\n\n```ts\nconst x = 1;\n```\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n[link](https://example.com)'} />);
@@ -58,7 +59,10 @@ test('açık İstek Analizi kapsam, beş durum, karar, kaynak ve maliyeti iki te
     thinkingTokens: 0, totalTokens: 0, latencyMs: 1, totalCost: 0, cacheHit: true, cacheEligible: true,
     cacheStatus: 'hit', cacheScope: 'shared', cacheDecisionReason: 'static_geography', cacheBypassReason: null,
     cacheLookupLatencyMs: 0.4, responseSource: 'shared_l1_cache', sourceProvider: 'openai', sourceModel: 'gpt-4o',
-    sourceRequestId: 'source', sourceTotalTokens: 30, avoidedEstimatedTokens: 30, avoidedEstimatedApiCost: null };
+    sourceRequestId: 'source', sourceTotalTokens: 30, avoidedEstimatedTokens: 30, avoidedEstimatedApiCost: null,
+    privacyClassification: 'public_shareable', classifierCalls: 1, classifierTotalTokens: 3,
+    classifierLatencyMs: 5, classifierEstimatedCost: 0.00001, pipelineTotalTokens: 3,
+    pipelineTotalCost: 0.00001, netAvoidedEstimatedTokens: 27, netAvoidedEstimatedApiCost: 0.0002 };
   const variants: [Partial<RequestAnalysisData>, string][] = [
     [{}, 'Shared Hit'],
     [{ cacheScope: 'session_private', responseSource: 'private_l1_cache' }, 'Private Hit'],
@@ -68,7 +72,9 @@ test('açık İstek Analizi kapsam, beş durum, karar, kaynak ve maliyeti iki te
   ];
   for (const [change, status] of variants) {
     const markup = renderToStaticMarkup(<RequestAnalysis {...base} {...change} defaultExpanded />);
-    for (const text of [status, 'Cache Kapsamı', 'Cache Karar Nedeni', 'Yanıt Kaynağı', 'dark:', 'aria-expanded="true"']) {
+    for (const text of [status, 'Gizlilik Sınıfı', 'Kamusal paylaşılabilir', 'Cache Uygunluğu',
+      'Cache Kapsamı', 'Cache Karar Nedeni', 'Yanıt Kaynağı', 'Sınıflandırma Ek Yükü',
+      'Toplam İşlem', 'dark:', 'aria-expanded="true"']) {
       assert.ok(markup.includes(text), text);
     }
     if (change.responseSource !== 'provider') {
@@ -77,4 +83,18 @@ test('açık İstek Analizi kapsam, beş durum, karar, kaynak ve maliyeti iki te
       assert.ok(markup.includes('$0.00'));
     }
   }
+});
+
+test('gönderim önceki tam model geçmişini taşır; hata ve görünüm verileri dışarıda kalır', () => {
+  const history = [
+    { role: 'user' as const, content: 'İlk soru', id: 'local-ui-id' },
+    { role: 'assistant' as const, content: 'İlk yanıt' },
+    { role: 'assistant' as const, content: 'Bağlantı hatası', isError: true },
+  ];
+  const request = createChatRequest('openai', 'gpt-4o', 'İkinci soru', history);
+  assert.deepEqual(request, { provider: 'openai', model: 'gpt-4o', message: 'İkinci soru',
+    conversation: [{ role: 'user', content: 'İlk soru' }, { role: 'assistant', content: 'İlk yanıt' }] });
+  history[0].content = 'Değiştirildi';
+  assert.equal(request.conversation[0].content, 'İlk soru');
+  assert.deepEqual(createChatRequest('groq', 'model', 'İlk soru', []).conversation, []);
 });

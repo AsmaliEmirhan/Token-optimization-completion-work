@@ -12,6 +12,7 @@ import { RequestAnalysis } from './RequestAnalysis';
 import type { RequestAnalysisData } from '../types/telemetry';
 import { ChevronDown, Check } from 'lucide-react';
 import { apiFetch } from '../utils/api';
+import { createChatRequest } from '../utils/chatRequest';
 
 interface ChatMessage {
   id: string;
@@ -65,8 +66,10 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 }) => {
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const messagesRef = useRef<ChatMessage[]>([]);
   const [viewState, setViewState] = useState<ViewState>('welcome');
   const [isLoading, setIsLoading] = useState(false);
+  const requestPendingRef = useRef(false);
 
   // Providers & Models state
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -80,6 +83,12 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const conversationEndRef = useRef<HTMLDivElement>(null);
   const conversationContainerRef = useRef<HTMLDivElement>(null);
+
+  const appendMessage = useCallback((message: ChatMessage) => {
+    // Yanıt ile React render'ı arasındaki aralıkta bile tam geçmiş korunur.
+    messagesRef.current = [...messagesRef.current, message];
+    setMessages(messagesRef.current);
+  }, []);
 
   // Fetch providers
   const fetchProviders = useCallback(() => {
@@ -156,18 +165,21 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 
 
   const handleSendMessage = useCallback(async (content: string) => {
+    if (requestPendingRef.current) return false;
     if (!selectedProvider || !selectedModel) {
       setViewState('conversation');
-      setMessages(prev => [...prev, {
+      appendMessage({
         id: `err-${Date.now()}`,
         role: 'assistant',
         content: 'Önce Ayarlar > API bölümünden bir API sağlayıcısı ve model seç.',
         createdAt: new Date(),
         isError: true
-      }]);
+      });
       return false; // Tells ChatInput NOT to clear the input
     }
 
+    const request = createChatRequest(selectedProvider, selectedModel, content, messagesRef.current);
+    requestPendingRef.current = true;
     const newMessage: ChatMessage = {
       id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       role: 'user',
@@ -175,7 +187,7 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
       createdAt: new Date(),
     };
 
-    setMessages(prev => [...prev, newMessage]);
+    appendMessage(newMessage);
 
     if (viewState === 'welcome') {
       setViewState('transitioning');
@@ -190,12 +202,7 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
         const res = await apiFetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            provider: selectedProvider,
-            model: selectedModel,
-            message: content,
-            // Güvenlik kapsamını sunucu HttpOnly oturumundan türetir.
-          })
+          body: JSON.stringify(request)
         });
 
         const data = await res.json();
@@ -221,6 +228,16 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             totalCost: data.telemetry.totalCost !== undefined ? data.telemetry.totalCost : null,
             cacheHit: data.telemetry.cacheHit === true,
             cacheEligible: data.telemetry.cacheEligible === true,
+            privacyClassification: data.telemetry.privacyClassification,
+            privacyConfidence: data.telemetry.privacyConfidence ?? null,
+            classifierCalls: data.telemetry.classifierCalls ?? 0,
+            classifierTotalTokens: data.telemetry.classifierTotalTokens ?? null,
+            classifierLatencyMs: data.telemetry.classifierLatencyMs ?? 0,
+            classifierEstimatedCost: data.telemetry.classifierEstimatedCost ?? null,
+            pipelineTotalTokens: data.telemetry.pipelineTotalTokens ?? null,
+            pipelineTotalCost: data.telemetry.pipelineTotalCost ?? null,
+            netAvoidedEstimatedTokens: data.telemetry.netAvoidedEstimatedTokens ?? null,
+            netAvoidedEstimatedApiCost: data.telemetry.netAvoidedEstimatedApiCost ?? null,
             cacheScope: data.telemetry.cacheScope ?? null,
             cacheDecisionReason: data.telemetry.cacheDecisionReason ?? data.telemetry.cacheBypassReason ?? null,
             cacheLookupLatencyMs: data.telemetry.cacheLookupLatencyMs ?? null,
@@ -260,13 +277,13 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
           };
         }
 
-        setMessages(prev => [...prev, {
+        appendMessage({
           id: `ast-${Date.now()}`,
           role: 'assistant',
           content: assistantContent,
           createdAt: new Date(),
           requestAnalysis,
-        }]);
+        });
 
         if (data.telemetry) {
           const telemetry = data.telemetry;
@@ -276,8 +293,8 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             mode: 'baseline',
             provider: telemetry.provider || data.provider || selectedProvider,
             model: telemetry.model || data.model || selectedModel,
-            prompt: content,
-            response: assistantContent,
+            // Analitik kaydı yalnız ölçüm taşır; kişisel soru/yanıt ikinci bir belleğe kopyalanmaz.
+            prompt: '[içerik saklanmadı]',
             telemetry,
             metrics: {
               inputTokens: telemetry.inputTokens ?? null,
@@ -306,21 +323,22 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
         }
 
       } catch (err: any) {
-        setMessages(prev => [...prev, {
+        appendMessage({
           id: `err-${Date.now()}`,
           role: 'assistant',
           content: err.message || 'Yanıt alınamadı. Lütfen API ayarlarını kontrol et.',
           createdAt: new Date(),
           isError: true
-        }]);
+        });
       } finally {
+        requestPendingRef.current = false;
         setIsLoading(false);
       }
     };
 
     runChat();
     return true; // Tells ChatInput to clear the input
-  }, [viewState, selectedProvider, selectedModel]);
+  }, [viewState, selectedProvider, selectedModel, appendMessage]);
 
   const configuredProviders = providers.filter(p => p.configured);
   const currentProviderObj = providers.find(p => p.id === selectedProvider);

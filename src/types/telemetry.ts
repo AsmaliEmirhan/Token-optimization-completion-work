@@ -1,5 +1,7 @@
 export type CacheScope = 'shared' | 'user_private' | 'session_private';
 export type ResponseSource = 'provider' | 'l1_exact_cache' | 'shared_l1_cache' | 'private_l1_cache' | 'inflight_shared';
+export type PrivacyClassification = 'public_shareable' | 'user_private' | 'session_private' |
+  'sensitive' | 'dynamic' | 'uncertain';
 
 export interface RequestTelemetry {
   requestId: string;
@@ -19,6 +21,18 @@ export interface RequestTelemetry {
   cacheHit: boolean;
   cacheType: null | 'exact' | 'semantic';
   cacheEligible: boolean;
+  privacyClassification?: PrivacyClassification;
+  privacyConfidence?: number | null;
+  classifierCalls?: number;
+  classifierInputTokens?: number | null;
+  classifierOutputTokens?: number | null;
+  classifierTotalTokens?: number | null;
+  classifierLatencyMs?: number;
+  classifierEstimatedCost?: number | null;
+  pipelineTotalTokens?: number | null;
+  pipelineTotalCost?: number | null;
+  netAvoidedEstimatedTokens?: number | null;
+  netAvoidedEstimatedApiCost?: number | null;
   cacheBypassReason: string | null;
   // Eski telemetri okunabilir; eksik kapsam ortak olarak varsayılmaz.
   cacheScope?: CacheScope | null;
@@ -109,6 +123,16 @@ export interface RequestAnalysisData {
 
   cacheHit: boolean;
   cacheEligible: boolean;
+  privacyClassification?: PrivacyClassification;
+  privacyConfidence?: number | null;
+  classifierCalls?: number;
+  classifierTotalTokens?: number | null;
+  classifierLatencyMs?: number;
+  classifierEstimatedCost?: number | null;
+  pipelineTotalTokens?: number | null;
+  pipelineTotalCost?: number | null;
+  netAvoidedEstimatedTokens?: number | null;
+  netAvoidedEstimatedApiCost?: number | null;
   cacheScope?: CacheScope | null;
   cacheDecisionReason?: string | null;
   cacheLookupLatencyMs?: number | null;

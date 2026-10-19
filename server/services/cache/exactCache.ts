@@ -57,13 +57,14 @@ export class InMemoryExactCache implements ExactCacheStore {
     const now = this.now();
     this.removeExpired(now);
     const snapshot = structuredClone(entry);
-    // Eski şema/özel kayıtlar yalnız anahtar benzerliğiyle ortak kayıt olamaz.
-    if (!['shared', 'session_private', 'user_private'].includes(snapshot.scope) || !snapshot.policyVersion ||
-        (snapshot.scope === 'shared' ? snapshot.scopeId !== null || snapshot.validationStatus !== 'approved' ||
-          snapshot.decision?.sharingResult?.status !== 'approved' || snapshot.decision?.eligibilityResult?.scope !== 'shared' ||
-          snapshot.decision.eligibilityResult.sharing?.status !== 'approved' || !snapshot.decision.eligibilityResult.eligible ||
-          snapshot.decision.eligibilityResult.policyVersion !== snapshot.policyVersion
-          : !snapshot.scopeId)) return false;
+    // Bu sürümde özel içerik hiçbir cache kaydına yazılamaz.
+    if (snapshot.scope !== 'shared' || snapshot.scopeId !== null || !snapshot.policyVersion ||
+        snapshot.validationStatus !== 'approved' || snapshot.decision?.sharingResult?.status !== 'approved' ||
+        snapshot.decision.sharingResult.classification !== 'public_shareable' ||
+        snapshot.decision?.eligibilityResult?.scope !== 'shared' ||
+        snapshot.decision.eligibilityResult.sharing?.status !== 'approved' || !snapshot.decision.eligibilityResult.eligible ||
+        snapshot.decision.eligibilityResult.classification !== 'public_shareable' ||
+        snapshot.decision.eligibilityResult.policyVersion !== snapshot.policyVersion) return false;
     snapshot.expiresAt = Math.min(snapshot.expiresAt, snapshot.createdAt + this.ttlMs);
     if (!Number.isFinite(snapshot.createdAt) || !Number.isFinite(snapshot.expiresAt) ||
         snapshot.createdAt > now || snapshot.expiresAt <= now) return false;

@@ -6,7 +6,7 @@ import { geminiProvider } from './services/providers/gemini.js';
 import { groqProvider } from './services/providers/groq.js';
 import { InMemoryExactCache } from './services/cache/exactCache.js';
 import { ChatService } from './services/chat/chatService.js';
-import type { CacheSafetyValidator } from './services/cache/cacheValidation.js';
+import type { SemanticPrivacyClassifier } from './services/cache/cacheValidation.js';
 import { RequestValidationError, validateChatRequest } from './services/chat/requestValidation.js';
 import { SessionStore } from './security/sessions.js';
 import type { BrowserSession, SessionOptions } from './security/sessions.js';
@@ -25,7 +25,8 @@ export interface AppOptions {
   cache?: InMemoryExactCache;
   providerTimeoutMs?: number;
   cacheEnabled?: boolean;
-  cacheValidator?: CacheSafetyValidator;
+  cacheClassifier?: SemanticPrivacyClassifier;
+  classifierConsent?: true;
   cachePolicyVersion?: string;
   discoverGeminiModels?: typeof discoverGeminiModels;
 }
@@ -86,8 +87,10 @@ export function createApp(options: AppOptions = {}) {
   const providers = options.providers ?? { openai: openaiProvider, gemini: geminiProvider, groq: groqProvider };
   const chatService = new ChatService({ providers, cache, cacheTtlMs: cache.ttlMs,
     // Burada varsayılan olarak ücretli veya semantik bir doğrulayıcı başlatılmaz.
-    validator: options.cacheValidator, policyVersion: options.cachePolicyVersion,
-    validatorTimeoutMs: limit('CACHE_VALIDATOR_TIMEOUT_MS', 1000, 30_000),
+    classifier: options.cacheClassifier, classifierConsent: options.classifierConsent,
+    policyVersion: options.cachePolicyVersion,
+    classifierTimeoutMs: limit('CACHE_CLASSIFIER_TIMEOUT_MS',
+      limit('CACHE_VALIDATOR_TIMEOUT_MS', 1000, 30_000), 30_000),
     providerTimeoutMs: options.providerTimeoutMs ?? limit('PROVIDER_TIMEOUT_MS', 60_000, 300_000),
     maxConcurrentGenerations: limit('L1_MAX_CONCURRENT_GENERATIONS', 100, 1000),
     maxWaitersPerKey: limit('L1_MAX_WAITERS_PER_KEY', 32, 1000),

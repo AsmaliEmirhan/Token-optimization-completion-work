@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
 import { ChevronDown, Info } from 'lucide-react';
-import type { RequestAnalysisData } from '../types/telemetry';
+import type { PrivacyClassification, RequestAnalysisData } from '../types/telemetry';
 import { formatCost } from '../utils/metrics';
 
 export type RequestAnalysisProps = RequestAnalysisData & { defaultExpanded?: boolean };
 
 const decisionLabels: Record<string, string> = {
-  static_geography: 'Bağımsız coğrafya sorusu', static_mathematics: 'Bağımsız matematik sorusu',
-  static_programming: 'Bağımsız programlama sorusu', personal_context: 'Kişiye özel içerik',
+  personal_context: 'Kişiye özel içerik',
   conversation_dependent: 'Önceki bağlama bağlı', conversation_context: 'Sohbet geçmişi içeriyor',
   custom_system_instructions: 'Özel sistem talimatı', custom_generation_parameters: 'Özel üretim ayarları',
-  additional_validator_unavailable: 'Paylaşım güvenliği kesinleşmedi', additional_validator_failed: 'Ek doğrulama tamamlanamadı',
-  invalid_validator_result: 'Ek doğrulama sonucu belirsiz', missing_response_safety_metadata: 'Yanıt güvenlik bilgisi eksik',
+  semantic_classifier_unavailable: 'Semantik sınıflandırıcı yapılandırılmadı',
+  semantic_classifier_failed: 'Sınıflandırma tamamlanamadı', invalid_classifier_result: 'Sınıflandırma sonucu geçersiz',
+  classifier_low_confidence: 'Sınıflandırma güveni yetersiz', missing_response_safety_metadata: 'Yanıt güvenlik bilgisi eksik',
   dynamic_information: 'Güncel bilgi gerektiriyor', sensitive_content: 'Hassas içerik', unsafe_instructions: 'Güvenli olmayan talimat',
   ambiguous_text: 'Belirsiz metin biçimi', incomplete_context: 'Eksik bağlam',
   explicit_bypass: 'Önbellek kullanımı kapalı', missing_verified_session: 'Doğrulanmış oturum yok',
   inflight_private_scope: 'Aynı özel kapsamda devam eden üretim',
+  inflight_session: 'Aynı oturumda devam eden üretim', authenticated_context: 'Kimlik bağlamı içeriyor',
+  external_context: 'Harici bağlam içeriyor', classifier_public_shareable: 'Semantik sınıflandırıcı onayı',
+  classifier_user_private: 'Sınıflandırıcı kullanıcıya özel buldu',
+  classifier_session_private: 'Sınıflandırıcı oturuma özel buldu',
+  classifier_sensitive: 'Sınıflandırıcı hassas buldu', classifier_dynamic: 'Sınıflandırıcı güncel buldu',
+  classifier_uncertain: 'Sınıflandırıcı emin değil',
+};
+
+const privacyLabels: Record<PrivacyClassification, string> = {
+  public_shareable: 'Kamusal paylaşılabilir', user_private: 'Kullanıcıya özel',
+  session_private: 'Oturuma özel', sensitive: 'Hassas', dynamic: 'Güncel', uncertain: 'Belirsiz',
 };
 
 const formatNumber = (num: number | null): string => {
@@ -47,10 +58,21 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
   latencyMs,
   totalCost,
   cacheHit,
+  cacheEligible,
   cacheStatus,
   cacheBypassReason,
   cacheScope,
   cacheDecisionReason,
+  privacyClassification,
+  privacyConfidence,
+  classifierCalls,
+  classifierTotalTokens,
+  classifierLatencyMs,
+  classifierEstimatedCost,
+  pipelineTotalTokens,
+  pipelineTotalCost,
+  netAvoidedEstimatedTokens,
+  netAvoidedEstimatedApiCost,
   cacheLookupLatencyMs,
   sourceTotalTokens,
   sourceRequestId,
@@ -122,6 +144,16 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
             </div>
             {/* Kapsam ve karar sade gösterilir; teknik neden kodu araç ipucunda kalır. */}
             <div className="flex items-center justify-between gap-3 text-[11.5px]">
+              <span className="text-[#596E8A] dark:text-[#9299A6]">Gizlilik Sınıfı</span>
+              <span className="font-semibold" title={privacyConfidence == null ? undefined : `Güven: ${privacyConfidence}`}>
+                {privacyClassification ? privacyLabels[privacyClassification] : 'Bilinmiyor'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3 text-[11.5px]">
+              <span className="text-[#596E8A] dark:text-[#9299A6]">Cache Uygunluğu</span>
+              <span className="font-semibold">{cacheEligible ? 'İstek onaylandı' : 'Uygun değil'}</span>
+            </div>
+            <div className="flex items-center justify-between gap-3 text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Cache Kapsamı</span>
               <span className="font-semibold">{cacheScope === 'shared' ? 'Ortak' : cacheScope === 'user_private' ? 'Kullanıcıya özel' : cacheScope === 'session_private' ? 'Oturuma özel' : '—'}</span>
             </div>
@@ -176,6 +208,12 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
                   <span className="text-[#596E8A] dark:text-[#9299A6]">Önlenen Tahmini API Maliyeti</span>
                   <span className="font-semibold tabular-nums">{formatCost(avoidedEstimatedApiCost)}</span>
                 </div>
+                {netAvoidedEstimatedApiCost !== undefined && (
+                  <div className="flex items-center justify-between text-[11.5px]">
+                    <span className="text-[#596E8A] dark:text-[#9299A6]">Sınıflandırma Sonrası Net Tahmin</span>
+                    <span className="font-semibold tabular-nums">{formatNumber(netAvoidedEstimatedTokens ?? null)} token / {formatCost(netAvoidedEstimatedApiCost)}</span>
+                  </div>
+                )}
                 <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6]">Kaynak üretime dayalı tahmindir; garantili fatura tasarrufu değildir.</p>
               </>
             )}
@@ -232,6 +270,18 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
                 {formatCost(totalCost)}
               </span>
             </div>
+            {classifierCalls !== undefined && (
+              <>
+                <div className="flex items-center justify-between text-[11.5px]">
+                  <span className="text-[#596E8A] dark:text-[#9299A6]">Sınıflandırma Ek Yükü</span>
+                  <span className="font-semibold tabular-nums">{formatNumber(classifierTotalTokens ?? null)} token · {formatLatency(classifierLatencyMs ?? null)} · {formatCost(classifierEstimatedCost ?? null)}</span>
+                </div>
+                <div className="flex items-center justify-between text-[11.5px]">
+                  <span className="text-[#596E8A] dark:text-[#9299A6]">Toplam İşlem</span>
+                  <span className="font-semibold tabular-nums">{formatNumber(pipelineTotalTokens ?? null)} token · {formatCost(pipelineTotalCost ?? null)}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

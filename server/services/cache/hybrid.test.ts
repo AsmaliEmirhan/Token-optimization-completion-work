@@ -3,169 +3,136 @@ import assert from 'node:assert/strict';
 import { ChatService } from '../chat/chatService.js';
 import { createExactCacheKey } from './cacheKey.js';
 import { evaluateCachePolicy, privateScopeFor } from './cachePolicy.js';
+import { createClassificationOverhead, type SemanticPrivacyClassifier } from './cacheValidation.js';
+import { baseRequest, createHarness, mockEntry, mockPublicClassifier, result, scopeA, scopeB } from './cacheTestUtils.js';
 import { InMemoryExactCache } from './exactCache.js';
-import { baseRequest, createHarness, mockEntry, result, scopeA, scopeB } from './cacheTestUtils.js';
-import type { CacheSafetyValidator } from './cacheValidation.js';
-import type { SafetyValidationResult } from './cacheTypes.js';
 
-test('iki doğrulanmış oturum aynı tam soruyu tek sağlayıcı çağrısıyla paylaşır', async () => {
+test('semantik sınıflandırıcı yoksa sıradan soru belirsizdir ve hiçbir kapsamda saklanmaz', async () => {
+  const h = createHarness({ withoutClassifier: true });
+  const input = { message: 'Herhangi bir olgusal sorunun cevabı nedir?' };
+  for (const scope of [scopeA, scopeA, scopeB]) {
+    const response = await h.execute(input, scope);
+    assert.equal(response.telemetry.privacyClassification, 'uncertain');
+    assert.equal(response.telemetry.cacheStatus, 'bypass');
+    assert.equal(response.telemetry.cacheDecisionReason, 'semantic_classifier_unavailable');
+    assert.equal(response.telemetry.responseSource, 'provider');
+  }
+  assert.equal(h.calls(), 3);
+  assert.equal(h.cache.size, 0);
+});
+
+test('açıkça etkin mock sınıflandırıcının iki onayından sonra A→B Shared Hit oluşur', async () => {
   const h = createHarness();
-  const a = await h.execute();
-  const b = await h.execute({}, scopeB);
+  const a = await h.execute({ message: 'Deney sorusu A' });
+  const b = await h.execute({ message: 'Deney sorusu A' }, scopeB);
   assert.equal(a.telemetry.cacheStatus, 'miss');
   assert.equal(a.telemetry.cacheScope, 'shared');
+  assert.equal(a.telemetry.privacyClassification, 'public_shareable');
+  assert.equal(a.telemetry.classifierCalls, 2);
+  assert.equal(a.telemetry.classifierTotalTokens, 6);
+  assert.equal(a.telemetry.pipelineTotalTokens, 36);
+  assert.equal(a.telemetry.pipelineTotalCost, a.telemetry.totalCost! + 0.00002);
   assert.equal(b.telemetry.responseSource, 'shared_l1_cache');
-  assert.equal(b.telemetry.cacheHit, true);
-  assert.equal(b.telemetry.cacheType, 'exact');
-  assert.equal(h.calls(), 1);
-  assert.notEqual(a.telemetry.requestId, b.telemetry.requestId);
-  assert.equal(b.telemetry.sourceRequestId, a.telemetry.requestId);
+  assert.equal(b.telemetry.classifierCalls, 1);
+  assert.equal(b.telemetry.classifierTotalTokens, 3);
+  assert.equal(b.telemetry.pipelineTotalTokens, 3);
+  assert.equal(b.telemetry.pipelineTotalCost, 0.00001);
   assert.deepEqual([b.telemetry.totalTokens, b.telemetry.totalCost], [0, 0]);
-  assert.deepEqual([b.telemetry.avoidedEstimatedTokens, b.telemetry.avoidedEstimatedApiCost], [30, a.telemetry.totalCost]);
+  assert.equal(b.telemetry.netAvoidedEstimatedTokens, 27);
+  assert.equal(b.telemetry.netAvoidedEstimatedApiCost, a.telemetry.totalCost! - 0.00001);
+  assert.equal(b.telemetry.sourceRequestId, a.telemetry.requestId);
+  assert.notEqual(b.telemetry.requestId, a.telemetry.requestId);
+  assert.equal(h.calls(), 1);
+  assert.equal(h.cache.size, 1);
 });
 
-test('Türkçe/İngilizce statik kategori örnekleri ve liste dışı ülke aynı akışla paylaşılır', async () => {
-  const examples = [
-    ["Türkiye'nin başkenti neresidir?", "Türkiye'nin başkenti Ankara'dır."],
-    ["Türkiye'nin başkenti", "Türkiye'nin başkenti Ankara'dır."],
-    ['Pisagor teoremi nedir?', 'Dik üçgende a² + b² = c². c hipotenüstür.'],
-    ["Python'da for döngüsü nasıl çalışır?", '```python\nfor i in range(5):\n    print(i)\n```'],
-    ['What is the capital of France?', 'The capital of France is Paris.'],
-    ['What is the capital of Norway?', 'The capital of Norway is Oslo.'],
-    ["Japonya'nın başkenti nedir?", "Japonya'nın başkenti Tokyo'dur."],
-  ];
-  for (const [message, content] of examples) {
-    const h = createHarness();
-    h.behavior(async () => ({ ...result(), content }));
-    const first = await h.execute({ message });
-    assert.equal(first.telemetry.cacheScope, 'shared', message);
-    assert.equal(first.telemetry.cacheValidationStatus, 'approved', message);
-    assert.equal((await h.execute({ message }, scopeB)).telemetry.responseSource, 'shared_l1_cache', message);
-    assert.equal(h.calls(), 1);
-  }
-});
-
-test('farklı ifade, ham model ve sağlayıcı L1 kaydını paylaşmaz', async () => {
+test('ham soru, sağlayıcı, model, ayar ve bağlam anahtarı bağımsızdır', async () => {
   const h = createHarness();
   await h.execute();
-  for (const change of [{ message: "Türkiye'nin başkenti neresidir?" }, { message: 'Türkiye başkent ne?' },
-    { model: 'gpt-4o-2024-08-06' }, { provider: 'gemini' }, { provider: 'groq' }]) {
-    assert.equal((await h.execute(change, scopeB)).telemetry.cacheStatus, 'miss');
+  for (const variant of [{ message: baseRequest.message + ' ' }, { provider: 'gemini' },
+    { provider: 'groq' }, { model: 'other-model' }, { generationParameters: { temperature: 0.4 } }]) {
+    assert.equal((await h.execute(variant, scopeB)).telemetry.cacheStatus, 'miss');
   }
   assert.equal(h.calls(), 6);
+  const decision = await evaluateCachePolicy({ ...baseRequest, securityScope: scopeA },
+    { classifier: mockPublicClassifier, overhead: createClassificationOverhead() });
+  assert.equal(decision.classification, 'public_shareable');
+  const key = createExactCacheKey({ ...baseRequest, scope: 'shared', scopeId: null,
+    policyVersion: decision.policyVersion, systemInstructions: null, conversation: [],
+    generationParameters: {}, toolContext: null, retrievalContext: null });
+  assert.equal(key, createExactCacheKey({ ...baseRequest, scope: 'shared', scopeId: null,
+    policyVersion: decision.policyVersion, systemInstructions: null, conversation: [],
+    generationParameters: {}, toolContext: null, retrievalContext: null }));
+  assert.notEqual(key, createExactCacheKey({ ...baseRequest, ...privateScopeFor({ ...baseRequest, securityScope: scopeA }),
+    policyVersion: decision.policyVersion, systemInstructions: null, conversation: [],
+    generationParameters: {}, toolContext: null, retrievalContext: null }));
 });
 
-test('belirsiz istek güvenilir ek doğrulayıcı olmadan yalnız kendi oturumunda önbelleğe alınır', async () => {
+test('kullanıcı/oturum özel istekleri, kimlik ve geçmiş değişse de cache yazmaz', async () => {
   const h = createHarness();
-  const request = { message: 'Bu tasarım fikrini yorumla.' };
-  const a = await h.execute(request);
-  assert.equal(a.telemetry.cacheScope, 'session_private');
-  assert.equal(a.telemetry.cacheValidationStatus, 'uncertain');
-  assert.equal(a.telemetry.cacheDecisionReason, 'additional_validator_unavailable');
-  assert.equal((await h.execute(request)).telemetry.responseSource, 'private_l1_cache');
-  assert.equal((await h.execute(request, scopeB)).telemetry.cacheStatus, 'miss');
-  assert.equal(h.calls(), 2);
-});
-
-test('özel yanıt daha sonra onaylanabilecek olsa bile okuma sırasında ortak kayda yükseltilmez', async () => {
-  const h = createHarness();
-  h.behavior(async () => ({ ...result(), content: 'Uzun ve biçimsel olarak doğrulanamayan bir açıklama.' }));
-  const first = await h.execute();
-  assert.equal(first.telemetry.cacheScope, 'session_private');
-  h.behavior(async () => result());
-  assert.equal((await h.execute()).telemetry.responseSource, 'private_l1_cache');
-  assert.equal(h.cache.size, 1);
-  const other = await h.execute({}, scopeB);
-  assert.equal(other.telemetry.cacheStatus, 'miss');
-  assert.equal(other.telemetry.cacheScope, 'shared');
-  assert.equal(h.calls(), 2);
-  assert.equal((await h.execute()).telemetry.responseSource, 'shared_l1_cache');
-});
-
-test('politika sürümü değişimi ortak kaydı siler ve yeni sürümde miss üretir', async () => {
-  const h = createHarness({ policyVersion: 'rules-old' });
-  await h.execute();
-  assert.equal(h.cache.size, 1);
-  const service = new ChatService({ cache: h.cache, providers: { openai: h.provider }, cacheTtlMs: 1000,
-    now: () => 1000, policyVersion: 'rules-new' });
-  assert.equal(h.cache.size, 0);
-  const second = await service.execute(baseRequest, { apiKey: 'fake', securityScope: scopeB });
-  assert.equal(second.telemetry.cacheStatus, 'miss');
-  assert.match(second.telemetry.cachePolicyVersion, /^rules-new:/);
-  assert.equal(h.calls(), 2);
-});
-
-test('özel kapsam, kimlik ve politika anahtara girer; ortak anahtar kişisel kimlik taşımaz', async () => {
-  const policy = await evaluateCachePolicy({ ...baseRequest, securityScope: scopeA });
-  const input = { ...baseRequest, scope: 'shared' as const, scopeId: null, policyVersion: policy.policyVersion,
-    systemInstructions: null, conversation: [], generationParameters: {}, toolContext: null, retrievalContext: null };
-  const a = createExactCacheKey({ ...input, ...{ securityScope: scopeA, apiKey: 'secret-a' } });
-  const b = createExactCacheKey({ ...input, ...{ securityScope: scopeB, apiKey: 'secret-b' } });
-  assert.equal(a, b);
-  for (const change of [{ policyVersion: 'next' }, { systemInstructions: 'kısa' },
-    { conversation: [{ role: 'user' as const, content: 'önceki' }] }, { generationParameters: { seed: 2 } },
-    privateScopeFor({ ...baseRequest, securityScope: scopeA })]) {
-    assert.notEqual(a, createExactCacheKey({ ...input, ...change }));
+  const personal = { message: 'Benim hesabımdaki tutar ne?' };
+  for (const scope of [scopeA, scopeA, scopeB]) {
+    const answer = await h.execute(personal, scope);
+    assert.equal(answer.telemetry.privacyClassification, 'session_private');
+    assert.equal(answer.telemetry.cacheStatus, 'bypass');
   }
-  assert.throws(() => createExactCacheKey({ ...input, scopeId: 'private-identifier' }));
+  const identity = { authenticated: true as const, issuer: 'mock-auth', subject: 'person', cacheRevision: 1 };
+  const authenticated = await h.service.execute(baseRequest, { apiKey: 'fake', securityScope: scopeA, authenticatedIdentity: identity });
+  assert.equal(authenticated.telemetry.privacyClassification, 'user_private');
+  assert.equal(authenticated.telemetry.cacheStatus, 'bypass');
+  const history = await h.execute({ conversation: [{ role: 'user', content: 'Önceki mesaj' }] });
+  assert.equal(history.telemetry.privacyClassification, 'session_private');
+  assert.equal(history.telemetry.cacheStatus, 'bypass');
+  assert.equal(h.cache.size, 0);
 });
 
-test('user_private gerçek sunucu auth bağlamı gerektirir; anonim kimlik oturumda kalır', async () => {
-  const request = { ...baseRequest, message: 'Benim favori rengim ne?' };
-  const anonymous = await evaluateCachePolicy({ ...request, securityScope: scopeA });
-  assert.equal(anonymous.scope, 'session_private');
-  const identity = { authenticated: true as const, issuer: 'test-auth', subject: 'verified-user', cacheRevision: 1 };
-  const h = createHarness();
-  const a = await h.service.execute(request, { apiKey: 'fake', securityScope: scopeA, authenticatedIdentity: identity });
-  const b = await h.service.execute(request, { apiKey: 'fake', securityScope: scopeB, authenticatedIdentity: identity });
-  assert.equal(a.telemetry.cacheScope, 'user_private');
-  assert.equal(b.telemetry.responseSource, 'private_l1_cache');
-  const c = await h.service.execute(request, { apiKey: 'fake', securityScope: scopeB,
-    authenticatedIdentity: { ...identity, subject: 'other-user' } });
-  assert.equal(c.telemetry.cacheStatus, 'miss');
-  assert.equal(h.calls(), 2);
+test('semantik sınıflandırıcı anahtar sözcük taşımayan isteği de özel işaretleyebilir', async () => {
+  const classifier: SemanticPrivacyClassifier = { ...mockPublicClassifier, version: 'mock-private-v1',
+    async classifyRequest() { return { classification: 'user_private', confidence: 0.99,
+      reasonCode: 'fixture_private', classifierVersion: this.version,
+      usage: { inputTokens: 2, outputTokens: 1, totalTokens: 3, estimatedCost: 0.00001 } }; } };
+  const h = createHarness({ classifier });
+  const first = await h.execute({ message: 'Bu sonucu yorumlar mısın?' });
+  const second = await h.execute({ message: 'Bu sonucu yorumlar mısın?' }, scopeB);
+  assert.equal(first.telemetry.privacyClassification, 'user_private');
+  assert.equal(first.telemetry.cacheDecisionReason, 'classifier_user_private');
+  assert.equal(first.telemetry.cacheStatus, 'bypass');
+  assert.equal(second.telemetry.responseSource, 'provider');
+  assert.equal(h.cache.size, 0);
 });
 
-test('ayrı kapsam kapasitesi ve kapsam/politika invalidation sözleşmesi', () => {
-  const cache = new InMemoryExactCache({ maxEntries: 10, maxSharedEntries: 1, maxPrivateEntries: 2, ttlMs: 100, now: () => 1000 });
-  cache.set(mockEntry('private-1', 1000));
-  cache.set(mockEntry('shared-1', 1000, 'shared'));
-  cache.set(mockEntry('shared-2', 1000, 'shared'));
-  assert.equal(cache.get('shared-1'), null);
-  assert.ok(cache.get('private-1'));
-  cache.set(mockEntry('private-2', 1000));
-  cache.set(mockEntry('private-3', 1000));
-  assert.equal(cache.get('private-1'), null);
-  assert.ok(cache.get('shared-2'));
-  assert.equal(cache.invalidate({ scope: 'session_private', scopeId: 'test-partition' }), 2);
-  assert.equal(cache.invalidate({ scope: 'shared', policyVersion: 'test-policy' }), 1);
+test('yanıt onayı reddedilirse veya belirsizse özel cache bile yazılmaz', async () => {
+  for (const classification of ['sensitive', 'uncertain'] as const) {
+    const classifier: SemanticPrivacyClassifier = { ...mockPublicClassifier, version: 'mock-' + classification,
+      async classifyResponse() { return { classification, confidence: 0.99,
+        reasonCode: 'mock_' + classification, classifierVersion: this.version,
+        usage: { inputTokens: 2, outputTokens: 1, totalTokens: 3, estimatedCost: 0.00001 } }; } };
+    const h = createHarness({ classifier });
+    const a = await h.execute();
+    const b = await h.execute({}, scopeB);
+    assert.equal(a.telemetry.cacheScope, null);
+    assert.equal(a.telemetry.privacyClassification, classification);
+    assert.equal(b.telemetry.responseSource, 'provider');
+    assert.equal(h.cache.size, 0);
+    assert.equal(h.calls(), 2);
+  }
+});
+
+test('sınıflandırıcı açık rıza ayarı olmadan başlatılamaz', () => {
+  const cache = new InMemoryExactCache({ maxEntries: 10, ttlMs: 1000 });
+  assert.throws(() => new ChatService({ providers: {}, cache, cacheTtlMs: 1000,
+    classifier: mockPublicClassifier }), /CLASSIFIER_CONSENT_REQUIRED/);
+});
+
+test('eski politika sürümündeki paylaşılan kayıt açılışta silinir', async () => {
+  const cache = new InMemoryExactCache({ maxEntries: 10, ttlMs: 1000, now: () => 1000 });
+  const old = mockEntry('old', 1000, 'shared');
+  assert.equal(cache.set(old), true);
+  const provider = { async sendMessage() { return result(); } };
+  const service = new ChatService({ providers: { openai: provider }, cache, cacheTtlMs: 1000,
+    now: () => 1000, classifier: mockPublicClassifier, classifierConsent: true });
   assert.equal(cache.size, 0);
-});
-
-test('ek doğrulayıcı iki aşamada bağımsız karar verir ve sürümü anahtara dahil olur', async () => {
-  let responseCalls = 0;
-  const decision = (status: SafetyValidationResult['status']): SafetyValidationResult => ({ status, reasonCode: 'mock_' + status, validatorVersion: 'fixture-v1' });
-  const validator: CacheSafetyValidator = {
-    version: 'fixture-v1',
-    async validateRequest(request) {
-      assert.equal(Object.hasOwn(request, 'securityScope'), false);
-      assert.equal(Object.hasOwn(request, 'authenticatedIdentity'), false);
-      assert.equal(Object.hasOwn(request, 'apiKey'), false);
-      return decision(request.message === 'Test fixture genel sorusu' ? 'approved' : 'uncertain');
-    },
-    async validateResponse(_request, response) {
-      responseCalls++;
-      return decision(response.content === 'Doğrulanmış test fixture cevabı' ? 'approved' : 'rejected');
-    },
-  };
-  const h = createHarness({ validator });
-  h.behavior(async () => ({ ...result(), content: 'Doğrulanmış test fixture cevabı' }));
-  const first = await h.execute({ message: 'Test fixture genel sorusu' });
-  assert.match(first.telemetry.cachePolicyVersion, /fixture-v1$/);
-  assert.equal((await h.execute({ message: 'Test fixture genel sorusu' }, scopeB)).telemetry.responseSource, 'shared_l1_cache');
-  assert.equal(responseCalls, 1);
-  const rejected = createHarness({ validator });
-  rejected.behavior(async () => ({ ...result(), content: 'Onaysız test cevabı' }));
-  assert.equal((await rejected.execute({ message: 'Test fixture genel sorusu' })).telemetry.cacheScope, 'session_private');
-  assert.equal((await rejected.execute({ message: 'Test fixture genel sorusu' }, scopeB)).telemetry.cacheStatus, 'miss');
+  const current = await service.execute(baseRequest, { apiKey: 'fake', securityScope: scopeA });
+  assert.equal(current.telemetry.cacheStatus, 'miss');
+  assert.match(current.telemetry.cachePolicyVersion, /^privacy-general-v1:/);
 });

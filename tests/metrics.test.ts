@@ -1,12 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateCacheAggregate, calculateCostAggregate, filterRecordsByTimeRange, getTimeRangeDurationMs, sumComplete, uniqueRequestRecords } from '../src/utils/metrics';
+import { calculateCacheAggregate, calculateCostAggregate, filterRecordsByTimeRange, formatCost,
+  getTimeRangeDurationMs, sumComplete, uniqueRequestRecords } from '../src/utils/metrics';
 import type { ExperimentRecord } from '../src/types/telemetry';
 import { ChatService } from '../server/services/chat/chatService.js';
 import { InMemoryExactCache } from '../server/services/cache/exactCache.js';
+import { mockPublicClassifier } from '../server/services/cache/cacheTestUtils.js';
 
 async function records(): Promise<ExperimentRecord[]> {
   const service = new ChatService({ cache: new InMemoryExactCache({ ttlMs: 1000, maxEntries: 10 }), cacheTtlMs: 1000,
+    classifier: mockPublicClassifier, classifierConsent: true,
     providers: { openai: { async sendMessage() {
       return { content: "Türkiye'nin başkenti Ankara'dır.", cacheable: true, latencyMs: 1,
     safety: { complete: true, hasToolCalls: false, hasRetrieval: false, hasPrivateContext: false, flagged: false },
@@ -30,8 +33,11 @@ test('gerçek backend telemetrisi frontend toplamında provider/shared/hit/bypas
   assert.equal(cache.hitRate, 50);
   assert.equal(cache.avoidedTokens, 60);
   assert.equal(sumComplete(data.map(r => r.metrics.totalTokens)), 60);
-  assert.equal(calculateCostAggregate(data).totalKnownCost, Number((data[0].metrics.totalCost! * 2).toFixed(8)));
+  assert.equal(calculateCostAggregate(data).totalKnownCost,
+    Number(data.reduce((sum, item) => sum + item.telemetry!.pipelineTotalCost!, 0).toFixed(8)));
   assert.equal(cache.avoidedApiCost, data[0].metrics.totalCost! * 2);
+  assert.equal(cache.netAvoidedTokens, 54);
+  assert.equal(cache.netAvoidedApiCost, 2 * (data[0].metrics.totalCost! - 0.00001));
   assert.equal(cache.sharedHits, 1);
   assert.equal(cache.privateHits, 0);
 });
@@ -45,9 +51,21 @@ test('bilinmeyen veya kısmi kullanım/fiyat sıfır uydurmaz', async () => {
   assert.equal(sumComplete([0, null]), null);
   assert.equal(sumComplete([0, 0]), 0);
   assert.equal(sumComplete([]), null);
-  assert.equal(calculateCostAggregate([{ ...data[0], metrics: { ...data[0].metrics, totalCost: null } }]).totalKnownCost, null);
-  const partial = calculateCostAggregate([data[0], { ...data[1], metrics: { ...data[1].metrics, totalCost: null } }]);
+  assert.equal(calculateCostAggregate([{ ...data[0], telemetry: { ...data[0].telemetry!, pipelineTotalCost: null },
+    metrics: { ...data[0].metrics, totalCost: null } }]).totalKnownCost, null);
+  const partial = calculateCostAggregate([data[0], { ...data[1], telemetry: { ...data[1].telemetry!, pipelineTotalCost: null },
+    metrics: { ...data[1].metrics, totalCost: null } }]);
   assert.equal(partial.hasPartialCoverage, true);
+});
+
+test('sınıflandırma gideri sağlayıcı giderine bir kez eklenir; net kazanç negatif olabilir', async () => {
+  const data = await records();
+  assert.equal(data[0].telemetry!.classifierCalls, 2);
+  assert.equal(data[0].telemetry!.pipelineTotalCost, data[0].metrics.totalCost! + 0.00002);
+  assert.equal(data[2].telemetry!.pipelineTotalCost, 0.00001);
+  data[2].telemetry!.netAvoidedEstimatedApiCost = -0.00002;
+  assert.equal(calculateCacheAggregate([data[2]]).netAvoidedApiCost, -0.00002);
+  assert.equal(formatCost(-0.00002), '-$0.00002');
 });
 
 test('saat/gün/hafta/ay aynı sınıfları toplar; sınır dışı ve gelecek kayıtları dışlar', async () => {

@@ -1,7 +1,8 @@
 import test, { type TestContext } from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp, type AppOptions } from './app.js';
-import type { LLMProvider, LLMResponse, ChatApiResponse } from './types/api.js';
+import type { LLMProvider, LLMResponse, ChatApiRequest, ChatApiResponse } from './types/api.js';
+import { mockPublicClassifier } from './services/cache/cacheTestUtils.js';
 
 const request = { provider: 'openai', model: 'gpt-4o', message: "Türkiye'nin başkenti" };
 const response = (): LLMResponse => ({ content: "Türkiye'nin başkenti Ankara'dır.", cacheable: true, latencyMs: 1,
@@ -10,12 +11,13 @@ const response = (): LLMResponse => ({ content: "Türkiye'nin başkenti Ankara'd
 
 async function fixture(t: TestContext, options: AppOptions = {}) {
   let calls = 0;
-  let respond = async (): Promise<LLMResponse> => response();
+  let respond: LLMProvider['sendMessage'] = async () => response();
   const keys: string[] = [];
   const provider: LLMProvider = { async sendMessage(params) {
-    calls++; keys.push(params.apiKey); return respond();
+    calls++; keys.push(params.apiKey); return respond(params);
   } };
-  const runtime = createApp({ providers: { openai: provider, gemini: provider, groq: provider }, ...options });
+  const runtime = createApp({ providers: { openai: provider, gemini: provider, groq: provider },
+    cacheClassifier: mockPublicClassifier, classifierConsent: true, ...options });
   const server = runtime.app.listen(0, '127.0.0.1');
   await new Promise<void>((resolve, reject) => { server.once('listening', resolve); server.once('error', reject); });
   const address = server.address();
@@ -89,8 +91,8 @@ test('HTTP sahte kullanıcı/tenant/session kapsamı başka oturuma ve API anaht
   await b.send('/api/providers/openai/configure', { apiKey: 'key-b' });
   const first = await (await a.send('/api/chat', privateRequest)).json() as ChatApiResponse;
   const other = await (await b.send('/api/chat', forged)).json() as ChatApiResponse;
-  assert.equal(first.telemetry.cacheStatus, 'miss');
-  assert.equal(other.telemetry.cacheStatus, 'miss');
+  assert.equal(first.telemetry.cacheStatus, 'bypass');
+  assert.equal(other.telemetry.cacheStatus, 'bypass');
   assert.deepEqual(f.keys, ['key-a', 'key-b']);
 });
 
@@ -100,7 +102,7 @@ test('API anahtarı yenilenince eski cache paylaşılmaz', async t => {
   await c.send('/api/chat', { ...request, message: 'Benim favori rengim ne?' });
   await c.send('/api/providers/openai/configure', { apiKey: 'new' });
   const second = await (await c.send('/api/chat', { ...request, message: 'Benim favori rengim ne?' })).json() as ChatApiResponse;
-  assert.equal(second.telemetry.cacheStatus, 'miss');
+  assert.equal(second.telemetry.cacheStatus, 'bypass');
   assert.deepEqual(f.keys, ['old', 'new']);
 });
 
@@ -118,7 +120,7 @@ test('Origin/Fetch-Metadata/özel başlık CSRF koruması ve hatalı JSON', asyn
 });
 
 test('HTTP bozuk/uygulanmayan alanlar reddedilir; onaysız serbest sohbet normal çalışır', async t => {
-  const f = await fixture(t);
+  const f = await fixture(t, { cacheClassifier: undefined, classifierConsent: undefined });
   const c = await f.configured();
   for (const extra of [{ generationParameters: { temperature: 9 } }, { cacheSafe: true },
     { toolContext: { cacheSafe: true, fingerprint: 'x' } }, { provider: '__proto__' }]) {
@@ -127,8 +129,9 @@ test('HTTP bozuk/uygulanmayan alanlar reddedilir; onaysız serbest sohbet normal
     assert.ok((await res.json() as { requestId: string }).requestId);
   }
   const bypass = await (await c.send('/api/chat', { ...request, message: 'Ne haber?' })).json() as ChatApiResponse;
-  assert.equal(bypass.telemetry.cacheStatus, 'miss');
-  assert.equal(bypass.telemetry.cacheScope, 'session_private');
+  assert.equal(bypass.telemetry.cacheStatus, 'bypass');
+  assert.equal(bypass.telemetry.cacheScope, null);
+  assert.equal(bypass.telemetry.privacyClassification, 'uncertain');
   assert.equal(bypass.telemetry.responseSource, 'provider');
   assert.equal(f.calls(), 1);
 });
@@ -248,15 +251,15 @@ test('HTTP gösterimi: iki ayrı çerez ortak L1 kaydını paylaşır, özel ist
   assert.deepEqual(f.keys, ['key-a']);
   assert.notEqual(first.telemetry.requestId, hit.telemetry.requestId);
   const privateQuestion = { ...request, message: 'Benim favori rengim ne?' };
-  assert.equal((await ask(a, privateQuestion)).telemetry.cacheScope, 'session_private');
-  assert.equal((await ask(b, privateQuestion)).telemetry.cacheStatus, 'miss');
-  assert.equal((await ask(b, privateQuestion)).telemetry.responseSource, 'private_l1_cache');
+  assert.equal((await ask(a, privateQuestion)).telemetry.cacheStatus, 'bypass');
+  assert.equal((await ask(b, privateQuestion)).telemetry.cacheStatus, 'bypass');
+  assert.equal((await ask(b, privateQuestion)).telemetry.responseSource, 'provider');
   assert.equal((await ask(b, { ...request, message: 'Bugün hava nasıl?' })).telemetry.cacheStatus, 'bypass');
   assert.equal((await ask(b, { ...request, model: 'gpt-4o-mini' })).telemetry.cacheStatus, 'miss');
   for (const malicious of [{ scope: 'shared' }, { cacheScope: 'shared' }, { cacheSafe: true }]) {
     assert.equal((await b.send('/api/chat', { ...privateQuestion, ...malicious })).status, 400);
   }
-  assert.equal(f.calls(), 5);
+  assert.equal(f.calls(), 6);
   t.diagnostic('A: miss/provider → B: hit/shared_l1_cache; ilk ortak çiftte sağlayıcı çağrısı=1, B token=0, B API maliyeti=0.');
 });
 
@@ -279,4 +282,82 @@ test('HTTP Gemini/OpenAI/Groq kendi model ve sağlayıcı sınırlarında ortak 
     assert.equal(second.telemetry.totalCost, 0);
   }
   assert.equal(f.calls(), 3);
+});
+
+test('HTTP genel politika: açık mock sınıflandırmayla iki oturumda ortak hit ve net maliyet', async t => {
+  const f = await fixture(t);
+  f.behavior(async () => ({ ...response(), content: 'Kısa deney yanıtı.' }));
+  const a = await f.configured('first-key');
+  const b = await f.configured('second-key');
+  assert.notEqual(a.cookie, b.cookie);
+  const input = { provider: 'openai', model: 'gpt-4o', message: 'Deney için genel soru', conversation: [] };
+  const ask = async (client: typeof a, body = input) => {
+    const res = await client.send('/api/chat', body);
+    assert.equal(res.status, 200);
+    return await res.json() as ChatApiResponse;
+  };
+  const first = await ask(a);
+  const hit = await ask(b);
+  assert.equal(first.telemetry.privacyClassification, 'public_shareable');
+  assert.equal(first.telemetry.cacheStatus, 'miss');
+  assert.equal(first.telemetry.classifierCalls, 2);
+  assert.equal(hit.telemetry.responseSource, 'shared_l1_cache');
+  assert.equal(hit.telemetry.classifierCalls, 1);
+  assert.equal(hit.telemetry.totalTokens, 0);
+  assert.equal(hit.telemetry.totalCost, 0);
+  assert.equal(hit.telemetry.pipelineTotalTokens, 3);
+  assert.equal(hit.telemetry.pipelineTotalCost, 0.00001);
+  assert.equal(hit.telemetry.netAvoidedEstimatedApiCost, first.telemetry.totalCost! - 0.00001);
+  assert.equal(hit.telemetry.sourceRequestId, first.telemetry.requestId);
+  assert.notEqual(hit.telemetry.requestId, first.telemetry.requestId);
+  assert.deepEqual(f.keys, ['first-key']);
+  assert.equal((await ask(b, { ...input, message: input.message + ' değişti' })).telemetry.cacheStatus, 'miss');
+  assert.equal((await ask(b, { ...input, model: 'other-model' })).telemetry.cacheStatus, 'miss');
+  await b.send('/api/providers/groq/configure', { apiKey: 'groq-key' });
+  assert.equal((await ask(b, { ...input, provider: 'groq' })).telemetry.cacheStatus, 'miss');
+  assert.equal(f.calls(), 4);
+  t.diagnostic('A Miss → B Shared Hit: tek sağlayıcı çağrısı; B sağlayıcı token/maliyet=0, sınıflandırma ek yükü=3 token ve $0.00001.');
+});
+
+test('HTTP özel ve belirsiz sorular ile hassas yanıtlar hiçbir L1 kaydına yazılmaz', async t => {
+  const f = await fixture(t, { cacheClassifier: undefined, classifierConsent: undefined });
+  const a = await f.configured();
+  const b = await f.configured();
+  const ask = async (client: typeof a, body: ChatApiRequest) => {
+    const res = await client.send('/api/chat', body);
+    assert.equal(res.status, 200);
+    return await res.json() as ChatApiResponse;
+  };
+  for (const [message, classification] of [
+    ['Genel bir deney sorusu', 'uncertain'], ['Benim adım ne?', 'session_private'],
+    ['Bugün ne oldu?', 'dynamic'], ['alice@example.com hakkında konuş', 'sensitive'],
+  ]) {
+    for (const client of [a, b]) {
+      const answer = await ask(client, { ...request, message });
+      assert.equal(answer.telemetry.privacyClassification, classification);
+      assert.equal(answer.telemetry.cacheStatus, 'bypass');
+      assert.equal(answer.telemetry.responseSource, 'provider');
+    }
+  }
+  const contextual = await ask(a, { ...request, conversation: [{ role: 'user', content: 'Önceki mesaj' }] });
+  assert.equal(contextual.telemetry.privacyClassification, 'session_private');
+  assert.equal(contextual.telemetry.cacheStatus, 'bypass');
+  assert.equal(f.cache.size, 0);
+  assert.equal(f.calls(), 9);
+});
+
+test('HTTP istek onayı tek başına yeterli değildir; hassas yanıt paylaşılmaz', async t => {
+  const f = await fixture(t);
+  f.behavior(async () => ({ ...response(), content: 'test@example.com' }));
+  const a = await f.configured();
+  const b = await f.configured();
+  const input = { ...request, message: 'Deney sorusu' };
+  const first = await (await a.send('/api/chat', input)).json() as ChatApiResponse;
+  const second = await (await b.send('/api/chat', input)).json() as ChatApiResponse;
+  assert.equal(first.telemetry.privacyClassification, 'sensitive');
+  assert.equal(first.telemetry.cacheEligible, false);
+  assert.equal(first.telemetry.cacheValidationStatus, 'rejected');
+  assert.equal(second.telemetry.responseSource, 'provider');
+  assert.equal(f.cache.size, 0);
+  assert.equal(f.calls(), 2);
 });

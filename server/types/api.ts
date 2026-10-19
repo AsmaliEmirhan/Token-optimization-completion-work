@@ -2,6 +2,7 @@ import type {
   ConversationMessage,
   GenerationParameters,
   StableExternalContext,
+  PrivacyClassification,
 } from '../services/cache/cacheTypes.js';
 
 export interface RequestTelemetry {
@@ -22,6 +23,18 @@ export interface RequestTelemetry {
   cacheHit: boolean;
   cacheType: null | 'exact' | 'semantic';
   cacheEligible: boolean;
+  privacyClassification: PrivacyClassification;
+  privacyConfidence: number | null;
+  classifierCalls: number;
+  classifierInputTokens: number | null;
+  classifierOutputTokens: number | null;
+  classifierTotalTokens: number | null;
+  classifierLatencyMs: number;
+  classifierEstimatedCost: number | null;
+  pipelineTotalTokens: number | null;
+  pipelineTotalCost: number | null;
+  netAvoidedEstimatedTokens: number | null;
+  netAvoidedEstimatedApiCost: number | null;
   cacheScope: 'shared' | 'user_private' | 'session_private' | null;
   cacheDecisionReason: string;
   cachePolicyVersion: string;

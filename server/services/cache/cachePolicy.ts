@@ -1,19 +1,20 @@
 import crypto from 'node:crypto';
 import { stableSerialize } from './cacheKey.js';
 import { CACHE_POLICY_VERSION, type AuthenticatedIdentity, type CacheScopeBinding,
-  type CacheScopeDecision, type SecurityScope } from './cacheTypes.js';
+  type CacheScopeDecision, type ClassificationOverhead, type PrivacyClassification,
+  type SecurityScope } from './cacheTypes.js';
 import type { ChatApiRequest } from '../../types/api.js';
-import { classifyStaticRequest, inspectTextRisk, validation, type CacheSafetyValidator,
-  runAdditionalValidation } from './cacheValidation.js';
+import { inspectTextRisk, runSemanticClassification, validation,
+  type PrivacyDecision, type SemanticPrivacyClassifier } from './cacheValidation.js';
 
 export interface CachePolicyRequest extends ChatApiRequest {
   securityScope?: SecurityScope;
   authenticatedIdentity?: AuthenticatedIdentity;
 }
 
+// Gelecekteki auth analitiğinin kapsam sözleşmesi; mevcut politika özel kayıt yazmaz.
 export function privateScopeFor(request: CachePolicyRequest): CacheScopeBinding {
   const identity = request.authenticatedIdentity;
-  // Sohbet geçmişi kullanıcı hesabından daha dar olan oturumda kalır.
   const user = identity?.authenticated === true && identity.issuer && identity.subject &&
     Number.isSafeInteger(identity.cacheRevision) && identity.cacheRevision >= 0 && !request.conversation?.length;
   const value = user ? { issuer: identity.issuer, subject: identity.subject, revision: identity.cacheRevision } : request.securityScope;
@@ -22,36 +23,37 @@ export function privateScopeFor(request: CachePolicyRequest): CacheScopeBinding 
 }
 
 export async function evaluateCachePolicy(request: CachePolicyRequest, options: {
-  policyVersion?: string; validator?: CacheSafetyValidator; validatorTimeoutMs?: number;
-} = {}): Promise<CacheScopeDecision> {
+  policyVersion?: string;
+  classifier?: SemanticPrivacyClassifier;
+  classifierTimeoutMs?: number;
+  overhead: ClassificationOverhead;
+}): Promise<CacheScopeDecision> {
   const policyVersion = options.policyVersion ?? CACHE_POLICY_VERSION;
-  const privateScope = privateScopeFor(request).scope;
-  const decide = (scope: CacheScopeDecision['scope'], reasonCode: string,
-    status: 'approved' | 'rejected' | 'uncertain', additional = false, category: string | null = null): CacheScopeDecision => ({
-    scope, eligible: scope !== null, reasonCode, policyVersion,
-    requiresAdditionalValidation: additional, category, sharing: validation(status, reasonCode),
-  });
-  if (request.forceCacheBypass) return decide(null, 'explicit_bypass', 'rejected');
+  const decide = (decision: PrivacyDecision): CacheScopeDecision => {
+    const eligible = decision.classification === 'public_shareable';
+    return { scope: eligible ? 'shared' : null, eligible, reasonCode: decision.reasonCode, policyVersion,
+      requiresAdditionalValidation: true, category: null,
+      sharing: validation(eligible ? 'approved' : decision.classification === 'uncertain' ? 'uncertain' : 'rejected',
+        decision.reasonCode, decision.classifierVersion),
+      classification: decision.classification, confidence: decision.confidence,
+      classificationOverhead: { ...options.overhead },
+    };
+  };
+  const structural = (classification: PrivacyClassification, reasonCode: string): CacheScopeDecision =>
+    decide({ classification, confidence: 1, reasonCode, classifierVersion: CACHE_POLICY_VERSION });
+  if (request.forceCacheBypass) return structural('uncertain', 'explicit_bypass');
   if (!request.securityScope?.partitionId || !Number.isSafeInteger(request.securityScope.credentialRevision) ||
-      request.securityScope.credentialRevision < 0) return decide(null, 'missing_verified_session', 'rejected');
-  if (request.toolContext || request.retrievalContext || request.hasExternalSideEffects || request.stream) {
-    return decide(null, 'unsupported_external_context', 'rejected');
-  }
-  const fullText = [request.message, request.systemInstructions ?? '', ...(request.conversation ?? []).map(m => m.content)].join('\n');
-  const risk = inspectTextRisk(fullText);
-  if (risk && risk !== 'personal_context' && risk !== 'conversation_dependent') return decide(null, risk, 'rejected');
-  if (request.conversation?.some(m => !m.content.trim())) return decide(null, 'incomplete_context', 'rejected');
-  // Gizli/özel sistem talimatı ve önceki konuşma asla ortak kapsama yükseltilmez.
-  if (request.systemInstructions !== undefined) return decide(privateScope, 'custom_system_instructions', 'rejected');
-  if (request.conversation?.length) return decide(privateScope, 'conversation_context', 'rejected');
-  if (risk) return decide(privateScope, risk, 'rejected');
-  if (Object.keys(request.generationParameters ?? {}).length) return decide(privateScope, 'custom_generation_parameters', 'rejected');
-
-  const category = classifyStaticRequest(request.message);
-  if (category) return decide('shared', 'static_' + category.id, 'approved', false, category.id);
-
-  // Şüpheli sözcük bulunmaması olumlu kanıt değildir. Ek doğrulayıcı yoksa belirsiz istek özeldir.
-  const sharing = await runAdditionalValidation(options.validator, 'request', request, undefined, options.validatorTimeoutMs);
-  return { ...decide(sharing.status === 'approved' ? 'shared' : privateScope,
-    sharing.reasonCode, sharing.status, true), sharing };
+      request.securityScope.credentialRevision < 0) return structural('uncertain', 'missing_verified_session');
+  if (request.toolContext || request.retrievalContext || 'uploadedFiles' in request ||
+      request.hasExternalSideEffects || request.stream) return structural('session_private', 'external_context');
+  const risk = inspectTextRisk([request.message, request.systemInstructions ?? '',
+    ...(request.conversation ?? []).map(item => item.content)].join('\n'));
+  if (risk) return decide(risk);
+  if (request.conversation?.some(item => !item.content.trim())) return structural('uncertain', 'incomplete_context');
+  if (request.conversation?.length) return structural('session_private', 'conversation_context');
+  if (request.systemInstructions !== undefined) return structural('session_private', 'custom_system_instructions');
+  if (request.authenticatedIdentity) return structural('user_private', 'authenticated_context');
+  // Yokluk kanıt değildir. Kamusal paylaşım için güvenilir, açıkça etkinleştirilmiş sınıflandırıcı gerekir.
+  return decide(await runSemanticClassification(options.classifier, 'request', request,
+    options.overhead, undefined, options.classifierTimeoutMs));
 }

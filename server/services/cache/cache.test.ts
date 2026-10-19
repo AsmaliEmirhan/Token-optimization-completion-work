@@ -45,21 +45,23 @@ test('farklı sağlayıcı veya tam model kimliği hit üretmez', async () => {
   assert.equal(h.calls(), 5);
 });
 
-test('onaylı farklı mesaj/sistem/geçmiş/parametreler bağımsız miss üretir', async () => {
+test('farklı mesaj/parametre miss; sistem ve geçmiş her seferinde bypass üretir', async () => {
   const h = createHarness({ maxEntries: 30 });
   for (const variant of fixtureVariants) {
-    assert.equal((await h.execute(variant)).telemetry.cacheStatus, 'miss');
-    assert.equal((await h.execute(variant)).telemetry.cacheStatus, 'hit');
+    const privateContext = variant.systemInstructions !== undefined || !!variant.conversation?.length;
+    assert.equal((await h.execute(variant)).telemetry.cacheStatus, privateContext ? 'bypass' : 'miss');
+    assert.equal((await h.execute(variant)).telemetry.cacheStatus, privateContext ? 'bypass' : 'hit');
   }
-  assert.equal(h.calls(), fixtureVariants.length);
+  assert.equal(h.calls(), fixtureVariants.length + 2);
 });
 
-test('sunucuda doğrulanan farklı oturum ve credential revizyonları ayrıdır', async () => {
+test('kişisel soru farklı oturum ve credential revizyonunda da saklanmaz', async () => {
   const h = createHarness();
   await h.execute({ message: 'Benim favori rengim ne?' });
-  assert.equal((await h.execute({ message: 'Benim favori rengim ne?' }, scopeB)).telemetry.cacheStatus, 'miss');
-  assert.equal((await h.execute({ message: 'Benim favori rengim ne?' }, { ...scopeA, credentialRevision: 2 })).telemetry.cacheStatus, 'miss');
+  assert.equal((await h.execute({ message: 'Benim favori rengim ne?' }, scopeB)).telemetry.cacheStatus, 'bypass');
+  assert.equal((await h.execute({ message: 'Benim favori rengim ne?' }, { ...scopeA, credentialRevision: 2 })).telemetry.cacheStatus, 'bypass');
   assert.equal(h.calls(), 3);
+  assert.equal(h.cache.size, 0);
 });
 
 test('eski istemci securityScope iddiası yok sayılır, doğrulanmış oturum yerine geçemez', async () => {
@@ -72,14 +74,15 @@ test('eski istemci securityScope iddiası yok sayılır, doğrulanmış oturum y
   assert.equal(Object.hasOwn(validateChatRequest(forged), 'securityScope'), false);
 });
 
-test('güncel metin bypass, kişisel ve belirsiz metin özel kapsamda kalır', async () => {
-  const h = createHarness();
+test('güncel, kişisel ve sınıflandırıcısız belirsiz metin bypass olur', async () => {
+  const h = createHarness({ withoutClassifier: true });
   const dynamic = await h.execute({ message: 'Bugün hava nasıl?' });
   assert.equal(dynamic.telemetry.cacheStatus, 'bypass');
   assert.equal(dynamic.telemetry.cacheBypassReason, 'dynamic_information');
   for (const message of ['Benim hesabımdaki tutar?', 'Bu cümlede dinamik anahtar kelime yok.']) {
     const response = await h.execute({ message });
-    assert.equal(response.telemetry.cacheScope, 'session_private');
+    assert.equal(response.telemetry.cacheScope, null);
+    assert.equal(response.telemetry.cacheStatus, 'bypass');
   }
   assert.throws(() => validateChatRequest({ ...baseRequest, cacheSafe: true }));
   assert.equal(h.calls(), 3);
@@ -116,7 +119,7 @@ test('başarısız veya tamamlanmamış yanıt saklanmaz; miss/bypass karışmaz
   h.behavior(async () => ({ ...result(), cacheable: false }));
   const incomplete = await h.execute();
   assert.equal(incomplete.telemetry.cacheStatus, 'miss');
-  assert.equal(incomplete.telemetry.cacheBypassReason, null);
+  assert.equal(incomplete.telemetry.cacheBypassReason, 'incomplete_provider_response');
   assert.equal(incomplete.telemetry.cacheWriteReason, 'incomplete_provider_response');
   assert.equal(h.cache.size, 0);
 });
@@ -143,6 +146,24 @@ test('eşzamanlı birebir istekler tek üretim paylaşır: hit değil, maliyet y
   assert.equal(responses.reduce((sum, r) => sum + r.telemetry.totalCost!, 0), responses[0].telemetry.totalCost);
   assert.equal(h.service.inflightCount, 0);
   assert.equal((await h.execute()).telemetry.responseSource, 'shared_l1_cache');
+});
+
+test('eşzamanlı oturum yanıtı hassassa bekleyen isteğin son kararı da cache dışıdır', async () => {
+  const h = createHarness();
+  const gate = deferred<LLMResponse>();
+  h.behavior(() => gate.promise);
+  const first = h.execute();
+  const waiting = h.execute();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.calls(), 1);
+  gate.resolve({ ...result(), content: 'alice@example.com' });
+  const [source, follower] = await Promise.all([first, waiting]);
+  assert.equal(source.telemetry.cacheEligible, false);
+  assert.equal(follower.telemetry.cacheEligible, false);
+  assert.equal(follower.telemetry.cacheScope, null);
+  assert.equal(follower.telemetry.privacyClassification, 'sensitive');
+  assert.equal(follower.telemetry.cacheBypassReason, 'response_sensitive_content');
+  assert.equal(h.cache.size, 0);
 });
 
 test('eşzamanlı farklı oturumlar iki provider çağrısı yapar', async () => {
@@ -286,7 +307,7 @@ test('kanonik anahtar deterministik ve ham prompt/parametre/kapsam duyarlıdır'
 test('kayıt kopyalama, toplam bayt sınırı, duplicate key, TTL ve invalidation korunur', () => {
   let now = 1000;
   const cache = new InMemoryExactCache({ ttlMs: 100, maxEntries: 20, maxEntryBytes: 2400, maxTotalBytes: 2500, now: () => now });
-  const entry = (key: string) => mockEntry(key, now);
+  const entry = (key: string) => mockEntry(key, now, 'shared');
   const original = entry('a');
   assert.equal(cache.set(original), true);
   original.content = 'changed';
