@@ -221,6 +221,9 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             totalCost: data.telemetry.totalCost !== undefined ? data.telemetry.totalCost : null,
             cacheHit: data.telemetry.cacheHit === true,
             cacheEligible: data.telemetry.cacheEligible === true,
+            cacheScope: data.telemetry.cacheScope ?? null,
+            cacheDecisionReason: data.telemetry.cacheDecisionReason ?? data.telemetry.cacheBypassReason ?? null,
+            cacheLookupLatencyMs: data.telemetry.cacheLookupLatencyMs ?? null,
             cacheStatus: data.telemetry.cacheStatus ?? 'bypass',
             cacheBypassReason: data.telemetry.cacheBypassReason ?? null,
             sourceTotalTokens: data.telemetry.sourceTotalTokens ?? null,
@@ -287,7 +290,8 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
               totalCost: telemetry.totalCost !== undefined ? telemetry.totalCost : null,
             }
           };
-          setExperimentRecords(prev => [...prev, newRecord]);
+          // Aynı HTTP isteği yeniden işlenirse toplam tüketimi iki kere saymıyoruz.
+          setExperimentRecords(prev => prev.some(record => record.id === newRecord.id) ? prev : [...prev, newRecord]);
           
           console.log('[Baseline Experiment]', {
             id: newRecord.id,

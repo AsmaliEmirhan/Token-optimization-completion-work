@@ -3,7 +3,20 @@ import { ChevronDown, Info } from 'lucide-react';
 import type { RequestAnalysisData } from '../types/telemetry';
 import { formatCost } from '../utils/metrics';
 
-export type RequestAnalysisProps = RequestAnalysisData;
+export type RequestAnalysisProps = RequestAnalysisData & { defaultExpanded?: boolean };
+
+const decisionLabels: Record<string, string> = {
+  static_geography: 'Bağımsız coğrafya sorusu', static_mathematics: 'Bağımsız matematik sorusu',
+  static_programming: 'Bağımsız programlama sorusu', personal_context: 'Kişiye özel içerik',
+  conversation_dependent: 'Önceki bağlama bağlı', conversation_context: 'Sohbet geçmişi içeriyor',
+  custom_system_instructions: 'Özel sistem talimatı', custom_generation_parameters: 'Özel üretim ayarları',
+  additional_validator_unavailable: 'Paylaşım güvenliği kesinleşmedi', additional_validator_failed: 'Ek doğrulama tamamlanamadı',
+  invalid_validator_result: 'Ek doğrulama sonucu belirsiz', missing_response_safety_metadata: 'Yanıt güvenlik bilgisi eksik',
+  dynamic_information: 'Güncel bilgi gerektiriyor', sensitive_content: 'Hassas içerik', unsafe_instructions: 'Güvenli olmayan talimat',
+  ambiguous_text: 'Belirsiz metin biçimi', incomplete_context: 'Eksik bağlam',
+  explicit_bypass: 'Önbellek kullanımı kapalı', missing_verified_session: 'Doğrulanmış oturum yok',
+  inflight_private_scope: 'Aynı özel kapsamda devam eden üretim',
+};
 
 const formatNumber = (num: number | null): string => {
   if (num === null || num === undefined) return '—';
@@ -36,6 +49,9 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
   cacheHit,
   cacheStatus,
   cacheBypassReason,
+  cacheScope,
+  cacheDecisionReason,
+  cacheLookupLatencyMs,
   sourceTotalTokens,
   sourceRequestId,
   responseSource,
@@ -43,8 +59,9 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
   sourceModel,
   avoidedEstimatedTokens,
   avoidedEstimatedApiCost,
+  defaultExpanded = false,
 }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
 
   const friendlyProvider = getProviderDisplayName(provider);
 
@@ -93,20 +110,25 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
             <div className="flex items-center justify-between text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Yanıt Kaynağı</span>
               <span className="font-semibold text-right">
-                {responseSource === 'l1_exact_cache' ? 'L1 Exact Cache' : responseSource === 'inflight_shared' ? 'Eşzamanlı Paylaşım' : friendlyProvider}
+                {responseSource === 'shared_l1_cache' ? 'Ortak L1 Önbelleği' : responseSource === 'private_l1_cache' ? 'Özel L1 Önbelleği' : responseSource === 'l1_exact_cache' ? 'L1 Önbelleği' : responseSource === 'inflight_shared' ? 'Eşzamanlı Üretim' : friendlyProvider}
               </span>
             </div>
             <div className="flex items-center justify-between text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Cache Durumu</span>
-              <span className={`font-semibold ${cacheHit ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
-                {cacheStatus === 'hit' ? 'Hit' : cacheStatus === 'inflight_shared' ? 'Paylaşılan Üretim' : cacheStatus === 'miss' ? 'Miss' : 'Bypass'}
+              <span className={`font-semibold text-right ${cacheHit ? 'text-emerald-600 dark:text-emerald-400' : ''}`}
+                title={cacheStatus === 'inflight_shared' ? 'In-flight Shared: yalnız aynı özel kapsamdaki istekler üretimi paylaşır; L1 eşleşmesi sayılmaz.' : `Arama süresi: ${formatLatency(cacheLookupLatencyMs ?? null)}`}>
+                {cacheStatus === 'hit' ? cacheScope === 'shared' ? 'Ortak Eşleşme (Shared Hit)' : cacheScope ? 'Özel Eşleşme (Private Hit)' : 'Eşleşme (Hit)' : cacheStatus === 'inflight_shared' ? 'Eşzamanlı Paylaşım' : cacheStatus === 'miss' ? 'Bulunamadı (Miss)' : 'Devre Dışı (Bypass)'}
               </span>
             </div>
-            {cacheBypassReason && (
-              <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6]">
-                {cacheBypassReason === 'untrusted_request' ? 'Bu istek sunucunun cache onay listesinde değil.' : 'İstek cache politikasının dışında.'}
-              </p>
-            )}
+            {/* Kapsam ve karar sade gösterilir; teknik neden kodu araç ipucunda kalır. */}
+            <div className="flex items-center justify-between gap-3 text-[11.5px]">
+              <span className="text-[#596E8A] dark:text-[#9299A6]">Cache Kapsamı</span>
+              <span className="font-semibold">{cacheScope === 'shared' ? 'Ortak' : cacheScope === 'user_private' ? 'Kullanıcıya özel' : cacheScope === 'session_private' ? 'Oturuma özel' : '—'}</span>
+            </div>
+            <div className="flex items-center justify-between gap-3 text-[11.5px]" title={cacheDecisionReason ?? cacheBypassReason ?? undefined}>
+              <span className="text-[#596E8A] dark:text-[#9299A6] shrink-0">Cache Karar Nedeni</span>
+              <span className="text-right">{decisionLabels[cacheDecisionReason ?? cacheBypassReason ?? ''] ?? (cacheDecisionReason?.startsWith('response_') ? 'Yanıt paylaşım denetimini geçmedi' : 'Sunucu güvenlik politikası')}</span>
+            </div>
             {responseSource !== 'provider' && (
               <div className="flex items-center justify-between gap-3 text-[11.5px]">
                 <span className="text-[#596E8A] dark:text-[#9299A6]">Orijinal Kaynak</span>

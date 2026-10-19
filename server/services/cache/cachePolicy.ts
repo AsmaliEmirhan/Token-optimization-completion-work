@@ -1,35 +1,57 @@
 import crypto from 'node:crypto';
 import { stableSerialize } from './cacheKey.js';
-import type { CachePolicyDecision, ExactCacheKeyInput } from './cacheTypes.js';
+import { CACHE_POLICY_VERSION, type AuthenticatedIdentity, type CacheScopeBinding,
+  type CacheScopeDecision, type SecurityScope } from './cacheTypes.js';
+import type { ChatApiRequest } from '../../types/api.js';
+import { classifyStaticRequest, inspectTextRisk, validation, type CacheSafetyValidator,
+  runAdditionalValidation } from './cacheValidation.js';
 
-export interface CachePolicyRequest extends Omit<ExactCacheKeyInput, 'schemaVersion'> {
-  forceCacheBypass?: boolean;
+export interface CachePolicyRequest extends ChatApiRequest {
+  securityScope?: SecurityScope;
+  authenticatedIdentity?: AuthenticatedIdentity;
 }
 
-// Güven sınırı sunucu kodudur: istemciden kategori/cacheSafe bayrağı kabul etmiyoruz.
-// Bu dar liste zamandan bağımsız eğitim sorularıdır; genel serbest metni sınıflandırmaz.
-export const REVIEWED_STATIC_PROMPTS = [
-  'İkili arama algoritmasını açıkla.',
-  'Pisagor teoremini açıkla.',
-  'Explain the binary search algorithm.',
-] as const;
-
-export function cacheSafetyFingerprint(request: Pick<CachePolicyRequest,
-  'message' | 'systemInstructions' | 'conversation' | 'generationParameters'>): string {
-  return crypto.createHash('sha256').update(stableSerialize({
-    message: request.message, systemInstructions: request.systemInstructions,
-    conversation: request.conversation, generationParameters: request.generationParameters,
-  })).digest('hex');
+export function privateScopeFor(request: CachePolicyRequest): CacheScopeBinding {
+  const identity = request.authenticatedIdentity;
+  // Sohbet geçmişi kullanıcı hesabından daha dar olan oturumda kalır.
+  const user = identity?.authenticated === true && identity.issuer && identity.subject &&
+    Number.isSafeInteger(identity.cacheRevision) && identity.cacheRevision >= 0 && !request.conversation?.length;
+  const value = user ? { issuer: identity.issuer, subject: identity.subject, revision: identity.cacheRevision } : request.securityScope;
+  return { scope: user ? 'user_private' : 'session_private',
+    scopeId: crypto.createHash('sha256').update(stableSerialize(value ?? null)).digest('hex') };
 }
 
-export const DEFAULT_SAFE_FINGERPRINTS: ReadonlySet<string> = new Set(REVIEWED_STATIC_PROMPTS.map(message =>
-  cacheSafetyFingerprint({ message, systemInstructions: null, conversation: [], generationParameters: {} })));
+export async function evaluateCachePolicy(request: CachePolicyRequest, options: {
+  policyVersion?: string; validator?: CacheSafetyValidator; validatorTimeoutMs?: number;
+} = {}): Promise<CacheScopeDecision> {
+  const policyVersion = options.policyVersion ?? CACHE_POLICY_VERSION;
+  const privateScope = privateScopeFor(request).scope;
+  const decide = (scope: CacheScopeDecision['scope'], reasonCode: string,
+    status: 'approved' | 'rejected' | 'uncertain', additional = false, category: string | null = null): CacheScopeDecision => ({
+    scope, eligible: scope !== null, reasonCode, policyVersion,
+    requiresAdditionalValidation: additional, category, sharing: validation(status, reasonCode),
+  });
+  if (request.forceCacheBypass) return decide(null, 'explicit_bypass', 'rejected');
+  if (!request.securityScope?.partitionId || !Number.isSafeInteger(request.securityScope.credentialRevision) ||
+      request.securityScope.credentialRevision < 0) return decide(null, 'missing_verified_session', 'rejected');
+  if (request.toolContext || request.retrievalContext || request.hasExternalSideEffects || request.stream) {
+    return decide(null, 'unsupported_external_context', 'rejected');
+  }
+  const fullText = [request.message, request.systemInstructions ?? '', ...(request.conversation ?? []).map(m => m.content)].join('\n');
+  const risk = inspectTextRisk(fullText);
+  if (risk && risk !== 'personal_context' && risk !== 'conversation_dependent') return decide(null, risk, 'rejected');
+  if (request.conversation?.some(m => !m.content.trim())) return decide(null, 'incomplete_context', 'rejected');
+  // Gizli/özel sistem talimatı ve önceki konuşma asla ortak kapsama yükseltilmez.
+  if (request.systemInstructions !== undefined) return decide(privateScope, 'custom_system_instructions', 'rejected');
+  if (request.conversation?.length) return decide(privateScope, 'conversation_context', 'rejected');
+  if (risk) return decide(privateScope, risk, 'rejected');
+  if (Object.keys(request.generationParameters ?? {}).length) return decide(privateScope, 'custom_generation_parameters', 'rejected');
 
-export function evaluateCachePolicy(request: CachePolicyRequest, approved: ReadonlySet<string> = DEFAULT_SAFE_FINGERPRINTS): CachePolicyDecision {
-  if (request.forceCacheBypass) return { eligible: false, reason: 'explicit_bypass' };
-  if (!request.securityScope.partitionId) return { eligible: false, reason: 'missing_verified_session' };
-  if (request.toolContext || request.retrievalContext) return { eligible: false, reason: 'unsupported_external_context' };
-  // Anahtar eşleşmesi uygunluk kanıtı değildir. Önce tüm içerik/parametre birleşimi onaylı olmalı.
-  if (!approved.has(cacheSafetyFingerprint(request))) return { eligible: false, reason: 'untrusted_request' };
-  return { eligible: true, reason: null };
+  const category = classifyStaticRequest(request.message);
+  if (category) return decide('shared', 'static_' + category.id, 'approved', false, category.id);
+
+  // Şüpheli sözcük bulunmaması olumlu kanıt değildir. Ek doğrulayıcı yoksa belirsiz istek özeldir.
+  const sharing = await runAdditionalValidation(options.validator, 'request', request, undefined, options.validatorTimeoutMs);
+  return { ...decide(sharing.status === 'approved' ? 'shared' : privateScope,
+    sharing.reasonCode, sharing.status, true), sharing };
 }

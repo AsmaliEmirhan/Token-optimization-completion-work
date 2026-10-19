@@ -22,8 +22,12 @@ export interface RequestTelemetry {
   cacheHit: boolean;
   cacheType: null | 'exact' | 'semantic';
   cacheEligible: boolean;
+  cacheScope: 'shared' | 'user_private' | 'session_private' | null;
+  cacheDecisionReason: string;
+  cachePolicyVersion: string;
+  cacheValidationStatus: 'approved' | 'rejected' | 'uncertain';
   cacheBypassReason: string | null;
-  responseSource: 'provider' | 'l1_exact_cache' | 'inflight_shared';
+  responseSource: 'provider' | 'l1_exact_cache' | 'shared_l1_cache' | 'private_l1_cache' | 'inflight_shared';
   cacheStatus: 'miss' | 'hit' | 'bypass' | 'inflight_shared';
   cacheWriteReason: string | null;
   cacheInfrastructureCost: number | null;
@@ -59,6 +63,14 @@ export interface RequestTelemetry {
 export interface LLMResponse {
   content: string;
   cacheable: boolean;
+  // Sağlayıcı adaptörü gözlemlerini taşır; içerik için semantik güvenlik iddiası değildir.
+  safety?: {
+    complete: boolean;
+    hasToolCalls: boolean;
+    hasRetrieval: boolean;
+    hasPrivateContext: boolean;
+    flagged: boolean;
+  };
   usage: {
     inputTokens: number | null;
     outputTokens: number | null;

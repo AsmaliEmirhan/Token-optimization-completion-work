@@ -1,16 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { InMemoryExactCache } from './exactCache.js';
-import { ChatService } from '../chat/chatService.js';
-import { cacheSafetyFingerprint, DEFAULT_SAFE_FINGERPRINTS, REVIEWED_STATIC_PROMPTS } from './cachePolicy.js';
+import { baseRequest, scopeA, scopeB, result, createHarness, deferred, mockEntry } from './cacheTestUtils.js';
 import { createExactCacheKey, stableSerialize } from './cacheKey.js';
 import { validateChatRequest } from '../chat/requestValidation.js';
-import type { ExactCacheEntry, SecurityScope } from './cacheTypes.js';
-import type { ChatApiRequest, LLMProvider, LLMResponse } from '../../types/api.js';
+import { privateScopeFor } from './cachePolicy.js';
+import type { ChatApiRequest, LLMResponse } from '../../types/api.js';
 
-const scopeA: SecurityScope = { partitionId: 'server-partition-a', credentialRevision: 1 };
-const scopeB: SecurityScope = { partitionId: 'server-partition-b', credentialRevision: 1 };
-const baseRequest: ChatApiRequest = { provider: 'openai', model: 'gpt-4o', message: REVIEWED_STATIC_PROMPTS[0] };
 const fixtureVariants: Partial<ChatApiRequest>[] = [
   {}, { message: 'soru-1' }, { message: 'soru-2' }, { message: 'soru-3' },
   { message: 'İkili aramayı açıkla.' },
@@ -22,51 +18,13 @@ const fixtureVariants: Partial<ChatApiRequest>[] = [
   { generationParameters: { seed: 7 } },
   { generationParameters: { stopSequences: ['END'] } },
 ];
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (error: Error) => void;
-  const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; });
-  return { promise, resolve, reject };
-}
-const result = (): LLMResponse => ({
-  content: 'Mock yanıt', cacheable: true, latencyMs: 5,
-  usage: { inputTokens: 10, outputTokens: 20, thinkingTokens: 0, totalTokens: 30 },
-});
-function createHarness(options: { ttlMs?: number; maxEntries?: number; maxEntryBytes?: number;
-  providerTimeoutMs?: number; maxWaitersPerKey?: number; maxConcurrentGenerations?: number; cacheEnabled?: boolean } = {}) {
-  let now = 1000;
-  let calls = 0;
-  let behavior = async (): Promise<LLMResponse> => result();
-  const provider: LLMProvider = { async sendMessage() { calls++; return behavior(); } };
-  const cache = new InMemoryExactCache({
-    ttlMs: options.ttlMs ?? 1000, maxEntries: options.maxEntries ?? 10,
-    maxEntryBytes: options.maxEntryBytes, now: () => now,
-  });
-  // Yalnızca test fixture'ları sunucu tarafından onaylanır; HTTP istemcisi bu listeyi değiştiremez.
-  const approved = new Set(DEFAULT_SAFE_FINGERPRINTS);
-  for (const variation of fixtureVariants) {
-    const request = { ...baseRequest, ...variation };
-    approved.add(cacheSafetyFingerprint({
-      message: request.message, systemInstructions: request.systemInstructions ?? null,
-      conversation: request.conversation ?? [], generationParameters: request.generationParameters ?? {},
-    }));
-  }
-  const service = new ChatService({ providers: { openai: provider, gemini: provider, groq: provider },
-    cache, cacheTtlMs: options.ttlMs ?? 1000, now: () => now, approvedFingerprints: approved, ...options });
-  return { cache, service, calls: () => calls, advance: (ms: number) => { now += ms; },
-    behavior: (fn: typeof behavior) => { behavior = fn; },
-    execute: (overrides: Partial<ChatApiRequest> = {}, scope: SecurityScope | null = scopeA) =>
-      service.execute({ ...baseRequest, ...overrides }, { apiKey: 'fake-key', securityScope: scope ?? undefined }),
-  };
-}
-
 test('ilk istek miss, sonraki tamamlanmış hit: tek provider çağrısı ve ayrı kimlikler', async () => {
   const h = createHarness();
   const first = await h.execute();
   const hit = await h.execute();
   assert.equal(first.telemetry.cacheStatus, 'miss');
   assert.equal(hit.telemetry.cacheStatus, 'hit');
-  assert.equal(hit.telemetry.responseSource, 'l1_exact_cache');
+  assert.equal(hit.telemetry.responseSource, 'shared_l1_cache');
   assert.equal(h.calls(), 1);
   assert.notEqual(first.telemetry.requestId, hit.telemetry.requestId);
   assert.equal(hit.telemetry.sourceRequestId, first.telemetry.requestId);
@@ -98,9 +56,9 @@ test('onaylı farklı mesaj/sistem/geçmiş/parametreler bağımsız miss üreti
 
 test('sunucuda doğrulanan farklı oturum ve credential revizyonları ayrıdır', async () => {
   const h = createHarness();
-  await h.execute();
-  assert.equal((await h.execute({}, scopeB)).telemetry.cacheStatus, 'miss');
-  assert.equal((await h.execute({}, { ...scopeA, credentialRevision: 2 })).telemetry.cacheStatus, 'miss');
+  await h.execute({ message: 'Benim favori rengim ne?' });
+  assert.equal((await h.execute({ message: 'Benim favori rengim ne?' }, scopeB)).telemetry.cacheStatus, 'miss');
+  assert.equal((await h.execute({ message: 'Benim favori rengim ne?' }, { ...scopeA, credentialRevision: 2 })).telemetry.cacheStatus, 'miss');
   assert.equal(h.calls(), 3);
 });
 
@@ -114,15 +72,16 @@ test('eski istemci securityScope iddiası yok sayılır, doğrulanmış oturum y
   assert.equal(Object.hasOwn(validateChatRequest(forged), 'securityScope'), false);
 });
 
-test('güncel ve onaysız metinler provider yolunda kalır, istemci güven bayrağı kabul edilmez', async () => {
+test('güncel metin bypass, kişisel ve belirsiz metin özel kapsamda kalır', async () => {
   const h = createHarness();
-  for (const message of ['Bugün hava nasıl?', 'Benim hesabımdaki tutar?', 'Bu cümlede dinamik anahtar kelime yok.']) {
+  const dynamic = await h.execute({ message: 'Bugün hava nasıl?' });
+  assert.equal(dynamic.telemetry.cacheStatus, 'bypass');
+  assert.equal(dynamic.telemetry.cacheBypassReason, 'dynamic_information');
+  for (const message of ['Benim hesabımdaki tutar?', 'Bu cümlede dinamik anahtar kelime yok.']) {
     const response = await h.execute({ message });
-    assert.equal(response.telemetry.cacheStatus, 'bypass');
-    assert.equal(response.telemetry.cacheBypassReason, 'untrusted_request');
+    assert.equal(response.telemetry.cacheScope, 'session_private');
   }
   assert.throws(() => validateChatRequest({ ...baseRequest, cacheSafe: true }));
-  assert.equal(h.cache.size, 0);
   assert.equal(h.calls(), 3);
 });
 
@@ -169,7 +128,7 @@ test('eşzamanlı birebir istekler tek üretim paylaşır: hit değil, maliyet y
   const a = h.execute();
   const b = h.execute();
   const c = h.execute();
-  await Promise.resolve();
+  await new Promise(resolve => setImmediate(resolve));
   assert.equal(h.calls(), 1);
   assert.equal(h.service.inflightCount, 1);
   gate.resolve(result());
@@ -183,7 +142,7 @@ test('eşzamanlı birebir istekler tek üretim paylaşır: hit değil, maliyet y
   assert.equal(responses.reduce((sum, r) => sum + r.telemetry.totalTokens!, 0), 30);
   assert.equal(responses.reduce((sum, r) => sum + r.telemetry.totalCost!, 0), responses[0].telemetry.totalCost);
   assert.equal(h.service.inflightCount, 0);
-  assert.equal((await h.execute()).telemetry.responseSource, 'l1_exact_cache');
+  assert.equal((await h.execute()).telemetry.responseSource, 'shared_l1_cache');
 });
 
 test('eşzamanlı farklı oturumlar iki provider çağrısı yapar', async () => {
@@ -200,7 +159,7 @@ test('eşzamanlı credential revizyon değişimi eski üretime bağlanmaz', asyn
   h.behavior(() => gate.promise);
   const oldRequest = h.execute();
   const newRequest = h.execute({}, { ...scopeA, credentialRevision: 2 });
-  await Promise.resolve();
+  await new Promise(resolve => setImmediate(resolve));
   assert.equal(h.calls(), 2);
   gate.resolve(result());
   assert.ok((await Promise.all([oldRequest, newRequest])).every(r => r.telemetry.responseSource === 'provider'));
@@ -261,7 +220,7 @@ test('benzer sözcükler ve boşluk farkları semantik eşleşmez', async () => 
   const h = createHarness();
   await h.execute();
   assert.equal((await h.execute({ message: 'İkili aramayı açıkla.' })).telemetry.cacheStatus, 'miss');
-  assert.equal((await h.execute({ message: baseRequest.message + ' ' })).telemetry.cacheStatus, 'bypass');
+  assert.equal((await h.execute({ message: baseRequest.message + ' ' })).telemetry.cacheStatus, 'miss');
 });
 
 test('cache kapalı veya açık bypass normal bağımsız provider çağrısı yapar', async () => {
@@ -313,24 +272,21 @@ test('kanonik anahtar deterministik ve ham prompt/parametre/kapsam duyarlıdır'
   const input = {
     ...baseRequest, systemInstructions: null, conversation: [],
     generationParameters: { temperature: 0.2, topP: 0.8 },
-    securityScope: scopeA, toolContext: null, retrievalContext: null,
+    ...privateScopeFor({ ...baseRequest, securityScope: scopeA }), policyVersion: 'test', toolContext: null, retrievalContext: null,
   };
   const key = createExactCacheKey(input);
   assert.match(key, /^[a-f0-9]{64}$/);
   assert.equal(key, createExactCacheKey({ ...input, generationParameters: { topP: 0.8, temperature: 0.2 } }));
   assert.notEqual(key, createExactCacheKey({ ...input, message: input.message + ' ' }));
-  assert.notEqual(key, createExactCacheKey({ ...input, securityScope: scopeB }));
+  assert.notEqual(key, createExactCacheKey({ ...input, ...privateScopeFor({ ...baseRequest, securityScope: scopeB }) }));
   assert.throws(() => stableSerialize({ value: Infinity }));
   assert.throws(() => stableSerialize(JSON.parse('{"__proto__":1}')));
 });
 
 test('kayıt kopyalama, toplam bayt sınırı, duplicate key, TTL ve invalidation korunur', () => {
   let now = 1000;
-  const cache = new InMemoryExactCache({ ttlMs: 100, maxEntries: 20, maxEntryBytes: 1000, maxTotalBytes: 1100, now: () => now });
-  const entry = (key: string): ExactCacheEntry => ({
-    id: key, key, answerId: key, content: 'x'.repeat(200), sourceProvider: 'openai', sourceModel: 'gpt-4o',
-    sourceRequestId: key, sourceUsage: result().usage, createdAt: now, expiresAt: now + 10000, cacheType: 'exact',
-  });
+  const cache = new InMemoryExactCache({ ttlMs: 100, maxEntries: 20, maxEntryBytes: 2400, maxTotalBytes: 2500, now: () => now });
+  const entry = (key: string) => mockEntry(key, now);
   const original = entry('a');
   assert.equal(cache.set(original), true);
   original.content = 'changed';
@@ -342,7 +298,7 @@ test('kayıt kopyalama, toplam bayt sınırı, duplicate key, TTL ve invalidatio
   assert.equal(cache.size, 1);
   cache.set(entry('b'));
   cache.set(entry('c'));
-  assert.ok(cache.byteSize <= 1100);
+  assert.ok(cache.byteSize <= 2500);
   assert.equal(cache.get('a'), null);
   now += 100;
   assert.equal(cache.byteSize, 0);

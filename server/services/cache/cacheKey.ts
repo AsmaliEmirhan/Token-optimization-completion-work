@@ -24,11 +24,18 @@ export function stableSerialize(value: unknown): string {
 }
 
 export function createExactCacheKey(input: Omit<ExactCacheKeyInput, 'schemaVersion'>): string {
-  // Sağlayıcı, ham model kimliği, kapsam ve tüm desteklenen bağlam anahtara girer.
-  // Böylece L1, farklı model veya kullanıcı yanıtlarını asla birbiriyle karıştırmaz.
-  const canonical: ExactCacheKeyInput = {
-    ...input,
+  if (input.scope === 'shared' ? input.scopeId !== null : !input.scopeId) throw new Error('INVALID_CACHE_SCOPE');
+  const fingerprint = (value: unknown) => crypto.createHash('sha256').update(stableSerialize(value)).digest('hex');
+  // Ham prompt korunur; sınıflandırmada kullanılan sadeleştirme L1 anahtarına uygulanmaz.
+  // Açık alan seçimi API anahtarı/oturum sırrının yanlışlıkla anahtara taşınmasını önler.
+  const canonical = {
     schemaVersion: CACHE_SCHEMA_VERSION,
+    scope: input.scope, scopeId: input.scopeId, policyVersion: input.policyVersion,
+    provider: input.provider, model: input.model, message: input.message,
+    systemFingerprint: fingerprint(input.systemInstructions),
+    conversationFingerprint: fingerprint(input.conversation),
+    generationParameters: input.generationParameters,
+    toolContext: input.toolContext, retrievalContext: input.retrievalContext,
   };
 
   return crypto.createHash('sha256').update(stableSerialize(canonical), 'utf8').digest('hex');

@@ -8,6 +8,7 @@ import { MetricsPopover } from '../src/components/MetricsPopover';
 import { ThemeProvider } from '../src/context/ThemeContext';
 import { SettingsModal } from '../src/components/SettingsModal';
 import { apiFetch } from '../src/utils/api';
+import type { RequestAnalysisData } from '../src/types/telemetry';
 
 test('Markdown: başlık/liste/kod/tablo ve güvenli bağlantı render sözleşmesi korunur', () => {
   const markup = renderToStaticMarkup(<MarkdownRenderer content={'# Başlık\n\n**kalın**\n\n- madde\n\n```ts\nconst x = 1;\n```\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n[link](https://example.com)'} />);
@@ -49,5 +50,31 @@ test('frontend açılışı tek oturum kurar, POST koruma başlığı ve aynı-o
   for (const request of requests) {
     assert.equal(request.init?.credentials, 'same-origin');
     if (request.init?.method === 'POST') assert.equal(new Headers(request.init.headers).get('X-TokenAI-Request'), '1');
+  }
+});
+
+test('açık İstek Analizi kapsam, beş durum, karar, kaynak ve maliyeti iki tema sınıfıyla gösterir', () => {
+  const base: RequestAnalysisData = { provider: 'openai', model: 'gpt-4o', inputTokens: 0, outputTokens: 0,
+    thinkingTokens: 0, totalTokens: 0, latencyMs: 1, totalCost: 0, cacheHit: true, cacheEligible: true,
+    cacheStatus: 'hit', cacheScope: 'shared', cacheDecisionReason: 'static_geography', cacheBypassReason: null,
+    cacheLookupLatencyMs: 0.4, responseSource: 'shared_l1_cache', sourceProvider: 'openai', sourceModel: 'gpt-4o',
+    sourceRequestId: 'source', sourceTotalTokens: 30, avoidedEstimatedTokens: 30, avoidedEstimatedApiCost: null };
+  const variants: [Partial<RequestAnalysisData>, string][] = [
+    [{}, 'Shared Hit'],
+    [{ cacheScope: 'session_private', responseSource: 'private_l1_cache' }, 'Private Hit'],
+    [{ cacheStatus: 'miss', cacheHit: false, responseSource: 'provider' }, 'Miss'],
+    [{ cacheStatus: 'bypass', cacheScope: null, cacheDecisionReason: 'dynamic_information', responseSource: 'provider' }, 'Bypass'],
+    [{ cacheStatus: 'inflight_shared', cacheScope: 'session_private', responseSource: 'inflight_shared' }, 'In-flight Shared'],
+  ];
+  for (const [change, status] of variants) {
+    const markup = renderToStaticMarkup(<RequestAnalysis {...base} {...change} defaultExpanded />);
+    for (const text of [status, 'Cache Kapsamı', 'Cache Karar Nedeni', 'Yanıt Kaynağı', 'dark:', 'aria-expanded="true"']) {
+      assert.ok(markup.includes(text), text);
+    }
+    if (change.responseSource !== 'provider') {
+      assert.ok(markup.includes('Önlenen Tahmini API Maliyeti'));
+      assert.ok(markup.includes('garantili fatura tasarrufu değildir'));
+      assert.ok(markup.includes('$0.00'));
+    }
   }
 });

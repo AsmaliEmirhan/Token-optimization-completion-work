@@ -36,6 +36,13 @@ export const groqProvider: LLMProvider = {
     return {
       content: response.choices[0]?.message?.content || '',
       cacheable: response.choices[0]?.finish_reason === 'stop',
+      safety: {
+        complete: response.choices[0]?.finish_reason === 'stop',
+        hasToolCalls: Boolean(response.choices[0]?.message?.tool_calls?.length || response.choices[0]?.message?.function_call || response.choices[0]?.message?.executed_tools?.length),
+        hasRetrieval: Boolean(response.choices[0]?.message?.annotations?.length),
+        hasPrivateContext: Boolean(systemInstructions || conversation.length),
+        flagged: false, // SDK ayrı bir güvenlik onayı sunmaz; içerik ayrıca sunucuda denetlenir.
+      },
       usage: {
         inputTokens,
         outputTokens,

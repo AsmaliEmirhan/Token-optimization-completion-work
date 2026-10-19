@@ -28,6 +28,7 @@ for (const [name, provider] of [['openai', openaiProvider], ['groq', groqProvide
     assert.equal(requests.length, 1);
     assert.equal(answer.content, 'mock answer');
     assert.equal(answer.cacheable, true);
+    assert.deepEqual(answer.safety, { complete: true, hasToolCalls: false, hasRetrieval: false, hasPrivateContext: true, flagged: false });
     assert.equal(answer.usage.inputTokens, 10);
     assert.equal(answer.usage.thinkingTokens, 5);
     const payload = payloads[0];
@@ -59,5 +60,23 @@ for (const [name, provider] of [['openai', openaiProvider], ['groq', groqProvide
     });
     await assert.rejects(provider.sendMessage({ apiKey: 'mock', model: 'mock-model', message: 'x' }));
     assert.equal(calls, 1);
+  });
+
+  test(name + ': beklenmeyen araç ve retrieval verisi güvenlik metadatasına taşınır', async t => {
+    // Finish reason tek başına güven kanıtı değildir; araç içeren STOP yanıtını da sınarız.
+    t.mock.method(globalThis, 'fetch', async () => {
+      const body = name === 'gemini' ? {
+        candidates: [{ content: { role: 'model', parts: [{ text: 'mock answer' }, { functionCall: { name: 'private_tool', args: {} } }] },
+          finishReason: 'STOP', groundingMetadata: { webSearchQueries: ['test'] } }],
+      } : { choices: [{ message: { role: 'assistant', content: 'mock answer',
+        tool_calls: [{ id: 'call', type: 'function', function: { name: 'private_tool', arguments: '{}' } }],
+        annotations: [{ type: 'url_citation', url_citation: { url: 'https://example.com', title: 'test', start_index: 0, end_index: 1 } }],
+      }, finish_reason: 'stop' }] };
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
+    });
+    const answer = await provider.sendMessage({ apiKey: 'mock', model: 'mock-model', message: 'test' });
+    assert.equal(answer.safety?.hasToolCalls, true);
+    assert.equal(answer.safety?.hasRetrieval, true);
+    assert.equal(answer.safety?.hasPrivateContext, false);
   });
 }
