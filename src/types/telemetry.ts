@@ -1,6 +1,3 @@
-export type CacheScope = 'shared' | 'user_private' | 'session_private';
-export type ResponseSource = 'provider' | 'l1_exact_cache' | 'shared_l1_cache' | 'private_l1_cache' | 'inflight_shared';
-
 export interface RequestTelemetry {
   requestId: string;
   timestamp: number;
@@ -18,29 +15,6 @@ export interface RequestTelemetry {
   // Reserved for future optimization stages
   cacheHit: boolean;
   cacheType: null | 'exact' | 'semantic';
-  cacheEligible: boolean;
-  cacheBypassReason: string | null;
-  // Eski telemetri okunabilir; eksik kapsam ortak olarak varsayılmaz.
-  cacheScope?: CacheScope | null;
-  cacheDecisionReason?: string | null;
-  cachePolicyVersion?: string;
-  cacheValidationStatus?: 'approved' | 'rejected' | 'uncertain';
-  responseSource: ResponseSource;
-  cacheStatus: 'miss' | 'hit' | 'bypass' | 'inflight_shared';
-  cacheWriteReason: string | null;
-  cacheInfrastructureCost: number | null;
-  sourceProvider: string;
-  sourceModel: string;
-  sourceRequestId: string;
-  cacheEntryId: string | null;
-  cacheLookupLatencyMs: number | null;
-
-  sourceInputTokens: number | null;
-  sourceOutputTokens: number | null;
-  sourceThinkingTokens: number | null;
-  sourceTotalTokens: number | null;
-  avoidedEstimatedTokens: number | null;
-  avoidedEstimatedApiCost: number | null;
 
   compressionUsed: boolean;
   compressionRatio: number | null;
@@ -106,21 +80,6 @@ export interface RequestAnalysisData {
   inputCost?: number | null;
   outputCost?: number | null;
   totalCost?: number | null;
-
-  cacheHit: boolean;
-  cacheEligible: boolean;
-  cacheScope?: CacheScope | null;
-  cacheDecisionReason?: string | null;
-  cacheLookupLatencyMs?: number | null;
-  responseSource: ResponseSource;
-  cacheStatus: 'miss' | 'hit' | 'bypass' | 'inflight_shared';
-  cacheBypassReason: string | null;
-  sourceTotalTokens: number | null;
-  sourceRequestId: string;
-  sourceProvider: string;
-  sourceModel: string;
-  avoidedEstimatedTokens: number | null;
-  avoidedEstimatedApiCost: number | null;
 }
 
 

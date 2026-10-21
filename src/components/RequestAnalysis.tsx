@@ -3,20 +3,7 @@ import { ChevronDown, Info } from 'lucide-react';
 import type { RequestAnalysisData } from '../types/telemetry';
 import { formatCost } from '../utils/metrics';
 
-export type RequestAnalysisProps = RequestAnalysisData & { defaultExpanded?: boolean };
-
-const decisionLabels: Record<string, string> = {
-  static_geography: 'Bağımsız coğrafya sorusu', static_mathematics: 'Bağımsız matematik sorusu',
-  static_programming: 'Bağımsız programlama sorusu', personal_context: 'Kişiye özel içerik',
-  conversation_dependent: 'Önceki bağlama bağlı', conversation_context: 'Sohbet geçmişi içeriyor',
-  custom_system_instructions: 'Özel sistem talimatı', custom_generation_parameters: 'Özel üretim ayarları',
-  additional_validator_unavailable: 'Paylaşım güvenliği kesinleşmedi', additional_validator_failed: 'Ek doğrulama tamamlanamadı',
-  invalid_validator_result: 'Ek doğrulama sonucu belirsiz', missing_response_safety_metadata: 'Yanıt güvenlik bilgisi eksik',
-  dynamic_information: 'Güncel bilgi gerektiriyor', sensitive_content: 'Hassas içerik', unsafe_instructions: 'Güvenli olmayan talimat',
-  ambiguous_text: 'Belirsiz metin biçimi', incomplete_context: 'Eksik bağlam',
-  explicit_bypass: 'Önbellek kullanımı kapalı', missing_verified_session: 'Doğrulanmış oturum yok',
-  inflight_private_scope: 'Aynı özel kapsamda devam eden üretim',
-};
+export type RequestAnalysisProps = RequestAnalysisData;
 
 const formatNumber = (num: number | null): string => {
   if (num === null || num === undefined) return '—';
@@ -46,22 +33,8 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
   totalTokens,
   latencyMs,
   totalCost,
-  cacheHit,
-  cacheStatus,
-  cacheBypassReason,
-  cacheScope,
-  cacheDecisionReason,
-  cacheLookupLatencyMs,
-  sourceTotalTokens,
-  sourceRequestId,
-  responseSource,
-  sourceProvider,
-  sourceModel,
-  avoidedEstimatedTokens,
-  avoidedEstimatedApiCost,
-  defaultExpanded = false,
 }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   const friendlyProvider = getProviderDisplayName(provider);
 
@@ -106,39 +79,6 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
             </div>
           </div>
 
-          <div className="space-y-1.5 pb-2.5 mb-2.5 border-b border-[#EAE7DC] dark:border-white/[0.06]">
-            <div className="flex items-center justify-between text-[11.5px]">
-              <span className="text-[#596E8A] dark:text-[#9299A6]">Yanıt Kaynağı</span>
-              <span className="font-semibold text-right">
-                {responseSource === 'shared_l1_cache' ? 'Ortak L1 Önbelleği' : responseSource === 'private_l1_cache' ? 'Özel L1 Önbelleği' : responseSource === 'l1_exact_cache' ? 'L1 Önbelleği' : responseSource === 'inflight_shared' ? 'Eşzamanlı Üretim' : friendlyProvider}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[11.5px]">
-              <span className="text-[#596E8A] dark:text-[#9299A6]">Cache Durumu</span>
-              <span className={`font-semibold text-right ${cacheHit ? 'text-emerald-600 dark:text-emerald-400' : ''}`}
-                title={cacheStatus === 'inflight_shared' ? 'In-flight Shared: yalnız aynı özel kapsamdaki istekler üretimi paylaşır; L1 eşleşmesi sayılmaz.' : `Arama süresi: ${formatLatency(cacheLookupLatencyMs ?? null)}`}>
-                {cacheStatus === 'hit' ? cacheScope === 'shared' ? 'Ortak Eşleşme (Shared Hit)' : cacheScope ? 'Özel Eşleşme (Private Hit)' : 'Eşleşme (Hit)' : cacheStatus === 'inflight_shared' ? 'Eşzamanlı Paylaşım' : cacheStatus === 'miss' ? 'Bulunamadı (Miss)' : 'Devre Dışı (Bypass)'}
-              </span>
-            </div>
-            {/* Kapsam ve karar sade gösterilir; teknik neden kodu araç ipucunda kalır. */}
-            <div className="flex items-center justify-between gap-3 text-[11.5px]">
-              <span className="text-[#596E8A] dark:text-[#9299A6]">Cache Kapsamı</span>
-              <span className="font-semibold">{cacheScope === 'shared' ? 'Ortak' : cacheScope === 'user_private' ? 'Kullanıcıya özel' : cacheScope === 'session_private' ? 'Oturuma özel' : '—'}</span>
-            </div>
-            <div className="flex items-center justify-between gap-3 text-[11.5px]" title={cacheDecisionReason ?? cacheBypassReason ?? undefined}>
-              <span className="text-[#596E8A] dark:text-[#9299A6] shrink-0">Cache Karar Nedeni</span>
-              <span className="text-right">{decisionLabels[cacheDecisionReason ?? cacheBypassReason ?? ''] ?? (cacheDecisionReason?.startsWith('response_') ? 'Yanıt paylaşım denetimini geçmedi' : 'Sunucu güvenlik politikası')}</span>
-            </div>
-            {responseSource !== 'provider' && (
-              <div className="flex items-center justify-between gap-3 text-[11.5px]">
-                <span className="text-[#596E8A] dark:text-[#9299A6]">Orijinal Kaynak</span>
-                <span className="font-semibold truncate" title={`${sourceProvider} / ${sourceModel}`}>
-                  {getProviderDisplayName(sourceProvider)} / {sourceModel}
-                </span>
-              </div>
-            )}
-          </div>
-
           {/* Metrics grid */}
           <div className="space-y-1.5 pb-2.5 mb-2.5 border-b border-[#EAE7DC] dark:border-white/[0.06]">
             <div className="flex items-center justify-between text-[11.5px]">
@@ -148,37 +88,12 @@ export const RequestAnalysis: React.FC<RequestAnalysisProps> = ({
               </span>
             </div>
 
-            {responseSource !== 'provider' && (
-              <div className="flex items-center justify-between text-[11.5px]">
-                <span className="text-[#596E8A] dark:text-[#9299A6]">Yeni LLM Tokenı</span>
-                <span className="font-semibold tabular-nums">0</span>
-              </div>
-            )}
-
             <div className="flex items-center justify-between text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Çıktı Token</span>
               <span className="font-semibold tabular-nums">
                 {formatNumber(outputTokens)}
               </span>
             </div>
-
-            {responseSource !== 'provider' && (
-              <>
-                <div className="flex items-center justify-between text-[11.5px]" title={sourceRequestId}>
-                  <span className="text-[#596E8A] dark:text-[#9299A6]">Kaynak Üretim Tokenı</span>
-                  <span className="font-semibold tabular-nums">{formatNumber(sourceTotalTokens)}</span>
-                </div>
-                <div className="flex items-center justify-between text-[11.5px]">
-                  <span className="text-[#596E8A] dark:text-[#9299A6]">Önlenen Tahmini Token</span>
-                  <span className="font-semibold tabular-nums">{formatNumber(avoidedEstimatedTokens)}</span>
-                </div>
-                <div className="flex items-center justify-between text-[11.5px]">
-                  <span className="text-[#596E8A] dark:text-[#9299A6]">Önlenen Tahmini API Maliyeti</span>
-                  <span className="font-semibold tabular-nums">{formatCost(avoidedEstimatedApiCost)}</span>
-                </div>
-                <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6]">Kaynak üretime dayalı tahmindir; garantili fatura tasarrufu değildir.</p>
-              </>
-            )}
 
             <div className="flex items-center justify-between text-[11.5px]">
               <span className="text-[#596E8A] dark:text-[#9299A6]">Düşünme Tokenı</span>

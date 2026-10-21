@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { LLMProvider } from '../../types/api.js';
+import type { LLMProvider, LLMResponse } from '../../types/api.js';
 
 export const geminiProvider: LLMProvider = {
-  async sendMessage({ apiKey, model, message, systemInstructions, conversation = [], generationParameters = {}, signal }) {
+  async sendMessage({ apiKey, model, message }) {
     console.log(`[Chat] Provider: gemini`);
     console.log(`[Chat] Model: ${model}`);
     console.log(`[Gemini] Starting request`);
@@ -10,26 +10,9 @@ export const geminiProvider: LLMProvider = {
     const start = performance.now();
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const genModel = genAI.getGenerativeModel({
-        model,
-        ...(systemInstructions ? { systemInstruction: systemInstructions } : {}),
-        generationConfig: {
-          temperature: generationParameters.temperature,
-          topP: generationParameters.topP,
-          maxOutputTokens: generationParameters.maxOutputTokens,
-          stopSequences: generationParameters.stopSequences,
-        },
-      });
+      const genModel = genAI.getGenerativeModel({ model });
 
-      const contents = [
-        ...conversation.map((item) => ({
-          role: item.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: item.content }],
-        })),
-        { role: 'user', parts: [{ text: message }] },
-      ];
-      // Aynı iptal sinyali tüm sağlayıcılarda uygulanır; bekleyen cache istekleri sınırlıdır.
-      const result = await genModel.generateContent({ contents }, { signal });
+      const result = await genModel.generateContent(message);
       const response = await result.response;
       const text = response.text();
 
@@ -47,15 +30,6 @@ export const geminiProvider: LLMProvider = {
 
       return {
         content: text,
-        cacheable: response.candidates?.[0]?.finishReason === 'STOP',
-        safety: {
-          complete: response.candidates?.[0]?.finishReason === 'STOP',
-          hasToolCalls: Boolean(response.candidates?.[0]?.content?.parts?.some(part =>
-            part.functionCall || part.functionResponse || part.executableCode || part.codeExecutionResult || part.inlineData || part.fileData)),
-          hasRetrieval: Boolean(response.candidates?.[0]?.groundingMetadata || response.candidates?.[0]?.citationMetadata),
-          hasPrivateContext: Boolean(systemInstructions || conversation.length),
-          flagged: Boolean(response.promptFeedback?.blockReason || response.candidates?.[0]?.safetyRatings?.some(rating => ['MEDIUM', 'HIGH'].includes(rating.probability))),
-        },
         usage: {
           inputTokens,
           outputTokens,
@@ -67,7 +41,7 @@ export const geminiProvider: LLMProvider = {
     } catch (error: any) {
       console.error(`[Gemini] Request failed`);
       console.error(`Status: ${error.status || 'Unknown'}`);
-      // Sağlayıcı hata metni URL/API anahtarı içerebilir; ham mesajı loglamıyoruz.
+      console.error(`Message: ${error.message || 'Unknown provider error'}`);
       throw error;
     }
   },

@@ -1,27 +1,15 @@
 import OpenAI from 'openai';
-import type { LLMProvider } from '../../types/api.js';
+import type { LLMProvider, LLMResponse } from '../../types/api.js';
 
 export const openaiProvider: LLMProvider = {
-  async sendMessage({ apiKey, model, message, systemInstructions, conversation = [], generationParameters = {}, signal }) {
+  async sendMessage({ apiKey, model, message }) {
     const start = performance.now();
-    // Tek üretim sahipliği korunur; SDK otomatik tekrarları ek ücretli çağrı üretmesin.
-    const openai = new OpenAI({ apiKey, maxRetries: 0 });
-
-    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-      ...(systemInstructions ? [{ role: 'system' as const, content: systemInstructions }] : []),
-      ...conversation.map((item) => ({ role: item.role, content: item.content })),
-      { role: 'user', content: message },
-    ];
+    const openai = new OpenAI({ apiKey });
 
     const response = await openai.chat.completions.create({
       model,
-      messages,
-      temperature: generationParameters.temperature,
-      top_p: generationParameters.topP,
-      max_tokens: generationParameters.maxOutputTokens,
-      stop: generationParameters.stopSequences,
-      seed: generationParameters.seed,
-    }, { signal });
+      messages: [{ role: 'user', content: message }],
+    });
 
     const end = performance.now();
     const usage = response.usage;
@@ -35,14 +23,6 @@ export const openaiProvider: LLMProvider = {
 
     return {
       content: response.choices[0]?.message?.content || '',
-      cacheable: response.choices[0]?.finish_reason === 'stop',
-      safety: {
-        complete: response.choices[0]?.finish_reason === 'stop',
-        hasToolCalls: Boolean(response.choices[0]?.message?.tool_calls?.length || response.choices[0]?.message?.function_call),
-        hasRetrieval: Boolean(response.choices[0]?.message?.annotations?.length),
-        hasPrivateContext: Boolean(systemInstructions || conversation.length),
-        flagged: Boolean(response.choices[0]?.message?.refusal || response.choices[0]?.finish_reason === 'content_filter'),
-      },
       usage: {
         inputTokens,
         outputTokens,

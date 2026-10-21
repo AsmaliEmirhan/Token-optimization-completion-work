@@ -11,7 +11,6 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 import { RequestAnalysis } from './RequestAnalysis';
 import type { RequestAnalysisData } from '../types/telemetry';
 import { ChevronDown, Check } from 'lucide-react';
-import { apiFetch } from '../utils/api';
 
 interface ChatMessage {
   id: string;
@@ -83,7 +82,7 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 
   // Fetch providers
   const fetchProviders = useCallback(() => {
-    apiFetch('/api/providers')
+    fetch('/api/providers')
       .then(res => res.json())
       .then(data => {
         if (data.providers) {
@@ -105,10 +104,6 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 
               return providerToUse.id;
             });
-          } else {
-            // Oturum süresi dolduğunda eski oturumun sağlayıcı seçimini geçerli göstermiyoruz.
-            setSelectedProvider(null);
-            setSelectedModel(null);
           }
         }
       })
@@ -187,14 +182,13 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
     const runChat = async () => {
       setIsLoading(true);
       try {
-        const res = await apiFetch('/api/chat', {
+        const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             provider: selectedProvider,
             model: selectedModel,
-            message: content,
-            // Güvenlik kapsamını sunucu HttpOnly oturumundan türetir.
+            message: content
           })
         });
 
@@ -219,20 +213,6 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             inputCost: data.telemetry.inputCost !== undefined ? data.telemetry.inputCost : null,
             outputCost: data.telemetry.outputCost !== undefined ? data.telemetry.outputCost : null,
             totalCost: data.telemetry.totalCost !== undefined ? data.telemetry.totalCost : null,
-            cacheHit: data.telemetry.cacheHit === true,
-            cacheEligible: data.telemetry.cacheEligible === true,
-            cacheScope: data.telemetry.cacheScope ?? null,
-            cacheDecisionReason: data.telemetry.cacheDecisionReason ?? data.telemetry.cacheBypassReason ?? null,
-            cacheLookupLatencyMs: data.telemetry.cacheLookupLatencyMs ?? null,
-            cacheStatus: data.telemetry.cacheStatus ?? 'bypass',
-            cacheBypassReason: data.telemetry.cacheBypassReason ?? null,
-            sourceTotalTokens: data.telemetry.sourceTotalTokens ?? null,
-            sourceRequestId: data.telemetry.sourceRequestId ?? '',
-            responseSource: data.telemetry.responseSource || 'provider',
-            sourceProvider: data.telemetry.sourceProvider || data.telemetry.provider || selectedProvider,
-            sourceModel: data.telemetry.sourceModel || data.telemetry.model || selectedModel,
-            avoidedEstimatedTokens: data.telemetry.avoidedEstimatedTokens ?? null,
-            avoidedEstimatedApiCost: data.telemetry.avoidedEstimatedApiCost ?? null,
           };
         } else if (data.metrics) {
           requestAnalysis = {
@@ -246,17 +226,6 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             inputCost: data.metrics.inputCost !== undefined ? data.metrics.inputCost : null,
             outputCost: data.metrics.outputCost !== undefined ? data.metrics.outputCost : null,
             totalCost: data.metrics.totalCost !== undefined ? data.metrics.totalCost : null,
-            cacheHit: false,
-            cacheEligible: false,
-            cacheStatus: 'bypass',
-            cacheBypassReason: null,
-            sourceTotalTokens: null,
-            sourceRequestId: '',
-            responseSource: 'provider',
-            sourceProvider: data.provider || selectedProvider,
-            sourceModel: data.model || selectedModel,
-            avoidedEstimatedTokens: null,
-            avoidedEstimatedApiCost: null,
           };
         }
 
@@ -290,8 +259,7 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
               totalCost: telemetry.totalCost !== undefined ? telemetry.totalCost : null,
             }
           };
-          // Aynı HTTP isteği yeniden işlenirse toplam tüketimi iki kere saymıyoruz.
-          setExperimentRecords(prev => prev.some(record => record.id === newRecord.id) ? prev : [...prev, newRecord]);
+          setExperimentRecords(prev => [...prev, newRecord]);
           
           console.log('[Baseline Experiment]', {
             id: newRecord.id,

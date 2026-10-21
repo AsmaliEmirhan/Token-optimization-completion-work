@@ -35,18 +35,8 @@ export const filterRecordsByTimeRange = (
 ): ExperimentRecord[] => {
   const durationMs = getTimeRangeDurationMs(selectedRange);
   const cutoff = now - durationMs;
-  return uniqueRequestRecords(records).filter((r) => r.timestamp >= cutoff && r.timestamp <= now);
+  return records.filter((r) => r.timestamp >= cutoff);
 };
-
-// Aynı requestId tekrar işlense de sağlayıcı harcaması ve istek sayısı çoğalmaz.
-export function uniqueRequestRecords(records: ExperimentRecord[]): ExperimentRecord[] {
-  const seen = new Set<string>();
-  return records.filter(record => {
-    const id = record.telemetry?.requestId ?? record.id;
-    if (seen.has(id)) return false;
-    seen.add(id); return true;
-  });
-}
 
 export const calculateTokenReduction = (baselineTokens: number | null, optimizedTokens: number | null): number | null => {
   if (baselineTokens === null || optimizedTokens === null || baselineTokens === 0) {
@@ -216,9 +206,9 @@ export const calculateCostAggregate = (records: ExperimentRecord[]): CostAggrega
   let unknownCostRecordCount = 0;
   let totalCostSum = 0;
 
-  for (const record of uniqueRequestRecords(records)) {
+  for (const record of records) {
     const cost = record.metrics.totalCost;
-    if (typeof cost === 'number' && Number.isFinite(cost) && cost >= 0) {
+    if (typeof cost === 'number' && !Number.isNaN(cost)) {
       totalCostSum += cost;
       knownCostRecordCount++;
     } else {
@@ -236,72 +226,4 @@ export const calculateCostAggregate = (records: ExperimentRecord[]): CostAggrega
     hasPartialCoverage,
   };
 };
-
-export interface CacheAggregateResult {
-  hits: number;
-  sharedHits: number;
-  privateHits: number;
-  legacyHits: number;
-  misses: number;
-  bypasses: number;
-  inflightShared: number;
-  unknown: number;
-  hitRate: number | null;
-  avoidedTokens: number | null;
-  avoidedApiCost: number | null;
-}
-
-export const calculateCacheAggregate = (records: ExperimentRecord[]): CacheAggregateResult => {
-  let hits = 0;
-  let sharedHits = 0;
-  let privateHits = 0;
-  let legacyHits = 0;
-  let misses = 0;
-  let bypasses = 0;
-  let inflightShared = 0;
-  let unknown = 0;
-  const avoidedTokens: (number | null)[] = [];
-  const avoidedCosts: (number | null)[] = [];
-
-  for (const record of uniqueRequestRecords(records)) {
-    const telemetry = record.telemetry;
-    switch (telemetry?.cacheStatus) {
-      case 'hit':
-        hits++;
-        if (telemetry.cacheScope === 'shared') sharedHits++;
-        else if (telemetry.cacheScope === 'user_private' || telemetry.cacheScope === 'session_private') privateHits++;
-        else legacyHits++;
-        break;
-      case 'miss': misses++; break;
-      case 'bypass': bypasses++; break;
-      case 'inflight_shared': inflightShared++; break;
-      default: unknown++;
-    }
-    if (telemetry?.cacheStatus === 'hit' || telemetry?.cacheStatus === 'inflight_shared') {
-      avoidedTokens.push(telemetry.avoidedEstimatedTokens);
-      avoidedCosts.push(telemetry.avoidedEstimatedApiCost);
-    }
-  }
-
-  const lookupCount = hits + misses;
-  return {
-    hits,
-    sharedHits,
-    privateHits,
-    legacyHits,
-    misses,
-    bypasses,
-    inflightShared,
-    unknown,
-    hitRate: lookupCount > 0 ? Number(((hits / lookupCount) * 100).toFixed(2)) : null,
-    avoidedTokens: sumComplete(avoidedTokens),
-    avoidedApiCost: sumComplete(avoidedCosts),
-  };
-};
-
-// Bir bileşen bilinmiyorsa toplamı da bilinmiyor kabul ediyoruz; null'u sıfır diye göstermiyoruz.
-export function sumComplete(values: (number | null | undefined)[]): number | null {
-  if (!values.length || values.some(value => typeof value !== 'number' || !Number.isFinite(value))) return null;
-  return values.reduce<number>((sum, value) => sum + (value as number), 0);
-}
 
