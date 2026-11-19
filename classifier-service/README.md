@@ -9,7 +9,7 @@ Yalnızca `127.0.0.1:8765` üzerinde dinler; sorular bilgisayar dışına gönde
 pip install -r classifier-service/requirements.txt
 ```
 
-Model dosyaları `ml/models/model/` klasöründe olmalıdır (Colab'dan indirilen `model.zip` içeriği).
+Model dosyaları `ml/models/model/` klasöründe olmalıdır. Modeli [Google Drive'dan](https://drive.google.com/drive/folders/1utwkAlprkEUlB6mAqTqom4EIHTSW9-Zj?usp=sharing) indirip `model.zip` dosyasını `ml/models/` içine çıkarın.
 
 ## Çalıştırma
 
