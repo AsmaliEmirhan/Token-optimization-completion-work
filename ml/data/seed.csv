@@ -1,0 +1,301 @@
+﻿id;text;label;source;group_id;notes
+seed-0001;Türkiye'nin başkenti neresidir?;genel;claude_seed;g001;
+seed-0002;Bugün Ankara'da hava kaç derece?;degisken;claude_seed;g001;
+seed-0003;Yaşadığım şehrin hangi bölgede olduğunu sana söylemiştim, hatırlıyor musun?;kisisel;claude_seed;g001;
+seed-0004;ankara hakkında dört dizelik bir şiir yaz;sanatsal;claude_seed;g001;informal
+seed-0005;Fotosentez nasıl gerçekleşir?;genel;claude_seed;g002;
+seed-0006;Fotosentez üzerine bu hafta yayımlanan en yeni araştırmalar neler?;degisken;claude_seed;g002;
+seed-0007;Dün sana anlattığım biyoloji ödevimdeki fotosentez kısmını düzelt.;kisisel;claude_seed;g002;
+seed-0008;fotosentezi anlatan çocuklar için kısa bir masal yaz;sanatsal;claude_seed;g002;informal
+seed-0009;Python'da fonksiyon nasıl tanımlanır?;genel;claude_seed;g003;
+seed-0010;Python'un şu anki en son kararlı sürümü hangisi?;degisken;claude_seed;g003;
+seed-0011;Sana yapıştırdığım Python kodumda neden hata alıyorum?;kisisel;claude_seed;g003;
+seed-0012;python öğrenen bir öğrencinin hikayesini anlatan kısa bir öykü yaz;sanatsal;claude_seed;g003;informal
+seed-0013;Pisagor teoremini açıkla.;genel;claude_seed;g004;
+seed-0014;Rastgele 5 tane dik üçgen kenar uzunluğu üret.;degisken;claude_seed;g004;
+seed-0015;Geçen konuşmada çözdüğümüz geometri sorusunun cevabı neydi?;kisisel;claude_seed;g004;
+seed-0016;Pisagor teoremi hakkında eğlenceli bir şarkı sözü yaz.;sanatsal;claude_seed;g004;
+seed-0017;Altın neden değerli bir maden olarak kabul edilir?;genel;claude_seed;g005;
+seed-0018;gram altın şu an kaç lira;degisken;claude_seed;g005;informal
+seed-0019;Elimdeki 20 gram altını bozdurmalı mıyım, birikimime göre ne yapayım?;kisisel;claude_seed;g005;
+seed-0020;altın rengi bir sonbahar sabahını anlatan bir şiir yaz;sanatsal;claude_seed;g005;informal
+seed-0021;Yağmur nasıl oluşur?;genel;claude_seed;g006;
+seed-0022;Yarın İstanbul'da yağmur yağacak mı?;degisken;claude_seed;g006;
+seed-0023;Bulunduğum yerde şu an hava nasıl?;kisisel;claude_seed;g006;
+seed-0024;Yağmurlu bir gece hakkında kısa bir hikaye yaz.;sanatsal;claude_seed;g006;
+seed-0025;Dostluk kavramını filozoflar nasıl tanımlamıştır?;genel;claude_seed;g007;
+seed-0026;Bugün Dünya Dostluk Günü mü?;degisken;claude_seed;g007;
+seed-0027;En yakın arkadaşım Elif'le aram bozuldu, ona ne demeliyim?;kisisel;claude_seed;g007;
+seed-0028;Dostluk hakkında dört kıtalık bir şiir yaz.;sanatsal;claude_seed;g007;
+seed-0029;Rastgele sayı üreteçleri nasıl çalışır?;genel;claude_seed;g008;
+seed-0030;1 ile 100 arasında rastgele 10 sayı üret;degisken;claude_seed;g008;informal
+seed-0031;Bana daha önce verdiğin şifre önerisini tekrar söyle.;kisisel;claude_seed;g008;
+seed-0032;Rastgele seçilmiş üç kelimeyle kısa bir öykü yaz: kedi, deniz, saat.;sanatsal;claude_seed;g008;
+seed-0033;enflasyon nedir ve nasıl ölçülür;genel;claude_seed;g009;informal
+seed-0034;Dolar kuru bugün ne kadar?;degisken;claude_seed;g009;
+seed-0035;Maaşım 45 bin lira, kiramı ödedikten sonra nasıl bütçe yapmalıyım?;kisisel;claude_seed;g009;
+seed-0036;Enflasyonu hicveden kısa bir mizah yazısı yaz.;sanatsal;claude_seed;g009;
+seed-0037;Futbolda ofsayt kuralı nedir?;genel;claude_seed;g010;
+seed-0038;Dün akşamki Galatasaray maçı kaç kaç bitti?;degisken;claude_seed;g010;
+seed-0039;Tuttuğum takımı sana söylemiştim, hangisiydi?;kisisel;claude_seed;g010;
+seed-0040;Bir futbol maçının son dakikasını anlatan heyecanlı bir öykü yaz.;sanatsal;claude_seed;g010;
+seed-0041;Osmanlı İmparatorluğu hangi yıl kuruldu?;genel;claude_seed;g011;
+seed-0042;Bugün tarihte ne oldu?;degisken;claude_seed;g011;
+seed-0043;Tarih sınavımda hangi konulardan düşük aldığımı söylemiştim, ona göre çalışma planı yap.;kisisel;claude_seed;g011;
+seed-0044;İstanbul'un fethini anlatan destansı bir şiir yaz.;sanatsal;claude_seed;g011;
+seed-0045;Saat dilimleri neden vardır?;genel;claude_seed;g012;
+seed-0046;Şu an saat kaç?;degisken;claude_seed;g012;
+seed-0047;toplantım için kurduğum alarmın saatini hatırlat;kisisel;claude_seed;g012;informal
+seed-0048;zamanın geçişi üzerine felsefi bir deneme yaz;sanatsal;claude_seed;g012;informal
+seed-0049;Depremler nasıl oluşur?;genel;claude_seed;g013;
+seed-0050;son bir saatte türkiye'de deprem oldu mu;degisken;claude_seed;g013;informal
+seed-0051;Oturduğum binanın depreme dayanıklı olup olmadığını nasıl anlarım, adresim sende var.;kisisel;claude_seed;g013;
+seed-0052;Deprem sonrası umudu anlatan kısa bir şiir yaz.;sanatsal;claude_seed;g013;
+seed-0053;Menemen nasıl yapılır?;genel;claude_seed;g014;
+seed-0054;Bu akşam yakınımda açık olan restoranlar hangileri?;degisken;claude_seed;g014;
+seed-0055;Glüten alerjim olduğunu söylemiştim, buna uygun bir akşam menüsü öner.;kisisel;claude_seed;g014;
+seed-0056;Bir köy mutfağını anlatan nostaljik bir öykü yaz.;sanatsal;claude_seed;g014;
+seed-0057;Grip ile soğuk algınlığı arasındaki fark nedir?;genel;claude_seed;g015;
+seed-0058;türkiye'de bu hafta grip vakaları artıyor mu;degisken;claude_seed;g015;informal
+seed-0059;tahlil sonuçlarımı yükledim, kolesterol değerlerim normal mi;kisisel;claude_seed;g015;informal
+seed-0060;Hastanede bekleyen bir babanın duygularını anlatan bir şiir yaz.;sanatsal;claude_seed;g015;
+seed-0061;Büyük dil modelleri nasıl çalışır?;genel;claude_seed;g016;
+seed-0062;Sen hangi yapay zeka modelisin?;degisken;claude_seed;g016;
+seed-0063;önceki mesajlarımda sana ne sormuştum;kisisel;claude_seed;g016;informal
+seed-0064;bir yapay zekanın ilk kez rüya gördüğünü anlatan bir öykü yaz;sanatsal;claude_seed;g016;informal
+seed-0065;'Good morning' Türkçeye nasıl çevrilir?;genel;claude_seed;g017;
+seed-0066;En son çıkan çeviri uygulamaları hangileri?;degisken;claude_seed;g017;
+seed-0067;Az önce yüklediğim İngilizce sözleşmeyi Türkçeye çevir.;kisisel;claude_seed;g017;
+seed-0068;Umut kelimesini konu alan Türkçe-İngilizce iki dilli bir şiir yaz.;sanatsal;claude_seed;g017;
+seed-0069;Türev nedir, ne işe yarar?;genel;claude_seed;g018;
+seed-0070;bana her seferinde farklı bir matematik sorusu sor;degisken;claude_seed;g018;informal
+seed-0071;Dünkü ödevimde yanlış yaptığım integral sorusunu tekrar açıkla.;kisisel;claude_seed;g018;
+seed-0072;Sayıların birbirine âşık olduğu absürt bir hikaye yaz.;sanatsal;claude_seed;g018;
+seed-0073;güneş sistemindeki gezegenler nelerdir;genel;claude_seed;g019;informal
+seed-0074;Bu gece Mars çıplak gözle görülebilecek mi?;degisken;claude_seed;g019;
+seed-0075;Burcumu sana söylemiştim, bu ay benim için neler olacak?;kisisel;claude_seed;g019;
+seed-0076;Uzayda yalnız kalan bir astronotun günlüğünü yaz.;sanatsal;claude_seed;g019;
+seed-0077;Türkiye'de cumhurbaşkanı kaç yıllığına seçilir?;genel;claude_seed;g020;
+seed-0078;son anketlere göre hangi parti önde;degisken;claude_seed;g020;informal
+seed-0079;Hangi partiye oy verdiğimi sana söylemiştim, hatırlıyor musun?;kisisel;claude_seed;g020;
+seed-0080;Demokrasi temalı bir şiir yaz.;sanatsal;claude_seed;g020;
+seed-0081;Suç ve Ceza romanının konusu nedir?;genel;claude_seed;g021;
+seed-0082;Bu ay en çok satan kitaplar hangileri?;degisken;claude_seed;g021;
+seed-0083;Okuduğum kitapları listelemiştim, bunlara benzer yeni kitap öner.;kisisel;claude_seed;g021;
+seed-0084;Bir kütüphanede geçen gizemli bir kısa öykü yaz.;sanatsal;claude_seed;g021;
+seed-0085;İyi bir özgeçmiş nasıl hazırlanır?;genel;claude_seed;g022;
+seed-0086;Şu anda en çok aranan yazılım iş ilanları hangileri?;degisken;claude_seed;g022;
+seed-0087;Yüklediğim CV'mi incele ve eksiklerini söyle.;kisisel;claude_seed;g022;
+seed-0088;İş görüşmesine giden genç bir mühendisin heyecanını anlatan bir öykü yaz.;sanatsal;claude_seed;g022;
+seed-0089;Trafik ışıkları neden kırmızı, sarı ve yeşil renklerdedir?;genel;claude_seed;g023;
+seed-0090;Şu an Boğaz Köprüsü'nde trafik var mı?;degisken;claude_seed;g023;
+seed-0091;işe giderken kullandığım güzergahta bugün sorun var mı;kisisel;claude_seed;g023;informal
+seed-0092;İstanbul trafiğini mizahi bir dille anlatan bir şiir yaz.;sanatsal;claude_seed;g023;
+seed-0093;SQL'de JOIN türleri nelerdir?;genel;claude_seed;g024;
+seed-0094;MySQL'in son sürümünde hangi yenilikler geldi?;degisken;claude_seed;g024;
+seed-0095;Şirketimizin veritabanı şemasını sana göndermiştim, ona göre sorgu yaz.;kisisel;claude_seed;g024;
+seed-0096;bir veritabanının içinde yaşayan verilerin maceralarını anlatan bir çocuk hikayesi yaz;sanatsal;claude_seed;g024;informal
+seed-0097;Sera etkisi nedir?;genel;claude_seed;g025;
+seed-0098;Bu yılki iklim zirvesinde hangi kararlar alındı?;degisken;claude_seed;g025;
+seed-0099;Elektrik faturalarımı yolladım, evimin karbon ayak izini hesaplar mısın?;kisisel;claude_seed;g025;
+seed-0100;Eriyen buzulları anlatan duygusal bir şiir yaz.;sanatsal;claude_seed;g025;
+seed-0101;Türkçede büyük ünlü uyumu kuralı nedir?;genel;claude_seed;g026;
+seed-0102;tdk sözlüğüne bu yıl eklenen yeni kelimeler neler;degisken;claude_seed;g026;informal
+seed-0103;Yazdığım paragraftaki yazım hatalarını düzelt: dün ki toplantı da bende vardım.;kisisel;claude_seed;g026;
+seed-0104;Türkçenin güzelliğini anlatan bir şiir yaz.;sanatsal;claude_seed;g026;
+seed-0105;Düzenli egzersizin faydaları nelerdir?;genel;claude_seed;g027;
+seed-0106;Bu haftaki maraton etkinliklerinin listesi nedir?;degisken;claude_seed;g027;
+seed-0107;boyum 1.75, kilom 90, bana özel bir antrenman programı hazırla;kisisel;claude_seed;g027;informal
+seed-0108;maraton koşan yaşlı bir adamın hikayesini yaz;sanatsal;claude_seed;g027;informal
+seed-0109;Blokzincir teknolojisi nasıl çalışır?;genel;claude_seed;g028;
+seed-0110;Bitcoin şu an kaç dolar?;degisken;claude_seed;g028;
+seed-0111;Cüzdanımdaki kripto paraların toplam değerini hesapla.;kisisel;claude_seed;g028;
+seed-0112;Kripto para çılgınlığını hicveden kısa bir hikaye yaz.;sanatsal;claude_seed;g028;
+seed-0113;Sinemada montaj ne demektir?;genel;claude_seed;g029;
+seed-0114;Bu hafta vizyona giren filmler hangileri?;degisken;claude_seed;g029;
+seed-0115;Bana daha önce önerdiğin filmlerden izlemediklerimi hatırlat.;kisisel;claude_seed;g029;
+seed-0116;Kısa bir korku filmi senaryosu yaz.;sanatsal;claude_seed;g029;
+seed-0117;RAM ile depolama arasındaki fark nedir?;genel;claude_seed;g030;
+seed-0118;Şu an satışta olan en iyi ekran kartı hangisi?;degisken;claude_seed;g030;
+seed-0119;Bilgisayarımın özelliklerini sana yazmıştım, bu oyunu kaldırır mı?;kisisel;claude_seed;g030;
+seed-0120;Eski bir bilgisayarın emekliye ayrılışını anlatan dokunaklı bir öykü yaz.;sanatsal;claude_seed;g030;
+seed-0121;YKS sınavı hangi oturumlardan oluşur?;genel;claude_seed;g031;
+seed-0122;Bu yılki YKS sonuçları ne zaman açıklanacak?;degisken;claude_seed;g031;
+seed-0123;Netlerimi sana söyledim, hangi üniversiteye girebilirim?;kisisel;claude_seed;g031;
+seed-0124;sınav sabahı bir öğrencinin iç sesini anlatan bir şiir yaz;sanatsal;claude_seed;g031;informal
+seed-0125;Kira sözleşmesinde nelere dikkat edilmelidir?;genel;claude_seed;g032;
+seed-0126;Bu yıl kira artış sınırı yüzde kaç?;degisken;claude_seed;g032;
+seed-0127;Ev sahibim beni çıkarmak istiyor, sözleşmemdeki maddelere göre haklarım ne?;kisisel;claude_seed;g032;
+seed-0128;Bir mahkeme salonunda geçen dramatik bir sahne yaz.;sanatsal;claude_seed;g032;
+seed-0129;Makam müziği nedir?;genel;claude_seed;g033;
+seed-0130;Bu hafta en çok dinlenen şarkılar hangileri?;degisken;claude_seed;g033;
+seed-0131;Sevdiğim şarkıları sana söylemiştim, bunlara benzer bir çalma listesi yap.;kisisel;claude_seed;g033;
+seed-0132;ayrılık temalı özgün bir şarkı sözü yaz;sanatsal;claude_seed;g033;informal
+seed-0133;Kediler neden mırlar?;genel;claude_seed;g034;
+seed-0134;hayvan hakları yasasında son durum ne;degisken;claude_seed;g034;informal
+seed-0135;Kedim Pamuk iki gündür yemek yemiyor, ne yapmalıyım?;kisisel;claude_seed;g034;
+seed-0136;Bir sokak kedisinin gözünden bir günü anlatan öykü yaz.;sanatsal;claude_seed;g034;
+seed-0137;kapadokya'nın peri bacaları nasıl oluşmuştur;genel;claude_seed;g035;informal
+seed-0138;önümüzdeki hafta sonu antalya'ya uçak bileti fiyatları ne kadar;degisken;claude_seed;g035;informal
+seed-0139;Bütçemi ve tarihlerimi söyledim, bana uygun bir tatil planı yap.;kisisel;claude_seed;g035;
+seed-0140;Kapadokya'da balonla uçuşu anlatan bir şiir yaz.;sanatsal;claude_seed;g035;
+seed-0141;Periyodik tablodaki elementler nasıl sıralanır?;genel;claude_seed;g036;
+seed-0142;Rastgele bir element seç ve özelliklerini anlat.;degisken;claude_seed;g036;
+seed-0143;Laboratuvar raporumdaki ölçüm sonuçlarını yorumlar mısın?;kisisel;claude_seed;g036;
+seed-0144;hidrojen ve oksijenin aşk hikayesini anlatan bir şiir yaz;sanatsal;claude_seed;g036;informal
+seed-0145;İkili arama algoritması nasıl çalışır?;genel;claude_seed;g037;
+seed-0146;Şu an GitHub'da en popüler açık kaynak projeler hangileri?;degisken;claude_seed;g037;
+seed-0147;Projemin README dosyasını okudun, buna uygun bir mimari öner.;kisisel;claude_seed;g037;
+seed-0148;sıralama algoritmalarını karakter olarak kullanan komik bir hikaye yaz;sanatsal;claude_seed;g037;informal
+seed-0149;Merkez bankası faiz oranını neden değiştirir?;genel;claude_seed;g038;
+seed-0150;Merkez Bankası'nın son faiz kararı ne oldu?;degisken;claude_seed;g038;
+seed-0151;kredi kartı borcum 30 bin lira, aylık gelirimle bunu nasıl kapatırım;kisisel;claude_seed;g038;informal
+seed-0152;pazarda pazarlık eden bir teyzeyi anlatan mizahi bir öykü yaz;sanatsal;claude_seed;g038;informal
+seed-0153;Kaygı bozukluğunun belirtileri nelerdir?;genel;claude_seed;g039;
+seed-0154;Bu ay psikoloji alanında yayımlanan yeni araştırmalar neler?;degisken;claude_seed;g039;
+seed-0155;son günlerde kendimi çok yalnız hissediyorum, bana ne önerirsin;kisisel;claude_seed;g039;informal
+seed-0156;yalnızlık üzerine serbest bir şiir yaz;sanatsal;claude_seed;g039;informal
+seed-0157;dna'nın yapısı nasıldır;genel;claude_seed;g040;informal
+seed-0158;Bu yılki Nobel Tıp Ödülü kime verildi?;degisken;claude_seed;g040;
+seed-0159;Genetik test sonuçlarımı yükledim, risklerimi açıkla.;kisisel;claude_seed;g040;
+seed-0160;bir hücrenin içindeki hayatı anlatan bir bilim kurgu öyküsü yaz;sanatsal;claude_seed;g040;informal
+seed-0161;Gazetecilikte 5N1K kuralı nedir?;genel;claude_seed;g041;
+seed-0162;Son dakika haberleri neler?;degisken;claude_seed;g041;
+seed-0163;Bana dün hangi haberleri özetlemiştin?;kisisel;claude_seed;g041;
+seed-0164;geleceğin gazetesinden bir manşet ve kısa haber yaz;sanatsal;claude_seed;g041;informal
+seed-0165;Dünyanın en uzun nehri hangisidir?;genel;claude_seed;g042;
+seed-0166;Şu anda hangi ülkelerde orman yangını var?;degisken;claude_seed;g042;
+seed-0167;Memleketimi sana söylemiştim, oranın meşhur yemekleri neler?;kisisel;claude_seed;g042;
+seed-0168;Karadeniz yaylalarını anlatan bir türkü sözü yaz.;sanatsal;claude_seed;g042;
+seed-0169;JavaScript'te let ile var arasındaki fark nedir?;genel;claude_seed;g043;
+seed-0170;npm'de bu hafta en çok indirilen paketler hangileri?;degisken;claude_seed;g043;
+seed-0171;Az önce attığım hata mesajına göre projemde neyi düzeltmeliyim?;kisisel;claude_seed;g043;
+seed-0172;Bir yazılımcının gece yarısı hata avını anlatan kısa bir öykü yaz.;sanatsal;claude_seed;g043;
+seed-0173;Ramazan Bayramı'nın anlamı nedir?;genel;claude_seed;g044;
+seed-0174;Bu yıl Ramazan Bayramı hangi tarihe denk geliyor?;degisken;claude_seed;g044;
+seed-0175;Ailemle bayramda ne yapacağımızı konuşmuştuk, planı hatırlat.;kisisel;claude_seed;g044;
+seed-0176;Bayram sabahını anlatan nostaljik bir şiir yaz.;sanatsal;claude_seed;g044;
+seed-0177;Yetişkinler günde kaç saat uyumalıdır?;genel;claude_seed;g045;
+seed-0178;Bu gece ay tutulması saat kaçta başlayacak?;degisken;claude_seed;g045;
+seed-0179;Uyku takip verilerime bakarak uyku düzenimi yorumla.;kisisel;claude_seed;g045;
+seed-0180;Uykusuz bir gecenin iç sesini anlatan bir şiir yaz.;sanatsal;claude_seed;g045;
+seed-0181;güneş panelleri nasıl elektrik üretir;genel;claude_seed;g046;informal
+seed-0182;Bu ay elektriğe zam geldi mi?;degisken;claude_seed;g046;
+seed-0183;evimin çatı ölçülerini sana vermiştim, kaç panel sığar;kisisel;claude_seed;g046;informal
+seed-0184;Rüzgar türbinlerinin konuştuğu bir masal yaz.;sanatsal;claude_seed;g046;
+seed-0185;Satrançta rok nasıl yapılır?;genel;claude_seed;g047;
+seed-0186;bu hafta indirimdeki bilgisayar oyunları hangileri;degisken;claude_seed;g047;informal
+seed-0187;Az önce oynadığımız satranç oyununda hangi hamlede hata yaptım?;kisisel;claude_seed;g047;
+seed-0188;satranç taşlarının savaşını anlatan destansı bir öykü yaz;sanatsal;claude_seed;g047;informal
+seed-0189;Antibiyotikler virüslere karşı neden etkili değildir?;genel;claude_seed;g048;
+seed-0190;bu ilaç şu an eczanelerde stokta var mı;degisken;claude_seed;g048;informal
+seed-0191;Kullandığım ilaçların listesini verdim, birbirleriyle etkileşir mi?;kisisel;claude_seed;g048;
+seed-0192;bir hemşirenin nöbet gecesini anlatan bir öykü yaz;sanatsal;claude_seed;g048;informal
+seed-0193;kurtuluş savaşı hangi yıllar arasında yapıldı;genel;claude_seed;g049;informal
+seed-0194;Bugün hangi önemli günlerden biri?;degisken;claude_seed;g049;
+seed-0195;dedemin savaş anılarını sana anlatmıştım, onları bir metne dönüştür;kisisel;claude_seed;g049;informal
+seed-0196;kurtuluş savaşı'nda bir köylü kadının fedakarlığını anlatan bir şiir yaz;sanatsal;claude_seed;g049;informal
+seed-0197;Aruz ölçüsü nedir?;genel;claude_seed;g050;
+seed-0198;Bu yıl hangi şair edebiyat ödülü kazandı?;degisken;claude_seed;g050;
+seed-0199;Geçen hafta sana yazdığım şiiri daha iyi hale getir.;kisisel;claude_seed;g050;
+seed-0200;Aruz ölçüsüyle bir gazel yaz.;sanatsal;claude_seed;g050;
+seed-0201;IP adresi nedir?;genel;claude_seed;g051;
+seed-0202;Şu an internet kesintisi yaşanan bölgeler var mı?;degisken;claude_seed;g051;
+seed-0203;Benim IP adresim ne?;kisisel;claude_seed;g051;
+seed-0204;İnternetin olmadığı bir dünyayı anlatan distopik bir öykü yaz.;sanatsal;claude_seed;g051;
+seed-0205;'Müteşekkir' kelimesinin anlamı nedir?;genel;claude_seed;g052;
+seed-0206;Bana her seferinde farklı bir kelime öğret.;degisken;claude_seed;g052;
+seed-0207;Bugün öğrendiğim kelimeleri listelemiştim, onlarla bir test hazırla.;kisisel;claude_seed;g052;
+seed-0208;'Müteşekkir' kelimesini kullanarak bir dörtlük yaz.;sanatsal;claude_seed;g052;
+seed-0209;Ekmek mayası nasıl çalışır?;genel;claude_seed;g053;
+seed-0210;Ekmeğe bugün zam geldi mi?;degisken;claude_seed;g053;
+seed-0211;diyetisyenimin verdiği listeyi gönderdim, ona uygun bir ekmek tarifi öner;kisisel;claude_seed;g053;informal
+seed-0212;Fırından yeni çıkmış ekmeğin kokusunu anlatan bir şiir yaz.;sanatsal;claude_seed;g053;
+seed-0213;Mimar Sinan'ın en önemli eserleri nelerdir?;genel;claude_seed;g054;
+seed-0214;İstanbul'da şu an devam eden büyük inşaat projeleri hangileri?;degisken;claude_seed;g054;
+seed-0215;Evimin planını yükledim, salonu nasıl düzenleyebilirim?;kisisel;claude_seed;g054;
+seed-0216;Süleymaniye Camii'nin taşlarının konuştuğu bir öykü yaz.;sanatsal;claude_seed;g054;
+seed-0217;Newton'un hareket yasaları nelerdir?;genel;claude_seed;g055;
+seed-0218;CERN'de bu ay yapılan deneylerin sonuçları ne?;degisken;claude_seed;g055;
+seed-0219;Fizik hocamın verdiği proje konusunu sana söylemiştim, hatırlıyor musun?;kisisel;claude_seed;g055;
+seed-0220;Yerçekiminin bir gün ortadan kalktığını anlatan kısa bir hikaye yaz.;sanatsal;claude_seed;g055;
+seed-0221;Anayasa Mahkemesi'nin görevi nedir?;genel;claude_seed;g056;
+seed-0222;Meclis'te bu hafta hangi yasa teklifleri görüşülüyor?;degisken;claude_seed;g056;
+seed-0223;Davamla ilgili sana anlattıklarıma göre avukat tutmalı mıyım?;kisisel;claude_seed;g056;
+seed-0224;Adalet temalı bir şiir yaz.;sanatsal;claude_seed;g056;
+seed-0225;sosyal medya algoritmaları içerikleri nasıl sıralar;genel;claude_seed;g057;informal
+seed-0226;twitter'da şu an gündemde ne var;degisken;claude_seed;g057;informal
+seed-0227;Instagram kullanıcı adım sende, hesabımın takipçi analizini yap.;kisisel;claude_seed;g057;
+seed-0228;Sosyal medya bağımlılığını hicveden bir şiir yaz.;sanatsal;claude_seed;g057;
+seed-0229;SWOT analizi nedir?;genel;claude_seed;g058;
+seed-0230;Bu çeyrekte en çok büyüyen Türk şirketleri hangileri?;degisken;claude_seed;g058;
+seed-0231;Şirketimin geçen yılki satış verilerine göre SWOT analizi yap.;kisisel;claude_seed;g058;
+seed-0232;Bir girişimcinin iflastan sonra yeniden ayağa kalkışını anlatan bir öykü yaz.;sanatsal;claude_seed;g058;
+seed-0233;Ekim nöbeti neden uygulanır?;genel;claude_seed;g059;
+seed-0234;Bu sezon fındık fiyatları ne kadar?;degisken;claude_seed;g059;
+seed-0235;Tarlamın toprak analizi sonuçlarına göre ne ekmeliyim?;kisisel;claude_seed;g059;
+seed-0236;Hasat zamanını anlatan bir köy şiiri yaz.;sanatsal;claude_seed;g059;
+seed-0237;Elektrikli araçlar nasıl çalışır?;genel;claude_seed;g060;
+seed-0238;Şu an Marmaray seferleri normal mi?;degisken;claude_seed;g060;
+seed-0239;Arabamın plakasını söylemiştim, muayene tarihi ne zaman?;kisisel;claude_seed;g060;
+seed-0240;Son treni kaçıran bir adamın hikayesini yaz.;sanatsal;claude_seed;g060;
+seed-0241;İngilizcede present perfect tense ne zaman kullanılır?;genel;claude_seed;g061;
+seed-0242;Bana rastgele beş İngilizce kelime ver.;degisken;claude_seed;g061;
+seed-0243;ingilizce seviyemi önceki testte ölçmüştük, ona göre bir çalışma planı hazırla;kisisel;claude_seed;g061;informal
+seed-0244;ingilizce öğrenmeye çalışan birinin komik maceralarını anlatan bir öykü yaz;sanatsal;claude_seed;g061;informal
+seed-0245;Asal sayı nedir?;genel;claude_seed;g062;
+seed-0246;bir zar at ve sonucu söyle;degisken;claude_seed;g062;informal
+seed-0247;doğum tarihimi sana vermiştim, yaşımı hesapla;kisisel;claude_seed;g062;informal
+seed-0248;Sıfır sayısının yalnızlığını anlatan bir şiir yaz.;sanatsal;claude_seed;g062;
+seed-0249;artık yıl nedir ve neden vardır;genel;claude_seed;g063;informal
+seed-0250;Bugün ayın kaçı?;degisken;claude_seed;g063;
+seed-0251;Takvimimdeki yarınki randevularımı listele.;kisisel;claude_seed;g063;
+seed-0252;Takvim yapraklarının dile geldiği bir öykü yaz.;sanatsal;claude_seed;g063;
+seed-0253;varoluşçuluk nedir;genel;claude_seed;g064;informal
+seed-0254;Bu yılki felsefe olimpiyatı sonuçları açıklandı mı?;degisken;claude_seed;g064;
+seed-0255;Geçen konuşmamızda varoluşçuluk hakkında bana ne demiştin?;kisisel;claude_seed;g064;
+seed-0256;Sisifos efsanesini modern bir dille yeniden anlatan kısa bir öykü yaz.;sanatsal;claude_seed;g064;
+seed-0257;kara delik nedir;genel;claude_seed;g065;informal
+seed-0258;James Webb teleskobu en son ne keşfetti?;degisken;claude_seed;g065;
+seed-0259;Bana özel hazırladığın uzay okuma listesini tekrar gönder.;kisisel;claude_seed;g065;
+seed-0260;bir kara deliğe düşen geminin mürettebatını anlatan bir öykü yaz;sanatsal;claude_seed;g065;informal
+seed-0261;Eller neden en az 20 saniye yıkanmalıdır?;genel;claude_seed;g066;
+seed-0262;Şu an Türkiye'de bir salgın uyarısı var mı?;degisken;claude_seed;g066;
+seed-0263;oğlumun okulunda bit salgını varmış, ona nasıl önlem almalıyım;kisisel;claude_seed;g066;informal
+seed-0264;Sabunun mikroplara karşı savaşını anlatan bir çocuk masalı yaz.;sanatsal;claude_seed;g066;
+seed-0265;Makine öğrenmesinde overfitting nedir?;genel;claude_seed;g067;
+seed-0266;Hugging Face'te bu hafta en çok indirilen modeller hangileri?;degisken;claude_seed;g067;
+seed-0267;Eğittiğim modelin loss grafiğini yükledim, overfitting var mı?;kisisel;claude_seed;g067;
+seed-0268;Bir makine öğrenmesi modelinin ilk eğitim gününü anlatan eğlenceli bir hikaye yaz.;sanatsal;claude_seed;g067;
+seed-0269;Atatürk hangi yıl doğdu?;genel;claude_seed;g068;
+seed-0270;bu yıl 10 kasım anma törenleri nerede yapılacak;degisken;claude_seed;g068;informal
+seed-0271;atatürk hakkında yazdığım ödevi sana göndermiştim, onu kısalt;kisisel;claude_seed;g068;informal
+seed-0272;Atatürk'e ithaf edilmiş bir şiir yaz.;sanatsal;claude_seed;g068;
+seed-0273;Yüzde hesabı nasıl yapılır?;genel;claude_seed;g069;
+seed-0274;Bugünkü kurla 500 euro kaç TL eder?;degisken;claude_seed;g069;
+seed-0275;Aylık harcamalarımı sana listeledim, toplamını ve yüzdelerini çıkar.;kisisel;claude_seed;g069;
+seed-0276;hesap makinesinin gözünden bir öğrencinin sınav gecesini anlat;sanatsal;claude_seed;g069;informal
+seed-0277;Mevsimler neden oluşur?;genel;claude_seed;g070;
+seed-0278;bu yıl istanbul'a ilk kar ne zaman yağacak;degisken;claude_seed;g070;informal
+seed-0279;"Bahçemdeki domateslerin yaprakları sararıyor, fotoğrafını gönderdim; ne yapmalıyım?";kisisel;claude_seed;g070;
+seed-0280;ilkbaharın gelişini anlatan bir haiku dizisi yaz;sanatsal;claude_seed;g070;informal
+seed-0281;Güçlü bir şifre nasıl oluşturulur?;genel;claude_seed;g071;
+seed-0282;Bana rastgele güçlü bir şifre üret.;degisken;claude_seed;g071;
+seed-0283;E-posta hesabım hacklendi galiba, giriş kayıtlarımı kontrol eder misin?;kisisel;claude_seed;g071;
+seed-0284;Bir siber saldırıyı anlatan gerilim öyküsü yaz.;sanatsal;claude_seed;g071;
+seed-0285;Dilekçe nasıl yazılır?;genel;claude_seed;g072;
+seed-0286;e-devlet şu an çalışıyor mu;degisken;claude_seed;g072;informal
+seed-0287;Adımı ve TC kimlik numaramı kullanarak belediyeye bir dilekçe yaz.;kisisel;claude_seed;g072;
+seed-0288;Bir dilekçenin bürokraside kayboluşunu anlatan mizahi bir öykü yaz.;sanatsal;claude_seed;g072;
+seed-0289;Göç kavramı sosyolojide nasıl ele alınır?;genel;claude_seed;g073;
+seed-0290;TÜİK'in açıkladığı son nüfus verileri neler?;degisken;claude_seed;g073;
+seed-0291;Ailemin göç hikayesini sana anlatmıştım, onu bir yazıya dönüştür.;kisisel;claude_seed;g073;
+seed-0292;Gurbetteki bir işçinin annesine yazdığı mektubu kurgula.;sanatsal;claude_seed;g073;
+seed-0293;Bir dairenin alanı nasıl hesaplanır?;genel;claude_seed;g074;
+seed-0294;bana rastgele bir matematik problemi seç ve sor;degisken;claude_seed;g074;informal
+seed-0295;Kızımın matematik ödevinin fotoğrafını yükledim, çözümünü anlat.;kisisel;claude_seed;g074;
+seed-0296;pi sayısının sonsuzluğunu anlatan bir şiir yaz;sanatsal;claude_seed;g074;informal
+seed-0297;Geri dönüşüm neden önemlidir?;genel;claude_seed;g075;
+seed-0298;belediyenin bu haftaki çöp toplama saatleri neler;degisken;claude_seed;g075;informal
+seed-0299;Mahallemdeki geri dönüşüm kutusunun yerini sana söylemiştim, nerede?;kisisel;claude_seed;g075;
+seed-0300;Plastik bir şişenin okyanustaki yolculuğunu anlatan bir öykü yaz.;sanatsal;claude_seed;g075;

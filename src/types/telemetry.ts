@@ -12,9 +12,17 @@ export interface RequestTelemetry {
 
   latencyMs: number;
 
-  // Reserved for future optimization stages
+  // L1 Exact Match Cache telemetry
   cacheHit: boolean;
   cacheType: null | 'exact' | 'semantic';
+  cacheStatus?: 'HIT' | 'MISS' | 'BYPASS' | null;
+  bypassReason?: string | null;
+  questionCategory?: 'genel' | 'kisisel' | 'degisken' | 'sanatsal' | null;
+  sourceProvider?: string | null;
+  sourceModel?: string | null;
+  estimatedAvoidedCost?: number | null;
+  cachedSaved?: boolean;
+  mode?: 'baseline' | 'optimized';
 
   compressionUsed: boolean;
   compressionRatio: number | null;
@@ -25,7 +33,7 @@ export interface RequestTelemetry {
   routerPolicy: string | null;
   routerConfidence: number | null;
 
-  // Cost fields will be calculated by the cost engine later.
+  // Cost fields calculated by the cost engine
   inputCost: number | null;
   outputCost: number | null;
   totalCost: number | null;
@@ -40,6 +48,12 @@ export interface RequestMetrics {
   inputCost?: number | null;
   outputCost?: number | null;
   totalCost?: number | null;
+  estimatedAvoidedCost?: number | null;
+  cacheStatus?: 'HIT' | 'MISS' | 'BYPASS' | null;
+  bypassReason?: string | null;
+  questionCategory?: 'genel' | 'kisisel' | 'degisken' | 'sanatsal' | null;
+  sourceProvider?: string | null;
+  sourceModel?: string | null;
 }
 
 export interface ExperimentRecord {
@@ -80,6 +94,15 @@ export interface RequestAnalysisData {
   inputCost?: number | null;
   outputCost?: number | null;
   totalCost?: number | null;
+
+  // L1 Cache analysis data
+  cacheHit?: boolean;
+  cacheType?: null | 'exact' | 'semantic';
+  cacheStatus?: 'HIT' | 'MISS' | 'BYPASS' | null;
+  bypassReason?: string | null;
+  questionCategory?: 'genel' | 'kisisel' | 'degisken' | 'sanatsal' | null;
+  sourceProvider?: string | null;
+  sourceModel?: string | null;
+  estimatedAvoidedCost?: number | null;
+  mode?: 'baseline' | 'optimized';
 }
-
-

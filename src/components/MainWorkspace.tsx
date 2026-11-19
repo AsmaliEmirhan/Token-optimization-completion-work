@@ -10,7 +10,8 @@ import type { ExperimentRecord } from './MetricsPopover';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { RequestAnalysis } from './RequestAnalysis';
 import type { RequestAnalysisData } from '../types/telemetry';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check, Zap } from 'lucide-react';
+import { getSessionId, getUserClassifierConsent } from '../utils/session';
 
 interface ChatMessage {
   id: string;
@@ -73,6 +74,9 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
 
+  // Mode state: Baseline vs L1 Optimize
+  const [mode, setMode] = useState<'baseline' | 'optimized'>('optimized');
+
   // Metrics state
   const [experimentRecords, setExperimentRecords] = useState<ExperimentRecord[]>([]);
 
@@ -82,7 +86,9 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 
   // Fetch providers
   const fetchProviders = useCallback(() => {
-    fetch('/api/providers')
+    fetch('/api/providers', {
+      headers: { 'x-session-id': getSessionId() },
+    })
       .then(res => res.json())
       .then(data => {
         if (data.providers) {
@@ -184,11 +190,16 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
       try {
         const res = await fetch('/api/chat', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-session-id': getSessionId(),
+          },
           body: JSON.stringify({
             provider: selectedProvider,
             model: selectedModel,
-            message: content
+            message: content,
+            mode,
+            userConsent: getUserClassifierConsent(),
           })
         });
 
@@ -213,6 +224,15 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             inputCost: data.telemetry.inputCost !== undefined ? data.telemetry.inputCost : null,
             outputCost: data.telemetry.outputCost !== undefined ? data.telemetry.outputCost : null,
             totalCost: data.telemetry.totalCost !== undefined ? data.telemetry.totalCost : null,
+            cacheHit: data.telemetry.cacheHit,
+            cacheType: data.telemetry.cacheType,
+            cacheStatus: data.telemetry.cacheStatus,
+            bypassReason: data.telemetry.bypassReason ?? null,
+            questionCategory: data.telemetry.questionCategory,
+            sourceProvider: data.telemetry.sourceProvider,
+            sourceModel: data.telemetry.sourceModel,
+            estimatedAvoidedCost: data.telemetry.estimatedAvoidedCost,
+            mode: data.telemetry.mode || mode,
           };
         } else if (data.metrics) {
           requestAnalysis = {
@@ -226,23 +246,83 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
             inputCost: data.metrics.inputCost !== undefined ? data.metrics.inputCost : null,
             outputCost: data.metrics.outputCost !== undefined ? data.metrics.outputCost : null,
             totalCost: data.metrics.totalCost !== undefined ? data.metrics.totalCost : null,
+            cacheHit: data.metrics.cacheStatus === 'HIT',
+            cacheStatus: data.metrics.cacheStatus,
+            questionCategory: data.metrics.questionCategory,
+            sourceProvider: data.metrics.sourceProvider,
+            sourceModel: data.metrics.sourceModel,
+            estimatedAvoidedCost: data.metrics.estimatedAvoidedCost,
+            mode,
           };
         }
 
+        const assistantMessageId = `ast-${Date.now()}`;
         setMessages(prev => [...prev, {
-          id: `ast-${Date.now()}`,
+          id: assistantMessageId,
           role: 'assistant',
           content: assistantContent,
           createdAt: new Date(),
           requestAnalysis,
         }]);
 
+        // If optimized mode and category was still in-flight, dynamically fetch category when background completes
+        if (mode === 'optimized' && !requestAnalysis?.cacheHit && !requestAnalysis?.questionCategory) {
+          const pollCategory = async () => {
+            for (let attempt = 0; attempt < 4; attempt++) {
+              await new Promise(r => setTimeout(r, 1200));
+              try {
+                const catRes = await fetch(`/api/chat/category?prompt=${encodeURIComponent(content)}`);
+                if (catRes.ok) {
+                  const catData = await catRes.json();
+                  if (catData.category) {
+                    setMessages(prev => prev.map(m => {
+                      if (m.id === assistantMessageId && m.requestAnalysis && !m.requestAnalysis.questionCategory) {
+                        return {
+                          ...m,
+                          requestAnalysis: {
+                            ...m.requestAnalysis,
+                            questionCategory: catData.category,
+                          }
+                        };
+                      }
+                      return m;
+                    }));
+                    setExperimentRecords(prev => prev.map(rec => {
+                      if (data.telemetry?.requestId && rec.id === data.telemetry.requestId && !rec.metrics.questionCategory) {
+                        const updated: ExperimentRecord = {
+                          ...rec,
+                          metrics: {
+                            ...rec.metrics,
+                            questionCategory: catData.category as 'genel' | 'kisisel' | 'degisken' | 'sanatsal',
+                          },
+                          ...(rec.telemetry ? {
+                            telemetry: {
+                              ...rec.telemetry,
+                              questionCategory: catData.category as 'genel' | 'kisisel' | 'degisken' | 'sanatsal',
+                            }
+                          } : {})
+                        };
+                        return updated;
+                      }
+                      return rec;
+                    }));
+                    break;
+                  }
+                }
+              } catch {
+                // Ignore background polling errors
+              }
+            }
+          };
+          pollCategory();
+        }
+
         if (data.telemetry) {
           const telemetry = data.telemetry;
           const newRecord: ExperimentRecord = {
             id: telemetry.requestId,
             timestamp: telemetry.timestamp ?? Date.now(),
-            mode: 'baseline',
+            mode: telemetry.mode || mode,
             provider: telemetry.provider || data.provider || selectedProvider,
             model: telemetry.model || data.model || selectedModel,
             prompt: content,
@@ -257,19 +337,27 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
               inputCost: telemetry.inputCost !== undefined ? telemetry.inputCost : null,
               outputCost: telemetry.outputCost !== undefined ? telemetry.outputCost : null,
               totalCost: telemetry.totalCost !== undefined ? telemetry.totalCost : null,
+              estimatedAvoidedCost: telemetry.estimatedAvoidedCost ?? null,
+              cacheStatus: telemetry.cacheStatus ?? null,
+              bypassReason: telemetry.bypassReason ?? null,
+              questionCategory: telemetry.questionCategory ?? null,
+              sourceProvider: telemetry.sourceProvider ?? null,
+              sourceModel: telemetry.sourceModel ?? null,
             }
           };
           setExperimentRecords(prev => [...prev, newRecord]);
           
-          console.log('[Baseline Experiment]', {
+          console.log(`[${newRecord.mode.toUpperCase()} Experiment]`, {
             id: newRecord.id,
+            mode: newRecord.mode,
+            cacheStatus: newRecord.metrics.cacheStatus,
             model: newRecord.model,
             inputTokens: newRecord.metrics.inputTokens,
             outputTokens: newRecord.metrics.outputTokens,
-            thinkingTokens: newRecord.metrics.thinkingTokens,
             totalTokens: newRecord.metrics.totalTokens,
             latencyMs: newRecord.metrics.latencyMs,
-            totalCost: newRecord.metrics.totalCost
+            totalCost: newRecord.metrics.totalCost,
+            estimatedAvoidedCost: newRecord.metrics.estimatedAvoidedCost
           });
         }
 
@@ -288,7 +376,7 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 
     runChat();
     return true; // Tells ChatInput to clear the input
-  }, [viewState, selectedProvider, selectedModel]);
+  }, [viewState, selectedProvider, selectedModel, mode]);
 
   const configuredProviders = providers.filter(p => p.configured);
   const currentProviderObj = providers.find(p => p.id === selectedProvider);
@@ -410,13 +498,13 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
 
       {/* Floating Bottom Chat Input */}
       <div className="w-full flex flex-col items-center pb-5 md:pb-7 pt-2 shrink-0">
-        <div className="w-full max-w-[840px] px-4 flex justify-start mb-2 relative">
+        <div className="w-full max-w-[840px] px-4 flex items-center justify-between mb-2 relative">
           {/* Model Selector Dropdown */}
           <div className="relative">
             <button 
               type="button"
               onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#14171C] border border-[#E8E5DC] dark:border-white/[0.08] shadow-xs text-[#596E8A] dark:text-[#9299A6] hover:text-[#071A3D] dark:hover:text-[#F4F4F5] text-[12px] font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#14171C] border border-[#E8E5DC] dark:border-white/[0.08] shadow-xs text-[#596E8A] dark:text-[#9299A6] hover:text-[#071A3D] dark:hover:text-[#F4F4F5] text-[12px] font-medium transition-colors cursor-pointer"
             >
               {currentProviderObj ? `${currentProviderObj.name} · ${currentModelObj?.name || 'Seçiniz'}` : 'Sağlayıcı Seçin'}
               <ChevronDown size={14} />
@@ -444,7 +532,7 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
                               setSelectedModel(model.id);
                               setIsModelSelectorOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[12px] text-left transition-colors ${selectedProvider === provider.id && selectedModel === model.id ? 'bg-[#EEF5FF] dark:bg-[#191D23] text-[#1677FF]' : 'text-[#071A3D] dark:text-[#F4F4F5] hover:bg-[#FAF9F5] dark:hover:bg-[#191D23]'}`}
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[12px] text-left transition-colors cursor-pointer ${selectedProvider === provider.id && selectedModel === model.id ? 'bg-[#EEF5FF] dark:bg-[#191D23] text-[#1677FF]' : 'text-[#071A3D] dark:text-[#F4F4F5] hover:bg-[#FAF9F5] dark:hover:bg-[#191D23]'}`}
                           >
                             <span>{model.name}</span>
                             {selectedProvider === provider.id && selectedModel === model.id && <Check size={14} className="text-[#1677FF]" />}
@@ -456,6 +544,35 @@ export const MainWorkspace: React.FC<MainWorkspaceProps> = ({
                 )}
               </div>
             )}
+          </div>
+
+          {/* Mode Switcher: Baseline vs L1 Optimize */}
+          <div className="flex items-center p-0.5 rounded-full bg-white dark:bg-[#14171C] border border-[#E8E5DC] dark:border-white/[0.08] shadow-xs text-[11.5px] font-medium">
+            <button
+              type="button"
+              onClick={() => setMode('baseline')}
+              className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                mode === 'baseline'
+                  ? 'bg-[#071A3D] text-white dark:bg-white dark:text-[#071A3D] font-semibold shadow-xs'
+                  : 'text-[#596E8A] dark:text-[#9299A6] hover:text-[#071A3D] dark:hover:text-[#F4F4F5]'
+              }`}
+              title="Baseline Modu: Önbellek kullanılmaz, doğrudan seçilen modele istek atılır."
+            >
+              Baseline
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('optimized')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full transition-all cursor-pointer ${
+                mode === 'optimized'
+                  ? 'bg-[#1677FF] text-white font-semibold shadow-xs'
+                  : 'text-[#596E8A] dark:text-[#9299A6] hover:text-[#071A3D] dark:hover:text-[#F4F4F5]'
+              }`}
+              title="L1 Optimize Modu: Sağlayıcı bağımsız MySQL Exact Cache ve BERTurk soru sınıflandırması devrededir."
+            >
+              <Zap size={11} className={mode === 'optimized' ? 'text-amber-300' : 'text-[#596E8A] dark:text-[#9299A6]'} />
+              <span>L1 Optimize</span>
+            </button>
           </div>
         </div>
 

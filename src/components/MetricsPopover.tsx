@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ChartNoAxesColumnIncreasing, Clock, Zap, Info, Layers, DollarSign } from 'lucide-react';
+import { ChartNoAxesColumnIncreasing, Clock, Zap, Info, DollarSign, Database } from 'lucide-react';
 import type { ExperimentRecord, RequestMetrics, RequestTelemetry } from '../types/telemetry';
 import { 
   filterRecordsByTimeRange, 
   getTimeRangeLabel, 
   formatCost,
   calculateCostAggregate,
+  calculateL1OptimizationStats,
   type MetricsTimeRange 
 } from '../utils/metrics';
 
@@ -102,6 +103,10 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
     return calculateCostAggregate(filteredRecords);
   }, [filteredRecords]);
 
+  const l1Stats = useMemo(() => {
+    return calculateL1OptimizationStats(filteredRecords);
+  }, [filteredRecords]);
+
   return (
     <div 
       id="metrics-popover"
@@ -189,7 +194,7 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
                     <div className="group relative inline-flex items-center">
                       <Info size={11} className="text-[#596E8A] dark:text-[#9299A6] cursor-help" />
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-52 p-2 bg-[#071A3D] dark:bg-white text-white dark:text-[#071A3D] text-[10px] leading-relaxed rounded-lg shadow-lg text-center z-50 pointer-events-none">
-                        Toplam token; girdi, çıktı ve model tarafından kullanılan düşünme tokenları gibi sağlayıcının raporladığı ek tokenları içerebilir.
+                        Toplam token; girdi, çıktı ve model düşünme tokenlarını içerir. Sınıflandırıcı tokenları dahil edilmez.
                       </div>
                     </div>
                   </div>
@@ -229,7 +234,7 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
                 <div className="flex items-center gap-1.5">
                   <DollarSign size={13} className="text-[#596E8A] dark:text-[#9299A6]" />
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#596E8A] dark:text-[#9299A6]">
-                    MALİYET
+                    SOHBET API MALİYETİ
                   </span>
                 </div>
                 {costAggregate.hasPartialCoverage && (
@@ -264,40 +269,65 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
               </div>
             </div>
 
-            {/* Optimizasyon Analizi */}
+            {/* L1 Optimizasyon Analizi */}
             <div className="border-t border-[#EAE7DC] dark:border-white/[0.08] pt-3.5">
-              <div className="flex items-center gap-1.5 mb-2.5">
-                <Layers size={13} className="text-[#596E8A] dark:text-[#9299A6]" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#596E8A] dark:text-[#9299A6]">
-                  OPTİMİZASYON ANALİZİ
-                </span>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center gap-1.5">
+                  <Database size={13} className="text-[#1677FF]" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#596E8A] dark:text-[#9299A6]">
+                    L1 EXACT CACHE ANALİZİ
+                  </span>
+                </div>
+                {l1Stats.hitCount > 0 && (
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    %{l1Stats.hitRate} İsabet
+                  </span>
+                )}
               </div>
 
-              <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#14171C] border border-[#EAE7DC] dark:border-white/[0.04] space-y-2">
-                <div className="grid grid-cols-2 gap-2 text-[11.5px]">
-                  <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Kurtarılan Token</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
+              <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#14171C] border border-[#EAE7DC] dark:border-white/[0.04] space-y-2.5">
+                {/* Hit/Miss Row */}
+                <div className="grid grid-cols-3 gap-2 text-[11px]">
+                  <div className="p-2 rounded-lg bg-white dark:bg-[#181C23] border border-[#EAE7DC] dark:border-white/[0.04]">
+                    <span className="text-[9.5px] text-[#596E8A] dark:text-[#9299A6] block">Önbellek İsabet</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                      {l1Stats.hitCount}
+                    </span>
                   </div>
-                  <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Token Tasarrufu</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
+                  <div className="p-2 rounded-lg bg-white dark:bg-[#181C23] border border-[#EAE7DC] dark:border-white/[0.04]">
+                    <span className="text-[9.5px] text-[#596E8A] dark:text-[#9299A6] block">Önbellek Iska</span>
+                    <span className="font-bold text-[#071A3D] dark:text-[#F4F4F5] tabular-nums">
+                      {l1Stats.missCount}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-white dark:bg-[#181C23] border border-[#EAE7DC] dark:border-white/[0.04]">
+                    <span className="text-[9.5px] text-[#596E8A] dark:text-[#9299A6] block">İsabet Oranı</span>
+                    <span className="font-bold text-[#1677FF] dark:text-[#40BFFF] tabular-nums">
+                      %{l1Stats.hitRate}
+                    </span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-[11.5px] pt-1.5 border-t border-[#EAE7DC]/60 dark:border-white/[0.04]">
-                  <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Kurtarılan Maliyet</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
+                {/* Savings Row */}
+                <div className="p-2 rounded-lg bg-white dark:bg-[#181C23] border border-[#EAE7DC] dark:border-white/[0.04] space-y-1.5">
+                  <div className="flex items-center justify-between text-[11.5px]">
+                    <span className="text-[#596E8A] dark:text-[#9299A6]">Tahmini Önlenen API Maliyeti</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                      {l1Stats.hasAvoidedCost ? `+${formatCost(l1Stats.totalAvoidedCost)}` : '—'}
+                    </span>
                   </div>
-                  <div>
-                    <span className="text-[10px] text-[#596E8A] dark:text-[#9299A6] block">Maliyet Tasarrufu</span>
-                    <span className="font-semibold text-[#071A3D] dark:text-[#F4F4F5]">—</span>
-                  </div>
+                  {l1Stats.hasAvoidedCost && costAggregate.totalKnownCost !== null && (
+                    <div className="flex items-center justify-between text-[10.5px] text-[#596E8A] dark:text-[#9299A6] pt-1 border-t border-[#EAE7DC]/60 dark:border-white/[0.04]">
+                      <span>Sohbet API Tasarruf Oranı</span>
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                        %{((l1Stats.totalAvoidedCost / (costAggregate.totalKnownCost + l1Stats.totalAvoidedCost)) * 100).toFixed(1)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
-                <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6] pt-1 italic">
-                  Optimizasyon verileri kullanılabilir olduğunda burada gösterilecek.
+                <p className="text-[10px] text-[#596E8A] dark:text-[#9299A6] italic leading-tight">
+                  Tasarruf, yalnızca kullanıcının önlenen sohbet API çağrılarına göre hesaplanır; TokenAI sınıflandırıcı maliyetleri hariçtir.
                 </p>
               </div>
             </div>
@@ -314,4 +344,3 @@ export const MetricsPopover: React.FC<MetricsPopoverProps> = ({
     </div>
   );
 };
-

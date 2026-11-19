@@ -1,0 +1,3 @@
+# TokenAI yerel sınıflandırıcı servisi — sadece CPU yeterlidir.
+torch>=2.2
+transformers>=4.40

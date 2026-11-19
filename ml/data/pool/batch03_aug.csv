@@ -1,0 +1,1017 @@
+﻿id;text;label;source;group_id;notes
+aug-0001;Türkiye'nin bşakenti neresidir?;genel;claude_aug;g001;varyant:seed-0001
+aug-0002;Bugün Ankarada hava kaç derece?;degisken;claude_aug;g001;varyant:seed-0002
+aug-0003;yaşadğım şehrin hangi bölgede olduğunu sana söylemiştim, hatırlıyor musun;kisisel;claude_aug;g001;varyant:seed-0003
+aug-0004;fotosentez nasil gerceklesir?;genel;claude_aug;g002;varyant:seed-0005
+aug-0005;dun sana anlattigim biyoloji odevimdeki fotosentez kismini duzelt.;kisisel;claude_aug;g002;varyant:seed-0007
+aug-0006;Python'da fonksiyon nasil tanimlanir;genel;claude_aug;g003;varyant:seed-0009
+aug-0007;Python'un su anki en son kararli surumu hangisi;degisken;claude_aug;g003;varyant:seed-0010
+aug-0008;Python öğrenen bir öğrencinin hikayesii anlatan kısa bir öykü yaz;sanatsal;claude_aug;g003;varyant:seed-0012
+aug-0009;pisagor teoremini açıkla.;genel;claude_aug;g004;varyant:seed-0013
+aug-0010;Gram alın şu an kaç lira;degisken;claude_aug;g005;varyant:seed-0018
+aug-0011;Altın rengi bir sonbahar sabahını anlatan bir şiir yaz;sanatsal;claude_aug;g005;varyant:seed-0020
+aug-0012;yağmur naısl oluşur?;genel;claude_aug;g006;varyant:seed-0021
+aug-0013;Yarın İstanbul'da yağmur yağacak mı ?;degisken;claude_aug;g006;varyant:seed-0022
+aug-0014;Dostluk kavramini filozoflar nasil tanimlamistir;genel;claude_aug;g007;varyant:seed-0025
+aug-0015;Bugün Dünya Dostluk Günümü ?;degisken;claude_aug;g007;varyant:seed-0026
+aug-0016;en yakın arkadaşım elif'le aram bozuldu, ona ne demeliyim;kisisel;claude_aug;g007;varyant:seed-0027
+aug-0017;Enflasyon nedir ve nasıl ölçülür;genel;claude_aug;g009;varyant:seed-0033
+aug-0018;Maaşım 45 bin lira, kiramı ödedikten sonra nasıl bütçe yapmalıyım;kisisel;claude_aug;g009;varyant:seed-0035
+aug-0019;Futbolda ofsayt kurali nedir ?;genel;claude_aug;g010;varyant:seed-0037
+aug-0020;Dun aksamki Galtaasaray maci kac kac bitti?;degisken;claude_aug;g010;varyant:seed-0038
+aug-0021;Buügn tarihte ne oldu?;degisken;claude_aug;g011;varyant:seed-0042
+aug-0022;Tarih sınavımda hangi konulardan düşük aldığımı söylemiştim, ona göre çalışma planı yap;kisisel;claude_aug;g011;varyant:seed-0043
+aug-0023;İstanbul'un fethini anlatan destansı bir şiir yaz;sanatsal;claude_aug;g011;varyant:seed-0044
+aug-0024;Şu an saat kaç;degisken;claude_aug;g012;varyant:seed-0046
+aug-0025;Oturduğum binanın depreme dayanıklı olup oladığını nasıl anlarım, adresim sende var.;kisisel;claude_aug;g013;varyant:seed-0051
+aug-0026;Grip ile soğuk algınlığı arasındaki fark nedir ?;genel;claude_aug;g015;varyant:seed-0057
+aug-0027;tahlil sonuçlarımı yükledim, kolesterol değerlerim normalmi;kisisel;claude_aug;g015;varyant:seed-0059
+aug-0028;Önceki mesajlarımda sana ne sormuştum;kisisel;claude_aug;g016;varyant:seed-0063
+aug-0029;bir yapay zekanın ilk kez rüya gördüğünü anatan bir öykü yaz;sanatsal;claude_aug;g016;varyant:seed-0064
+aug-0030;Bana her seferinde farklı bir matmatik sorusu sor;degisken;claude_aug;g018;varyant:seed-0070
+aug-0031;Dünkü ödevimde yanlış yaptığım integral sorusunu tekrar açıkla;kisisel;claude_aug;g018;varyant:seed-0071
+aug-0032;Burcmuu sana söylemiştim, bu ay benim için neler olacak;kisisel;claude_aug;g019;varyant:seed-0075
+aug-0033;son anketlere göre hangi pati önde;degisken;claude_aug;g020;varyant:seed-0078
+aug-0034;Demokrasi temalı bir şiir yaz;sanatsal;claude_aug;g020;varyant:seed-0080
+aug-0035;Suc ve Ceza romaninin konsu nedir ?;genel;claude_aug;g021;varyant:seed-0081
+aug-0036;Okuuğum kitapları listelemiştim, bunlara benzer yeni kitap öner;kisisel;claude_aug;g021;varyant:seed-0083
+aug-0037;şu anda en çok aranan yazılım iş ilanları hangileri ?;degisken;claude_aug;g022;varyant:seed-0086
+aug-0038;Yukeldigim CV'mi incele ve eksiklerini soyle.;kisisel;claude_aug;g022;varyant:seed-0087
+aug-0039;ıs gorusmesine giden genc bir muhendisin heyecanini anlatan bir oyku yaz.;sanatsal;claude_aug;g022;varyant:seed-0088
+aug-0040;Su an Bogaz Koprusu'nde trafik var mi?;degisken;claude_aug;g023;varyant:seed-0090
+aug-0041;sql'de joın turleri nelerdir;genel;claude_aug;g024;varyant:seed-0093
+aug-0042;mysql'in son sürümnde hangi yenilikler geldi?;degisken;claude_aug;g024;varyant:seed-0094
+aug-0043;Sirketimizin veritabani semasini sana gondermistim, ona gore sorgu yaz.;kisisel;claude_aug;g024;varyant:seed-0095
+aug-0044;Tdk sözlüğüne bu yıl eklenen yeni kelimeler neler;degisken;claude_aug;g026;varyant:seed-0102
+aug-0045;Türkçenin güzelliğini anlatan bir şiir yaz;sanatsal;claude_aug;g026;varyant:seed-0104
+aug-0046;Düzenli egzerszin faydaları nelerdir;genel;claude_aug;g027;varyant:seed-0105
+aug-0047;maraton koşan yaşlı bir admaın hikayesini yaz;sanatsal;claude_aug;g027;varyant:seed-0108
+aug-0048;Bitoin şu an kaç dolar ?;degisken;claude_aug;g028;varyant:seed-0110
+aug-0049;kripto para çılgınlığını hicveden kısa bir hikaye yaz.;sanatsal;claude_aug;g028;varyant:seed-0112
+aug-0050;sinemada montaj ne demektir;genel;claude_aug;g029;varyant:seed-0113
+aug-0051;ram ile depolama arasindaki fark nedir?;genel;claude_aug;g030;varyant:seed-0117
+aug-0052;Bilgisayarımın özelliklerini sana yazmıştım, bu oynu kaldırır mı?;kisisel;claude_aug;g030;varyant:seed-0119
+aug-0053;Netlerimi sana söyledim, hangi üniversiteye girebilirim ?;kisisel;claude_aug;g031;varyant:seed-0123
+aug-0054;Kira sözleşmesinde nelere dikkat edilmelidir;genel;claude_aug;g032;varyant:seed-0125
+aug-0055;Ev sahibim beni çıkarmak istiyor, sözleşmemdeki maddelere göre haklarım ne;kisisel;claude_aug;g032;varyant:seed-0127
+aug-0056;Bu hafta en cok dinlenen sarkilar hangileri;degisken;claude_aug;g033;varyant:seed-0130
+aug-0057;Sevdiğim şarkıları sana söylemiştim, bunlara benzer bir çalma listesi yap;kisisel;claude_aug;g033;varyant:seed-0131
+aug-0058;Ayrlık temalı özgün bir şarkı sözü yaz;sanatsal;claude_aug;g033;varyant:seed-0132
+aug-0059;Kediler neden mırlar;genel;claude_aug;g034;varyant:seed-0133
+aug-0060;Kedim Pamuk iki gundur yemek yemiyor, ne yapmaliyim?;kisisel;claude_aug;g034;varyant:seed-0135
+aug-0061;kapadokyanın peri bacaları nasıl oluşmuştur;genel;claude_aug;g035;varyant:seed-0137
+aug-0062;önüüzdeki hafta sonu antalya'ya uçak bileti fiyatları ne kadar;degisken;claude_aug;g035;varyant:seed-0138
+aug-0063;Rastgele bir element sec ve ozelliklerini anlat;degisken;claude_aug;g036;varyant:seed-0142
+aug-0064;Hidrojen ve oksijenin aşk hikayesini anlatan bir şiir yaz;sanatsal;claude_aug;g036;varyant:seed-0144
+aug-0065;Şu an GitHub'da en popüler açık kaynak projeler hangileri;degisken;claude_aug;g037;varyant:seed-0146
+aug-0066;projemin readme dosyasını okudun, buna uygun bir mimari öner.;kisisel;claude_aug;g037;varyant:seed-0147
+aug-0067;Siralama algoritmalarini karakter olarak kullanan komik bir hikaye yaz;sanatsal;claude_aug;g037;varyant:seed-0148
+aug-0068;Merkez bankası faiz oranını neden değiştirir;genel;claude_aug;g038;varyant:seed-0149
+aug-0069;Merkez Bankası'nın son faiz kararı ne oldu ?;degisken;claude_aug;g038;varyant:seed-0150
+aug-0070;krdi kartı borcum 30 bin lira, aylık gelirimle bunu nasıl kapatırım;kisisel;claude_aug;g038;varyant:seed-0151
+aug-0071;Pazarda pazarlık eden bir teyzyi anlatan mizahi bir öykü yaz;sanatsal;claude_aug;g038;varyant:seed-0152
+aug-0072;son gunlered kendimi cok yalniz hissediyorum, bana ne onerirsin;kisisel;claude_aug;g039;varyant:seed-0155
+aug-0073;genetik test sonuçlarımı yükledim, risklerimi açıkla.;kisisel;claude_aug;g040;varyant:seed-0159
+aug-0074;Bir hücrenin içindeki hayatı anlatan bir bilim kurgu öyküsü yaz;sanatsal;claude_aug;g040;varyant:seed-0160
+aug-0075;Geleceğin gazetesinden bir manşet ve kısa haber yaz;sanatsal;claude_aug;g041;varyant:seed-0164
+aug-0076;Dunyanin en uzun nehri hangisidir?;genel;claude_aug;g042;varyant:seed-0165
+aug-0077;Şu anda hagni ülkelerde orman yangını var?;degisken;claude_aug;g042;varyant:seed-0166
+aug-0078;Memleketimi sana söylemiştim, oranın meşhur yemekleri neler ?;kisisel;claude_aug;g042;varyant:seed-0167
+aug-0079;karadeniz yaylalarını anlatan bir türkü sözü yaz.;sanatsal;claude_aug;g042;varyant:seed-0168
+aug-0080;Bir yazilimcinin gece yarisi hata avini anlatan kisa bir oyku yaz;sanatsal;claude_aug;g043;varyant:seed-0172
+aug-0081;Ramazan Bayrami'nin anlami nedir?;genel;claude_aug;g044;varyant:seed-0173
+aug-0082;bu gece ay tutulması saat kaçta başlayacak?;degisken;claude_aug;g045;varyant:seed-0178
+aug-0083;Uykusuz bir gecenin iç sesini anlatan bir şiir yaz;sanatsal;claude_aug;g045;varyant:seed-0180
+aug-0084;Evimin çatı ölçülerini sana vermiştim, kaç panel sığar;kisisel;claude_aug;g046;varyant:seed-0183
+aug-0085;rüzgar türbinlerinin konuştuğu bir masal yaz.;sanatsal;claude_aug;g046;varyant:seed-0184
+aug-0086;antibiyotikler virüslre karşı neden etkili değildir?;genel;claude_aug;g048;varyant:seed-0189
+aug-0087;Kullandığım ilaçların listesini verdim, birbirlerile etkileşir mi?;kisisel;claude_aug;g048;varyant:seed-0191
+aug-0088;dedemin savas anilarini sana anlatmistim, onlari bir metne donustur;kisisel;claude_aug;g049;varyant:seed-0195
+aug-0089;Aruz olucsu nedir?;genel;claude_aug;g050;varyant:seed-0197
+aug-0090;aruz ölçüsüyle bir gazel yaz.;sanatsal;claude_aug;g050;varyant:seed-0200
+aug-0091;IP adresi nedir;genel;claude_aug;g051;varyant:seed-0201
+aug-0092;Benim IP adresim ne ?;kisisel;claude_aug;g051;varyant:seed-0203
+aug-0093;İnternetin olmadığı bir dünayı anlatan distopik bir öykü yaz.;sanatsal;claude_aug;g051;varyant:seed-0204
+aug-0094;'müteşekkir' keimesinin anlamı nedir;genel;claude_aug;g052;varyant:seed-0205
+aug-0095;Müteşekkir kelimesini kullanarak bir dörtlük yaz.;sanatsal;claude_aug;g052;varyant:seed-0208
+aug-0096;ekmek mayası nasıl çalışır?;genel;claude_aug;g053;varyant:seed-0209
+aug-0097;Ekmeğe bugün zam geldimi?;degisken;claude_aug;g053;varyant:seed-0210
+aug-0098;diyetisyenimin verdiği listeyi gönderdim, ona uygun bir emek tarifi öner;kisisel;claude_aug;g053;varyant:seed-0211
+aug-0099;Fırından yeni çıkmış ekmeğin kokusunu anlatan bir şiir yaz;sanatsal;claude_aug;g053;varyant:seed-0212
+aug-0100;Newtonun hareket yasaalrı nelerdir?;genel;claude_aug;g055;varyant:seed-0217
+aug-0101;Yerçekiminin bir gün ortadan kalktığını anlatn kısa bir hikaye yaz.;sanatsal;claude_aug;g055;varyant:seed-0220
+aug-0102;anayasa mahkemesi'nin görevi nedir;genel;claude_aug;g056;varyant:seed-0221
+aug-0103;Meclis'te bu hafta hangi yasa teklifleri göürşülüyor;degisken;claude_aug;g056;varyant:seed-0222
+aug-0104;Davamla ilgili sana anlattiklarima gore avukat tutmali miyim?;kisisel;claude_aug;g056;varyant:seed-0223
+aug-0105;Twitter'da su an gundemde ne var;degisken;claude_aug;g057;varyant:seed-0226
+aug-0106;SWOT analii nedir ?;genel;claude_aug;g058;varyant:seed-0229
+aug-0107;bir girişimcinin iflastan sonra yeniden ayağa kalkışını anlatan bir öykü yaz.;sanatsal;claude_aug;g058;varyant:seed-0232
+aug-0108;tarlamın toprka analizi sonuçlarına göre ne ekmeliyim ?;kisisel;claude_aug;g059;varyant:seed-0235
+aug-0109;hasat zamanını anlatn bir köy şiiri yaz.;sanatsal;claude_aug;g059;varyant:seed-0236
+aug-0110;Su an Marmaray sfeerleri normal mi?;degisken;claude_aug;g060;varyant:seed-0238
+aug-0111;Son treni kaçıran bir adamın hikayesini yaz;sanatsal;claude_aug;g060;varyant:seed-0240
+aug-0112;bana rastgele beş ingilizce kelime ver.;degisken;claude_aug;g061;varyant:seed-0242
+aug-0113;ıngilizce seviyemi önceki testte ölçmüştük, ona göre bir çalışma planı hazırla;kisisel;claude_aug;g061;varyant:seed-0243
+aug-0114;Bir zar at ve sonucu söle;degisken;claude_aug;g062;varyant:seed-0246
+aug-0115;dogum tarihimi sana vermistim, yasimi hesapla;kisisel;claude_aug;g062;varyant:seed-0247
+aug-0116;Sifir sayisinin yalnizligini anlatan bir siir yaz;sanatsal;claude_aug;g062;varyant:seed-0248
+aug-0117;artk yıl nedir ve neden vardır;genel;claude_aug;g063;varyant:seed-0249
+aug-0118;Bguün ayın kaçı ?;degisken;claude_aug;g063;varyant:seed-0250
+aug-0119;takvimimdeki yarınki randveularımı listele;kisisel;claude_aug;g063;varyant:seed-0251
+aug-0120;varolusculuk nedir;genel;claude_aug;g064;varyant:seed-0253
+aug-0121;Bu yilki felsefe olimpiyati sonuclari aciklandi mi ?;degisken;claude_aug;g064;varyant:seed-0254
+aug-0122;geçen konuşmamızda varoluşçuluk hakkında bana ne demiştin?;kisisel;claude_aug;g064;varyant:seed-0255
+aug-0123;Kara delik neir;genel;claude_aug;g065;varyant:seed-0257
+aug-0124;Bana ozel hazirladigin uzay okuma listesini tekrar gonder.;kisisel;claude_aug;g065;varyant:seed-0259
+aug-0125;Bir kara deliğe düşen geminin mürettebatını anlatan bir öykü yaz;sanatsal;claude_aug;g065;varyant:seed-0260
+aug-0126;sabunun mikroplara karşı savaşını anlatan bir çocuk masalı yaz.;sanatsal;claude_aug;g066;varyant:seed-0264
+aug-0127;eğittiğim modelin loss grafiğini yükledim, overfitting var mı;kisisel;claude_aug;g067;varyant:seed-0267
+aug-0128;Atatürk hangi yıl doğdu;genel;claude_aug;g068;varyant:seed-0269
+aug-0129;hesap makinesinin gozunden bir ogrencinin sinav gecesini anlat;sanatsal;claude_aug;g069;varyant:seed-0276
+aug-0130;Bu yıl istanbula ilk kar ne zaman yağacak;degisken;claude_aug;g070;varyant:seed-0278
+aug-0131;"Bahçemdeki domateslerin yaprakları sararıyor, fotoğrafını gönderdim; ne yapmalıyım";kisisel;claude_aug;g070;varyant:seed-0279
+aug-0132;Ilkbaharin gelisini anlatan bir haiku dizisi yaz;sanatsal;claude_aug;g070;varyant:seed-0280
+aug-0133;E-posta hesabım hacklendi galiba, giriş kayıltarımı kontrol eder misin?;kisisel;claude_aug;g071;varyant:seed-0283
+aug-0134;dilekçe nasıl yazılır?;genel;claude_aug;g072;varyant:seed-0285
+aug-0135;E-devlet su an calisiyor mu;degisken;claude_aug;g072;varyant:seed-0286
+aug-0136;Adımı ve TC kimlik numaramı kullanarak belediyeye bir dilekçe yaz;kisisel;claude_aug;g072;varyant:seed-0287
+aug-0137;tüik'in açıkladığı son nüfus verileri neler ?;degisken;claude_aug;g073;varyant:seed-0290
+aug-0138;ailemin goc hikayesini sana anlatmistim, onu bir yaziya donustur.;kisisel;claude_aug;g073;varyant:seed-0291
+aug-0139;Geri dönüşüm neden önemlidir;genel;claude_aug;g075;varyant:seed-0297
+aug-0140;belediyenin bu haftaki çöp toplama saatleri nleer;degisken;claude_aug;g075;varyant:seed-0298
+aug-0141;Mahallemdeki geri dönüşüm kutuusnun yerini sana söylemiştim, nerede?;kisisel;claude_aug;g075;varyant:seed-0299
+aug-0142;ozon tabkaası nedir;genel;claude_aug;auto-p1-0002;varyant:p1-0002
+aug-0143;su kaç dereecde kaynar?;genel;claude_aug;auto-p1-0003;varyant:p1-0003
+aug-0144;suyun kaldırma kuvveti nasıl hesaplanır ?;genel;claude_aug;auto-p1-0004;varyant:p1-0004
+aug-0145;arşimet prensibi nedri;genel;claude_aug;auto-p1-0005;varyant:p1-0005
+aug-0146;Ohm kanunu nedir;genel;claude_aug;auto-p1-0007;varyant:p1-0007
+aug-0147;Işık hızı saniyede kaç kilometredir;genel;claude_aug;auto-p1-0010;varyant:p1-0010
+aug-0148;gokkusagi nasil olusur?;genel;claude_aug;auto-p1-0012;varyant:p1-0012
+aug-0149;Gelgit olayi neden olur?;genel;claude_aug;auto-p1-0014;varyant:p1-0014
+aug-0150;atmosferin katmanları nelerdir?;genel;claude_aug;auto-p1-0018;varyant:p1-0018
+aug-0151;Kar taneleri neden altıgen şeklindedir;genel;claude_aug;auto-p1-0020;varyant:p1-0020
+aug-0152;hucre zarinin gorevi nedir?;genel;claude_aug;auto-p1-0021;varyant:p1-0021
+aug-0153;0 Rh negatif neden genel verici sayilir?;genel;claude_aug;auto-p1-0025;varyant:p1-0025
+aug-0154;Bağışıklık sistemi naıl çalışır?;genel;claude_aug;auto-p1-0028;varyant:p1-0028
+aug-0155;Virüs ile bakteri arasındaki fark nedir;genel;claude_aug;auto-p1-0030;varyant:p1-0030
+aug-0156;Migren ile noral baş ağrısı nasıl ayırt edilir?;genel;claude_aug;auto-p1-0034;varyant:p1-0034
+aug-0157;Uykusuzluğun vücuda etkileri nelerdir;genel;claude_aug;auto-p1-0035;varyant:p1-0035
+aug-0158;diyabet tip 1 ve tip 2 arasındaki fark nedir?;genel;claude_aug;auto-p1-0036;varyant:p1-0036
+aug-0159;Gluten nedir hanig yiyeceklerde bulunur;genel;claude_aug;auto-p1-0041;varyant:p1-0041
+aug-0160;Laktoz intoleransı nedir;genel;claude_aug;auto-p1-0042;varyant:p1-0042
+aug-0161;Probiyotik nedir ?;genel;claude_aug;auto-p1-0043;varyant:p1-0043
+aug-0162;lif açısından zengin yiyecekler nelerdir;genel;claude_aug;auto-p1-0045;varyant:p1-0045
+aug-0163;Aralikli oruc nedir?;genel;claude_aug;auto-p1-0046;varyant:p1-0046
+aug-0164;Klaori nedir nasıl hesaplanır;genel;claude_aug;auto-p1-0047;varyant:p1-0047
+aug-0165;Bazal metabolizma hizi ne demek;genel;claude_aug;auto-p1-0048;varyant:p1-0048
+aug-0166;Esneme hareketleri neden onemlidir?;genel;claude_aug;auto-p1-0050;varyant:p1-0050
+aug-0167;Dis beyazlatmak icin evde neler yapilabilir ?;genel;claude_aug;auto-p1-0053;varyant:p1-0053
+aug-0168;Kuru cilt icin hangi bakim adimlari onerilir?;genel;claude_aug;auto-p1-0055;varyant:p1-0055
+aug-0169;Gümüş takılar naısl parlatılır?;genel;claude_aug;auto-p1-0062;varyant:p1-0062
+aug-0170;bitkiler kış aylarında nasıl sulanmalı?;genel;claude_aug;auto-p1-0063;varyant:p1-0063
+aug-0171;Kaktüs ne sıklıkla sulanır;genel;claude_aug;auto-p1-0065;varyant:p1-0065
+aug-0172;domates fidesi ne zaman dikilir;genel;claude_aug;auto-p1-0066;varyant:p1-0066
+aug-0173;evde ekşi maya nasıl yapılır?;genel;claude_aug;auto-p1-0068;varyant:p1-0068
+aug-0174;Mercimek corbasi nasil yapilir?;genel;claude_aug;auto-p1-0069;varyant:p1-0069
+aug-0175;Karniyarik ile imam bayildi arasindaki fark nedir?;genel;claude_aug;auto-p1-0072;varyant:p1-0072
+aug-0176;türk kahvesi nasıl pişirilir?;genel;claude_aug;auto-p1-0075;varyant:p1-0075
+aug-0177;Delik çay kaç dakika demlenmeli?;genel;claude_aug;auto-p1-0076;varyant:p1-0076
+aug-0178;Pilavın tane tane olması için ne yapılmalı ?;genel;claude_aug;auto-p1-0078;varyant:p1-0078
+aug-0179;Hamur neden kabarmaz ?;genel;claude_aug;auto-p1-0079;varyant:p1-0079
+aug-0180;Zeytinyağı ısıtılına zararlı mı olur?;genel;claude_aug;auto-p1-0080;varyant:p1-0080
+aug-0181;Yogurt evde nasil mayalanir?;genel;claude_aug;auto-p1-0082;varyant:p1-0082
+aug-0182;Turşu nasıl kurulur;genel;claude_aug;auto-p1-0083;varyant:p1-0083
+aug-0183;tarhana nedir nasıl yapılır;genel;claude_aug;auto-p1-0084;varyant:p1-0084
+aug-0184;Python'da try except ne ise yarar;genel;claude_aug;auto-p1-0090;varyant:p1-0090
+aug-0185;Pythonda sınıf nsaıl tanımlanır?;genel;claude_aug;auto-p1-0091;varyant:p1-0091
+aug-0186;Python'da dosya nasil okunur;genel;claude_aug;auto-p1-0093;varyant:p1-0093
+aug-0187;Python'da virtual environment nsail olusturulur?;genel;claude_aug;auto-p1-0094;varyant:p1-0094
+aug-0188;asycn await nasil calisir;genel;claude_aug;auto-p1-0098;varyant:p1-0098
+aug-0189;JavaScript'te arrow function nedir;genel;claude_aug;auto-p1-0099;varyant:p1-0099
+aug-0190;TypeScript neden kullanılır;genel;claude_aug;auto-p1-0100;varyant:p1-0100
+aug-0191;react'te useeffect ne zaman çalışır?;genel;claude_aug;auto-p1-0102;varyant:p1-0102
+aug-0192;prosp ile state arasındaki fark nedir;genel;claude_aug;auto-p1-0103;varyant:p1-0103
+aug-0193;html ile css arasındaki fark nedir?;genel;claude_aug;auto-p1-0104;varyant:p1-0104
+aug-0194;CSS'te flexbox nasil kullanilir?;genel;claude_aug;auto-p1-0105;varyant:p1-0105
+aug-0195;Responsive tasarim ne demek ?;genel;claude_aug;auto-p1-0107;varyant:p1-0107
+aug-0196;git'te commit ile push arasındaki fark nedir ?;genel;claude_aug;auto-p1-0108;varyant:p1-0108
+aug-0197;git branch nasıl oluşturulr;genel;claude_aug;auto-p1-0109;varyant:p1-0109
+aug-0198;Git megre ile rebase arasındaki fark nedir?;genel;claude_aug;auto-p1-0110;varyant:p1-0110
+aug-0199;dcoker nedir ne ise yarar?;genel;claude_aug;auto-p1-0111;varyant:p1-0111
+aug-0200;docker image ile container farki nedir;genel;claude_aug;auto-p1-0112;varyant:p1-0112
+aug-0201;kubernetes ne işe yarar?;genel;claude_aug;auto-p1-0113;varyant:p1-0113
+aug-0202;Mikrservis mimarisi nedir?;genel;claude_aug;auto-p1-0114;varyant:p1-0114
+aug-0203;Monolitik mimari ile mikroservis arasındaki fark nedir;genel;claude_aug;auto-p1-0115;varyant:p1-0115
+aug-0204;JSON nedir;genel;claude_aug;auto-p1-0121;varyant:p1-0121
+aug-0205;NoSQL ile SQL veritabanı arasındaki fark nedri ?;genel;claude_aug;auto-p1-0126;varyant:p1-0126
+aug-0206;Önbellek (cache) nedir ?;genel;claude_aug;auto-p1-0127;varyant:p1-0127
+aug-0207;Hizli siralama (quicksort) nasil calisir;genel;claude_aug;auto-p1-0129;varyant:p1-0129
+aug-0208;Rekürsif fonksiyon nedir;genel;claude_aug;auto-p1-0130;varyant:p1-0130
+aug-0209;Hash tablosu nasıl çalışır;genel;claude_aug;auto-p1-0133;varyant:p1-0133
+aug-0210;Nesne yönelimli programlamanın dört temel ilkesi nelerdir ?;genel;claude_aug;auto-p1-0134;varyant:p1-0134
+aug-0211;Polimorfizm nedir;genel;claude_aug;auto-p1-0136;varyant:p1-0136
+aug-0212;RAM neden onemlidir?;genel;claude_aug;auto-p1-0139;varyant:p1-0139
+aug-0213;ssd ile hdd arasındkai fark nedir?;genel;claude_aug;auto-p1-0140;varyant:p1-0140
+aug-0214;ikilik sayı sistemi nasıl çalışır;genel;claude_aug;auto-p1-0144;varyant:p1-0144
+aug-0215;VPN nasıl çalışır ?;genel;claude_aug;auto-p1-0150;varyant:p1-0150
+aug-0216;DNS ne işe yarar ?;genel;claude_aug;auto-p1-0151;varyant:p1-0151
+aug-0217;Derin öğrenme nedir ?;genel;claude_aug;auto-p1-0154;varyant:p1-0154
+aug-0218;Gradyan inişi nedir ?;genel;claude_aug;auto-p1-0156;varyant:p1-0156
+aug-0219;transformer mimarisi nedir;genel;claude_aug;auto-p1-0158;varyant:p1-0158
+aug-0220;doğal dil işleme nedir?;genel;claude_aug;auto-p1-0160;varyant:p1-0160
+aug-0221;türev nasıl alınır ?;genel;claude_aug;auto-p1-0163;varyant:p1-0163
+aug-0222;EBOB ve EKOK nasli bulunur?;genel;claude_aug;auto-p1-0167;varyant:p1-0167
+aug-0223;Olasilik nedir?;genel;claude_aug;auto-p1-0168;varyant:p1-0168
+aug-0224;Permütasyon ile kombinayson farkı nedir?;genel;claude_aug;auto-p1-0169;varyant:p1-0169
+aug-0225;Ucgein alani nasil hesaplanir?;genel;claude_aug;auto-p1-0172;varyant:p1-0172
+aug-0226;Kürenin hacim formülü nedir;genel;claude_aug;auto-p1-0173;varyant:p1-0173
+aug-0227;Denklem nasil cozulur ikinci dereceden;genel;claude_aug;auto-p1-0177;varyant:p1-0177
+aug-0228;Matrs çarpımı nasıl yapılır?;genel;claude_aug;auto-p1-0178;varyant:p1-0178
+aug-0229;Yuzde 20 indirim nasil hesaplanir ?;genel;claude_aug;auto-p1-0180;varyant:p1-0180
+aug-0230;gayir safi yurt içi hasıla nedir?;genel;claude_aug;auto-p1-0185;varyant:p1-0185
+aug-0231;hisse senedi ile tahvil arasındaki fark nedir?;genel;claude_aug;auto-p1-0187;varyant:p1-0187
+aug-0232;Borsa endeksi ne demektir;genel;claude_aug;auto-p1-0188;varyant:p1-0188
+aug-0233;Döviz kuru naısl belirlenir ?;genel;claude_aug;auto-p1-0189;varyant:p1-0189
+aug-0234;Merkez bankasinin gorevleri nelerdir ?;genel;claude_aug;auto-p1-0190;varyant:p1-0190
+aug-0235;Osmanlı Devleti'nin kurucusu kimdir;genel;claude_aug;auto-p1-0197;varyant:p1-0197
+aug-0236;Lale Dervi nedir;genel;claude_aug;auto-p1-0200;varyant:p1-0200
+aug-0237;cumhuriyet ne zaman ilan edildi;genel;claude_aug;auto-p1-0204;varyant:p1-0204
+aug-0238;Rönesans nedir;genel;claude_aug;auto-p1-0210;varyant:p1-0210
+aug-0239;reform hareketleri neden başladı?;genel;claude_aug;auto-p1-0211;varyant:p1-0211
+aug-0240;roma imparatorluğu neden çöktü;genel;claude_aug;auto-p1-0215;varyant:p1-0215
+aug-0241;Hititler hangi bolgede yasadi?;genel;claude_aug;auto-p1-0218;varyant:p1-0218
+aug-0242;ipek yolu nedir?;genel;claude_aug;auto-p1-0219;varyant:p1-0219
+aug-0243;Cografi kesiflerin sonculari nelerdir?;genel;claude_aug;auto-p1-0220;varyant:p1-0220
+aug-0244;Karadeniz neden bu kadar yagis alir;genel;claude_aug;auto-p1-0223;varyant:p1-0223
+aug-0245;kıtalar nelerdir ?;genel;claude_aug;auto-p1-0227;varyant:p1-0227
+aug-0246;everet dagi kac metre?;genel;claude_aug;auto-p1-0228;varyant:p1-0228
+aug-0247;Avustralya neden hem kıta hem ülkedir;genel;claude_aug;auto-p1-0232;varyant:p1-0232
+aug-0248;Mevsimer neden yarım kürelere göre farklıdır?;genel;claude_aug;auto-p1-0233;varyant:p1-0233
+aug-0249;Turkcede ses olylari nelerdir?;genel;claude_aug;auto-p1-0235;varyant:p1-0235
+aug-0250;unsuz yumusamasi nedir?;genel;claude_aug;auto-p1-0236;varyant:p1-0236
+aug-0251;Sıfat tamlaması ndir ?;genel;claude_aug;auto-p1-0243;varyant:p1-0243
+aug-0252;Halk edebiyatı ile divan edebiyatı arasındaki fark nedir;genel;claude_aug;auto-p1-0248;varyant:p1-0248
+aug-0253;Servet-i Fünun dönemi nedir ?;genel;claude_aug;auto-p1-0249;varyant:p1-0249
+aug-0254;roman ile hikaye arasındaki fark nedir ?;genel;claude_aug;auto-p1-0251;varyant:p1-0251
+aug-0255;Nutuk'u kim yazmıştır ?;genel;claude_aug;auto-p1-0256;varyant:p1-0256
+aug-0256;küçük prens kitabının konusu nedir?;genel;claude_aug;auto-p1-0258;varyant:p1-0258
+aug-0257;Simyacı kitbaının ana fikri nedir?;genel;claude_aug;auto-p1-0259;varyant:p1-0259
+aug-0258;hamlet'in konusu neidr ?;genel;claude_aug;auto-p1-0260;varyant:p1-0260
+aug-0259;"İngilizcede ""used to"" ne zaamn kullanılır?";genel;claude_aug;auto-p1-0261;varyant:p1-0261
+aug-0260;"""Teşekkür ederim"" Almancada nasıl söylenir ?";genel;claude_aug;auto-p1-0264;varyant:p1-0264
+aug-0261;"""Good luck"" Türkçeye naslı çevrilir?";genel;claude_aug;auto-p1-0266;varyant:p1-0266
+aug-0262;ıngilizcede duzensiz fiiller nelerdir?;genel;claude_aug;auto-p1-0267;varyant:p1-0267
+aug-0263;İspanyolcada ser ve estar frkı nedir;genel;claude_aug;auto-p1-0268;varyant:p1-0268
+aug-0264;Yabanci dil ogrenmek icin etkili yonetmler nelerdir?;genel;claude_aug;auto-p1-0269;varyant:p1-0269
+aug-0265;Sinav kaygisiyla basa cikmak icin ne yapilabilir?;genel;claude_aug;auto-p1-0272;varyant:p1-0272
+aug-0266;Hızlı okuma nasıl öğrenilir;genel;claude_aug;auto-p1-0273;varyant:p1-0273
+aug-0267;motivasyon nasil artirilir?;genel;claude_aug;auto-p1-0276;varyant:p1-0276
+aug-0268;Stresle basa cimka yollari nelerdir?;genel;claude_aug;auto-p1-0278;varyant:p1-0278
+aug-0269;meditasyon nasıl yapılır?;genel;claude_aug;auto-p1-0279;varyant:p1-0279
+aug-0270;Nfes egzersizleri nelerdir?;genel;claude_aug;auto-p1-0280;varyant:p1-0280
+aug-0271;Topluluk önünde konuşma korkusu nasıl yenilir;genel;claude_aug;auto-p1-0282;varyant:p1-0282
+aug-0272;Ön yazı nasıl yazılır;genel;claude_aug;auto-p1-0284;varyant:p1-0284
+aug-0273;Referans mektubu nasıl itsenir ?;genel;claude_aug;auto-p1-0285;varyant:p1-0285
+aug-0274;Freelance çalışmanın avantajları ve dezavantajları nelerdir ?;genel;claude_aug;auto-p1-0289;varyant:p1-0289
+aug-0275;staj başvurusu yaparken nelere dikkat edilmeli?;genel;claude_aug;auto-p1-0290;varyant:p1-0290
+aug-0276;öğretmenlik mesleğinin zorlukları nelerdir;genel;claude_aug;auto-p1-0296;varyant:p1-0296
+aug-0277;Felsefede etik nedir;genel;claude_aug;auto-p1-0297;varyant:p1-0297
+aug-0278;Platon'un mağara alegorisi nedir;genel;claude_aug;auto-p1-0299;varyant:p1-0299
+aug-0279;"Descartes'in ""dusunuyorum oyleyse varim"" sozu ne anlama gelir?";genel;claude_aug;auto-p1-0301;varyant:p1-0301
+aug-0280;stoacılık nedir?;genel;claude_aug;auto-p1-0303;varyant:p1-0303
+aug-0281;Ütilitarizm nedir;genel;claude_aug;auto-p1-0304;varyant:p1-0304
+aug-0282;Empai nedir?;genel;claude_aug;auto-p1-0305;varyant:p1-0305
+aug-0283;Biilşsel çarpıtma nedir;genel;claude_aug;auto-p1-0306;varyant:p1-0306
+aug-0284;Demokrasi nedir;genel;claude_aug;auto-p1-0311;varyant:p1-0311
+aug-0285;laiklik ne demektir;genel;claude_aug;auto-p1-0314;varyant:p1-0314
+aug-0286;nato nedir?;genel;claude_aug;auto-p1-0317;varyant:p1-0317
+aug-0287;seçme ve seçilme hakkı nedir;genel;claude_aug;auto-p1-0319;varyant:p1-0319
+aug-0288;Ayipli mal nedir?;genel;claude_aug;auto-p1-0322;varyant:p1-0322
+aug-0289;Kidem tazminati nedir ?;genel;claude_aug;auto-p1-0324;varyant:p1-0324
+aug-0290;vekaletname nedir;genel;claude_aug;auto-p1-0326;varyant:p1-0326
+aug-0291;Boşanma dvası nasıl açılır?;genel;claude_aug;auto-p1-0328;varyant:p1-0328
+aug-0292;Trafik ceasına itiraz nasıl yapılır ?;genel;claude_aug;auto-p1-0329;varyant:p1-0329
+aug-0293;pasaport başvurusu için hnagi belgeler gerekir?;genel;claude_aug;auto-p1-0330;varyant:p1-0330
+aug-0294;Ehliyet sınıfları nelerdir ?;genel;claude_aug;auto-p1-0331;varyant:p1-0331
+aug-0295;Arabanın yağı ne sıklıkla değiştirilmeli ?;genel;claude_aug;auto-p1-0332;varyant:p1-0332
+aug-0296;Kışın araab kullanırken nelere dikkat edilmeli ?;genel;claude_aug;auto-p1-0335;varyant:p1-0335
+aug-0297;Uçak nasıl havada kalır;genel;claude_aug;auto-p1-0337;varyant:p1-0337
+aug-0298;Kediler ne siklikla beslenmeli?;genel;claude_aug;auto-p1-0341;varyant:p1-0341
+aug-0299;Köpekler neden kuyruk sallar;genel;claude_aug;auto-p1-0342;varyant:p1-0342
+aug-0300;penguenler neden uçamaz?;genel;claude_aug;auto-p1-0348;varyant:p1-0348
+aug-0301;Dinozorlar nden yok oldu ?;genel;claude_aug;auto-p1-0349;varyant:p1-0349
+aug-0302;Fotosentez ve solunum arasindaki fark nedir?;genel;claude_aug;auto-p1-0351;varyant:p1-0351
+aug-0303;büyük patlama teorisi nedir;genel;claude_aug;auto-p1-0353;varyant:p1-0353
+aug-0304;Işık yılı nedir ?;genel;claude_aug;auto-p1-0357;varyant:p1-0357
+aug-0305;tavla kuralları nelerdir ?;genel;claude_aug;auto-p1-0363;varyant:p1-0363
+aug-0306;futbolda penaltı ne zaman verilir?;genel;claude_aug;auto-p1-0364;varyant:p1-0364
+aug-0307;basketbolda uc saniye kurali nedir?;genel;claude_aug;auto-p1-0365;varyant:p1-0365
+aug-0308;maratonun mesafesi neden 42 kilometredir;genel;claude_aug;auto-p1-0369;varyant:p1-0369
+aug-0309;fotogracfilikta diyafram nedir?;genel;claude_aug;auto-p1-0371;varyant:p1-0371
+aug-0310;Gitarda akor nasıl basılır ?;genel;claude_aug;auto-p1-0373;varyant:p1-0373
+aug-0311;Klasik müzik dönelmeri nelerdir?;genel;claude_aug;auto-p1-0376;varyant:p1-0376
+aug-0312;Empresynoizm nedir;genel;claude_aug;auto-p1-0378;varyant:p1-0378
+aug-0313;suluboya ile akrilik boya arasindaki fark nedir ?;genel;claude_aug;auto-p1-0381;varyant:p1-0381
+aug-0314;Kâğıttan uçak naslı yapılır?;genel;claude_aug;auto-p1-0382;varyant:p1-0382
+aug-0315;Origami nedir;genel;claude_aug;auto-p1-0383;varyant:p1-0383
+aug-0316;Hdıırellez nedir?;genel;claude_aug;auto-p1-0386;varyant:p1-0386
+aug-0317;Asure nedir, neden yapilir?;genel;claude_aug;auto-p1-0389;varyant:p1-0389
+aug-0318;Ebru snatı nedir?;genel;claude_aug;auto-p1-0393;varyant:p1-0393
+aug-0319;hat sanatı nedir;genel;claude_aug;auto-p1-0394;varyant:p1-0394
+aug-0320;istifa dilekçesinde neler yazılmalı ?;genel;claude_aug;auto-p1-0398;varyant:p1-0398
+aug-0321;Intihal nedir?;genel;claude_aug;auto-p1-0403;varyant:p1-0403
+aug-0322;kontrol grubu nedir;genel;claude_aug;auto-p1-0408;varyant:p1-0408
+aug-0323;Anket hazirlarken nelere dkikat edilmeli?;genel;claude_aug;auto-p1-0409;varyant:p1-0409
+aug-0324;SWOT analizi nasil yapilir?;genel;claude_aug;auto-p1-0410;varyant:p1-0410
+aug-0325;Pazarlama karmasi (4P) nedir;genel;claude_aug;auto-p1-0411;varyant:p1-0411
+aug-0326;Marka bilinirliği nasıl artırılır ?;genel;claude_aug;auto-p1-0412;varyant:p1-0412
+aug-0327;Dijital pazralama nedir?;genel;claude_aug;auto-p1-0415;varyant:p1-0415
+aug-0328;Girişimcilik nedir ?;genel;claude_aug;auto-p1-0416;varyant:p1-0416
+aug-0329;İş planı nasıl hazırlanır ?;genel;claude_aug;auto-p1-0417;varyant:p1-0417
+aug-0330;Şirket türleri nelerdir;genel;claude_aug;auto-p1-0418;varyant:p1-0418
+aug-0331;Brun kanaması durumunda ne yapılmalı?;genel;claude_aug;auto-p1-0422;varyant:p1-0422
+aug-0332;Boğulma durumunda Heimlich manevrası nasıl yapılır ?;genel;claude_aug;auto-p1-0424;varyant:p1-0424
+aug-0333;Yangın söndürücü nasıl kullanılır ?;genel;claude_aug;auto-p1-0427;varyant:p1-0427
+aug-0334;Karbonmonoksit zehirlenmesinin belirtielri nelerdir?;genel;claude_aug;auto-p1-0428;varyant:p1-0428
+aug-0335;Geri dönüşm sembolleri ne anlama gelir ?;genel;claude_aug;auto-p1-0429;varyant:p1-0429
+aug-0336;plastik doğada kaç yılda çözünür ?;genel;claude_aug;auto-p1-0430;varyant:p1-0430
+aug-0337;Karbon ayak izi nedir;genel;claude_aug;auto-p1-0431;varyant:p1-0431
+aug-0338;Elektrik tasarrufu için neler yapılabilir ?;genel;claude_aug;auto-p1-0435;varyant:p1-0435
+aug-0339;dugune giderken nasil giyinilir?;genel;claude_aug;auto-p1-0443;varyant:p1-0443
+aug-0340;Kamp için gerekli malzemeelr nelerdir?;genel;claude_aug;auto-p1-0446;varyant:p1-0446
+aug-0341;adımı hatırlıyro musun;kisisel;claude_aug;auto-p1-0448;varyant:p1-0448
+aug-0342;Konusmamizin basinda sordugum soruya geri donelim.;kisisel;claude_aug;auto-p1-0453;varyant:p1-0453
+aug-0343;Dün konuştuğumuz konuyu deavm ettirelim.;kisisel;claude_aug;auto-p1-0455;varyant:p1-0455
+aug-0344;bu hatannı sebebi ne;kisisel;claude_aug;auto-p1-0458;varyant:p1-0458
+aug-0345;Ykarıdaki metni İngilizceye çevir.;kisisel;claude_aug;auto-p1-0459;varyant:p1-0459
+aug-0346;Yazdıım e-postayı kontrol eder misin?;kisisel;claude_aug;auto-p1-0461;varyant:p1-0461
+aug-0347;Bu paragraıf kısalt.;kisisel;claude_aug;auto-p1-0462;varyant:p1-0462
+aug-0348;bu sözleşmede beni zor durumda bırakacak bir madde var mı;kisisel;claude_aug;auto-p1-0467;varyant:p1-0467
+aug-0349;Tez taslağımı okuyup yorum yapr mısın?;kisisel;claude_aug;auto-p1-0468;varyant:p1-0468
+aug-0350;Kodumda bellek sızıntısı varmı ?;kisisel;claude_aug;auto-p1-0473;varyant:p1-0473
+aug-0351;Sınav notlarımı sana yazdım, otalamam kaç oldu;kisisel;claude_aug;auto-p1-0474;varyant:p1-0474
+aug-0352;Geçen dönem 2.4 ortalamam vardı, onur listesine girmek için bu dönem kaç almalıyım;kisisel;claude_aug;auto-p1-0476;varyant:p1-0476
+aug-0353;boyum 1.80, kilom 95. ideal kiloma ne kadar sürede inerim?;kisisel;claude_aug;auto-p1-0477;varyant:p1-0477
+aug-0354;tansiyon hastasıyım, bu ilacı kullanabilir miyim?;kisisel;claude_aug;auto-p1-0480;varyant:p1-0480
+aug-0355;Dizlerim ağrıyor, koşuya devam etmeli miyim ?;kisisel;claude_aug;auto-p1-0481;varyant:p1-0481
+aug-0356;dün gece hiç uyuyamadım, bgün ne yapmalıyım;kisisel;claude_aug;auto-p1-0482;varyant:p1-0482
+aug-0357;Son zamanlarda cok mutsuzum, ne yapabilirim?;kisisel;claude_aug;auto-p1-0483;varyant:p1-0483
+aug-0358;Sevgilimden ayrıldım, kendimi nasıl toparlarım;kisisel;claude_aug;auto-p1-0484;varyant:p1-0484
+aug-0359;arkadaşım doğum günümü unuttu, ona kırgın olmam normal mi;kisisel;claude_aug;auto-p1-0486;varyant:p1-0486
+aug-0360;İş yerinde terfi alamadım, istifa etmli miyim;kisisel;claude_aug;auto-p1-0488;varyant:p1-0488
+aug-0361;Kredi kartı borcum 60 bin lira, önce hangisini kapatayım;kisisel;claude_aug;auto-p1-0490;varyant:p1-0490
+aug-0362;Elimde 200 bin lira var, ne yapmalıyım ?;kisisel;claude_aug;auto-p1-0491;varyant:p1-0491
+aug-0363;Kirada oturuyorum, ev alamk icin ne kadar biriktirmem gerek?;kisisel;claude_aug;auto-p1-0492;varyant:p1-0492
+aug-0364;Telefonum çok ısınıyor, ne yapayım ?;kisisel;claude_aug;auto-p1-0494;varyant:p1-0494
+aug-0365;Kimlik numaram şu, vergi borcum var mı;kisisel;claude_aug;auto-p1-0501;varyant:p1-0501
+aug-0366;benim yaşadığım yerde en yakın hatane hangisi?;kisisel;claude_aug;auto-p1-0503;varyant:p1-0503
+aug-0367;Evime en yakın market nerede ?;kisisel;claude_aug;auto-p1-0504;varyant:p1-0504
+aug-0368;konumuma göre bana restoran öner;kisisel;claude_aug;auto-p1-0506;varyant:p1-0506
+aug-0369;takvimime pazartesi saat 10a dişçi randevusu ekle.;kisisel;claude_aug;auto-p1-0508;varyant:p1-0508
+aug-0370;Yapılacaklar listeme süt almaı ekle.;kisisel;claude_aug;auto-p1-0510;varyant:p1-0510
+aug-0371;kız arkadaşıma yıl dönümü için ne alsam, çiçek sevmez.;kisisel;claude_aug;auto-p1-0516;varyant:p1-0516
+aug-0372;eşimin doğum günü için sürpriz planla, kalaablıktan hoşlanmaz.;kisisel;claude_aug;auto-p1-0517;varyant:p1-0517
+aug-0373;TYT'de 85 net yaptım, hedefim tıp. Ne kadar çalışmalıyım;kisisel;claude_aug;auto-p1-0520;varyant:p1-0520
+aug-0374;Evde dambılım var, sadeec onunla bir program hazırla.;kisisel;claude_aug;auto-p1-0524;varyant:p1-0524
+aug-0375;Kizim 3 yasinda ve yemek seciyor, ne yapmaliyim?;kisisel;claude_aug;auto-p1-0529;varyant:p1-0529
+aug-0376;Bebeğim 6 aylık, ek gıdaya nasıl başlamalıyım;kisisel;claude_aug;auto-p1-0531;varyant:p1-0531
+aug-0377;akvaryumumdaki balıklar ölüyor, sebebi ne olabilir?;kisisel;claude_aug;auto-p1-0534;varyant:p1-0534
+aug-0378;Bahçemde göleg çok, ne ekebilirim?;kisisel;claude_aug;auto-p1-0537;varyant:p1-0537
+aug-0379;1.60 boyundayım, hangi pantolon modeli bana uyar ?;kisisel;claude_aug;auto-p1-0542;varyant:p1-0542
+aug-0380;Terapiste gtimem gerekiyor mu, belirtilerimi anlattım.;kisisel;claude_aug;auto-p1-0549;varyant:p1-0549
+aug-0381;Bana bir sifre hatirlatici ipucu olustur, ilk evcil hayvanimin adi Boncuk.;kisisel;claude_aug;auto-p1-0552;varyant:p1-0552
+aug-0382;Benim burcuma göre bugün şanslı mıyım ?;kisisel;claude_aug;auto-p1-0553;varyant:p1-0553
+aug-0383;Doğum haritamı yorumlarmısın;kisisel;claude_aug;auto-p1-0554;varyant:p1-0554
+aug-0384;Kahve falıma bakarmısın, fincanın fotoğrafını gönderdim.;kisisel;claude_aug;auto-p1-0555;varyant:p1-0555
+aug-0385;Beinmle daha samimi konuş.;kisisel;claude_aug;auto-p1-0558;varyant:p1-0558
+aug-0386;biraz daha detaylandırır mısın ?;kisisel;claude_aug;auto-p1-0562;varyant:p1-0562
+aug-0387;Bir onceki listeye iki madde daha ekle;kisisel;claude_aug;auto-p1-0564;varyant:p1-0564
+aug-0388;bunu tablo halinde göster.;kisisel;claude_aug;auto-p1-0565;varyant:p1-0565
+aug-0389;Ilk maddeyi aciklar misin ?;kisisel;claude_aug;auto-p1-0566;varyant:p1-0566
+aug-0390;yukarıdaki kodu typescript'e çevir.;kisisel;claude_aug;auto-p1-0567;varyant:p1-0567
+aug-0391;Az önce yazdığın SQL sorgusnuu optimize et;kisisel;claude_aug;auto-p1-0568;varyant:p1-0568
+aug-0392;Bu metindeki yazım hatalaını düzelt;kisisel;claude_aug;auto-p1-0569;varyant:p1-0569
+aug-0393;Patronuma izin istemek için mesaj yaz, cuma günü düğünüm var;kisisel;claude_aug;auto-p1-0575;varyant:p1-0575
+aug-0394;İstifa dilekçmei yaz, adım Mehmet Kaya ve 3 yıldır bu şirketteyim.;kisisel;claude_aug;auto-p1-0577;varyant:p1-0577
+aug-0395;Mülakatta bana maaş beklentimi sorsalar ne demeliyim, 2 yıllık deneyimim var;kisisel;claude_aug;auto-p1-0580;varyant:p1-0580
+aug-0396;sunum slaytlarımı gözden geçir.;kisisel;claude_aug;auto-p1-0582;varyant:p1-0582
+aug-0397;bitirme projem için bir konu öner, makine öğrenmesini seviyorum;kisisel;claude_aug;auto-p1-0583;varyant:p1-0583
+aug-0398;MR raporumda disk hernisi yazıyor, ameliyat olmalı mıyım;kisisel;claude_aug;auto-p1-0589;varyant:p1-0589
+aug-0399;Annemin hafızası zayıflıyor, alzheimer olabilirmi;kisisel;claude_aug;auto-p1-0592;varyant:p1-0592
+aug-0400;Deem 85 yaşında, ona nasıl bakmalıyım?;kisisel;claude_aug;auto-p1-0593;varyant:p1-0593
+aug-0401;ailem bölüm tercihime karşı çıkıyor, ne yapmalıyım?;kisisel;claude_aug;auto-p1-0594;varyant:p1-0594
+aug-0402;ev arkadaşımla sorun yaşıyorum.;kisisel;claude_aug;auto-p1-0595;varyant:p1-0595
+aug-0403;akşam yemeği için evde tavku ve patates var, ne pişireyim;kisisel;claude_aug;auto-p1-0605;varyant:p1-0605
+aug-0404;Bilgisayarim 8 GB RAM, bu progrmai calistirir mi?;kisisel;claude_aug;auto-p1-0608;varyant:p1-0608
+aug-0405;Oyun bilgisayarım için hangi parçayı yükseltmeliyim, ekran kartım GTX 1650;kisisel;claude_aug;auto-p1-0609;varyant:p1-0609
+aug-0406;Bana daha önce önerdiğin dizilerden hangisini izlemedim;kisisel;claude_aug;auto-p1-0613;varyant:p1-0613
+aug-0407;Okuduğum kitaplara göre bana yeni bir kitap öner, Dostoyevski ve Kafka seviyorum;kisisel;claude_aug;auto-p1-0614;varyant:p1-0614
+aug-0408;Sevdiğim filmler Interstellar ve Inception, bana benzer film öner;kisisel;claude_aug;auto-p1-0616;varyant:p1-0616
+aug-0409;İzmir'de yaşıyorum, hafta sonu gidebileceğim yerler öner;kisisel;claude_aug;auto-p1-0618;varyant:p1-0618
+aug-0410;Almanya'da çalışmak istiyorum, mesleğim hemşire;kisisel;claude_aug;auto-p1-0622;varyant:p1-0622
+aug-0411;Sana verdiğim bilgilere göre bana bir yol haritası çıkar;kisisel;claude_aug;auto-p1-0627;varyant:p1-0627
+aug-0412;sence ben ne yapmalıyım ?;kisisel;claude_aug;auto-p1-0629;varyant:p1-0629
+aug-0413;Bana tavsiyen ne olur ?;kisisel;claude_aug;auto-p1-0630;varyant:p1-0630
+aug-0414;durummu değerlendirir misin?;kisisel;claude_aug;auto-p1-0631;varyant:p1-0631
+aug-0415;Beim gibi biri için bu mantıklımı?;kisisel;claude_aug;auto-p1-0633;varyant:p1-0633
+aug-0416;ben 40 yaşındayım, yeni bir dil öğrenmek için geç mi?;kisisel;claude_aug;auto-p1-0634;varyant:p1-0634
+aug-0417;Ben hemşireyim, gece vardiyasından sonra nsıl uyuyabilirim?;kisisel;claude_aug;auto-p1-0636;varyant:p1-0636
+aug-0418;evden cailsiyorum ve odaklanamiyorum, ne onerirsin?;kisisel;claude_aug;auto-p1-0638;varyant:p1-0638
+aug-0419;Astigmatım var, gece araba kullanmak bana zor geliyor;kisisel;claude_aug;auto-p1-0640;varyant:p1-0640
+aug-0420;Sol kolumda uyusma var, ciddi bir sey mi ?;kisisel;claude_aug;auto-p1-0642;varyant:p1-0642
+aug-0421;Kalp pilim var, MR çektirebilir miyim ?;kisisel;claude_aug;auto-p1-0647;varyant:p1-0647
+aug-0422;Spor salnuna yeni basladim, kollarim cok agriyor;kisisel;claude_aug;auto-p1-0651;varyant:p1-0651
+aug-0423;günde 4 saat uyuyorum, bu bana zarar verir mi;kisisel;claude_aug;auto-p1-0652;varyant:p1-0652
+aug-0424;Kızımın okulu çok uzak, servis mi tutayım yoksa ben mi götüreyim ?;kisisel;claude_aug;auto-p1-0653;varyant:p1-0653
+aug-0425;eşim yurtdışına taşınmak istiyor ama ben istemiyorum.;kisisel;claude_aug;auto-p1-0655;varyant:p1-0655
+aug-0426;kayınvalidemle aram iyi değil, bayramda ne yapmalıyım;kisisel;claude_aug;auto-p1-0656;varyant:p1-0656
+aug-0427;Nişanlım düğünü ertelemek istiyor, bu kötü bir işaret mi ?;kisisel;claude_aug;auto-p1-0657;varyant:p1-0657
+aug-0428;Okulda zorbaliga ugruyorum, kime soylemeliyim?;kisisel;claude_aug;auto-p1-0659;varyant:p1-0659
+aug-0429;isverenim maasimi iki aydir odemiyor.;kisisel;claude_aug;auto-p1-0661;varyant:p1-0661
+aug-0430;Araıcma park halindeyken çarpmışlar, sigorta karşılarmı?;kisisel;claude_aug;auto-p1-0663;varyant:p1-0663
+aug-0431;Kredi başvurum reddedildi, neden olabilir;kisisel;claude_aug;auto-p1-0665;varyant:p1-0665
+aug-0432;Bankadan aldığım kredinin faizi yüksek, yapılandırma yapabilir miyim ?;kisisel;claude_aug;auto-p1-0667;varyant:p1-0667
+aug-0433;Doğalgaz faturam geçen aya göre iki katı, kontrl edermisin?;kisisel;claude_aug;auto-p1-0670;varyant:p1-0670
+aug-0434;Telefon tarifemi değiştirmelimiyim, ayda 40 GB kullanıyorum;kisisel;claude_aug;auto-p1-0671;varyant:p1-0671
+aug-0435;Laptopumun pili cabuk bitiyor, 3 yillik.;kisisel;claude_aug;auto-p1-0672;varyant:p1-0672
+aug-0436;WhatsApp yedegim yuklenmiyor.;kisisel;claude_aug;auto-p1-0676;varyant:p1-0676
+aug-0437;Sunucum 500 hatasi veriyor, loglari sana atayim mi;kisisel;claude_aug;auto-p1-0680;varyant:p1-0680
+aug-0438;Az önce paylaştığım hata meajını açıkla;kisisel;claude_aug;auto-p1-0681;varyant:p1-0681
+aug-0439;Gönderdiğim JSON dosyasında hata var mı ?;kisisel;claude_aug;auto-p1-0682;varyant:p1-0682
+aug-0440;Fotoğraftaki yaızyı okuyabilir misin?;kisisel;claude_aug;auto-p1-0684;varyant:p1-0684
+aug-0441;bu ekran görüntüsündeki ayarı nasıl değiştiririm;kisisel;claude_aug;auto-p1-0685;varyant:p1-0685
+aug-0442;notlarımdaki önemli kısımları çıkar.;kisisel;claude_aug;auto-p1-0687;varyant:p1-0687
+aug-0443;Ders notlarıman bana soru hazırla.;kisisel;claude_aug;auto-p1-0688;varyant:p1-0688
+aug-0444;Çzidiğim resmi değerlendir.;kisisel;claude_aug;auto-p1-0690;varyant:p1-0690
+aug-0445;Rmoanımın ilk bölümünü okuyup eleştir.;kisisel;claude_aug;auto-p1-0691;varyant:p1-0691
+aug-0446;bana özel bir doğum günü mesajı yaz, adım can ve 30 yaşına giriyorum.;kisisel;claude_aug;auto-p1-0694;varyant:p1-0694
+aug-0447;Bugun hava nasil ?;degisken;claude_aug;auto-p1-0695;varyant:p1-0695
+aug-0448;Bu hafta sonu hava güzel olcaak mı ?;degisken;claude_aug;auto-p1-0697;varyant:p1-0697
+aug-0449;Bu kış soğk geçecek mi?;degisken;claude_aug;auto-p1-0699;varyant:p1-0699
+aug-0450;Çeyrek altın kaç TL ?;degisken;claude_aug;auto-p1-0703;varyant:p1-0703
+aug-0451;Gram gümüş fiyatı bugün ne kadar;degisken;claude_aug;auto-p1-0704;varyant:p1-0704
+aug-0452;Bernt petrol varili şu an kaç dolar?;degisken;claude_aug;auto-p1-0705;varyant:p1-0705
+aug-0453;Benzin litresi kaç TL oldu ?;degisken;claude_aug;auto-p1-0706;varyant:p1-0706
+aug-0454;Doğalaza bu ay zam var mı ?;degisken;claude_aug;auto-p1-0708;varyant:p1-0708
+aug-0455;Asgari ücret şu an ne kadar ?;degisken;claude_aug;auto-p1-0710;varyant:p1-0710
+aug-0456;Mmeur maaş zammı yüzde kaç olacak?;degisken;claude_aug;auto-p1-0712;varyant:p1-0712
+aug-0457;emekli bayram ikramiyesi ne kadar;degisken;claude_aug;auto-p1-0713;varyant:p1-0713
+aug-0458;borsa istanbul bugün yükseldi mi ?;degisken;claude_aug;auto-p1-0719;varyant:p1-0719
+aug-0459;ASELSAN hissesi bugün ne kadar ?;degisken;claude_aug;auto-p1-0721;varyant:p1-0721
+aug-0460;Apple hisseleri bugun dustu mu;degisken;claude_aug;auto-p1-0724;varyant:p1-0724
+aug-0461;yeni cikan android surumunde neler var?;degisken;claude_aug;auto-p1-0729;varyant:p1-0729
+aug-0462;Windowsun son güncellemesi ne getirdi;degisken;claude_aug;auto-p1-0730;varyant:p1-0730
+aug-0463;şu an en çok kazanan yaılım dili hangisi?;degisken;claude_aug;auto-p1-0736;varyant:p1-0736
+aug-0464;galtaasaray bu akşam kiminle oynuyor?;degisken;claude_aug;auto-p1-0737;varyant:p1-0737
+aug-0465;Fenerbahce maci kac kac ?;degisken;claude_aug;auto-p1-0738;varyant:p1-0738
+aug-0466;Şampiyonlar Liginde bu hafta hangi maçlar var;degisken;claude_aug;auto-p1-0740;varyant:p1-0740
+aug-0467;nba'de su an hangi takim lider?;degisken;claude_aug;auto-p1-0743;varyant:p1-0743
+aug-0468;wimbledon'ı bu yıl kim kazandı?;degisken;claude_aug;auto-p1-0744;varyant:p1-0744
+aug-0469;Düna Kupası'nın son şampiyonu kim?;degisken;claude_aug;auto-p1-0745;varyant:p1-0745
+aug-0470;Son dakika gelişmeleri neler;degisken;claude_aug;auto-p1-0747;varyant:p1-0747
+aug-0471;Son anket sonuçları ne diyor ?;degisken;claude_aug;auto-p1-0751;varyant:p1-0751
+aug-0472;okullar ne zaman açılıyor?;degisken;claude_aug;auto-p1-0754;varyant:p1-0754
+aug-0473;Bu yil somestr tatili ne zaman basliyor?;degisken;claude_aug;auto-p1-0755;varyant:p1-0755
+aug-0474;bu yılki resmi tatiller hangi günlere denk geliyor;degisken;claude_aug;auto-p1-0757;varyant:p1-0757
+aug-0475;Bugün günerden ne?;degisken;claude_aug;auto-p1-0758;varyant:p1-0758
+aug-0476;Spotifyda şu an en çok dinlneen şarkı hangisi?;degisken;claude_aug;auto-p1-0767;varyant:p1-0767
+aug-0477;Bu yıln en çok satan romanı hangisi;degisken;claude_aug;auto-p1-0772;varyant:p1-0772
+aug-0478;Metrobus su an calisiyor mu?;degisken;claude_aug;auto-p1-0776;varyant:p1-0776
+aug-0479;Antalyada otel fiytaları şu an ne durumda?;degisken;claude_aug;auto-p1-0783;varyant:p1-0783
+aug-0480;kapadokya balon turu fiyatı ne kadar?;degisken;claude_aug;auto-p1-0784;varyant:p1-0784
+aug-0481;Askerlik bedleli ucreti ne kadar?;degisken;claude_aug;auto-p1-0787;varyant:p1-0787
+aug-0482;KYK yurt ücretleri ne kadr oldu;degisken;claude_aug;auto-p1-0789;varyant:p1-0789
+aug-0483;Taban puanlar açıklandımı?;degisken;claude_aug;auto-p1-0790;varyant:p1-0790
+aug-0484;KPSS sonçları ne zaman açıklanacak ?;degisken;claude_aug;auto-p1-0791;varyant:p1-0791
+aug-0485;Deprem oldu mu az once?;degisken;claude_aug;auto-p1-0794;varyant:p1-0794
+aug-0486;Son dperemler listesi;degisken;claude_aug;auto-p1-0795;varyant:p1-0795
+aug-0487;Kandili son deprem nerede oldu ?;degisken;claude_aug;auto-p1-0796;varyant:p1-0796
+aug-0488;Sel uyarisi varmi bugun?;degisken;claude_aug;auto-p1-0798;varyant:p1-0798
+aug-0489;yeni bir salgın var mı?;degisken;claude_aug;auto-p1-0801;varyant:p1-0801
+aug-0490;Altın düşre mi önümüzdeki ay?;degisken;claude_aug;auto-p1-0804;varyant:p1-0804
+aug-0491;Bitcoin yukselecek mi?;degisken;claude_aug;auto-p1-0807;varyant:p1-0807
+aug-0492;Yapay zeka insanların işini elinden alcaak mı?;degisken;claude_aug;auto-p1-0811;varyant:p1-0811
+aug-0493;Yapay zeka bilinç kazanabilirmi;degisken;claude_aug;auto-p1-0812;varyant:p1-0812
+aug-0494;Ölümden sonra hayat var mı;degisken;claude_aug;auto-p1-0813;varyant:p1-0813
+aug-0495;hayatın anlamı nedir?;degisken;claude_aug;auto-p1-0815;varyant:p1-0815
+aug-0496;İnsan özünde iyimidir kötü müdür?;degisken;claude_aug;auto-p1-0816;varyant:p1-0816
+aug-0497;İnternete erişmin varmı?;degisken;claude_aug;auto-p1-0827;varyant:p1-0827
+aug-0498;kaç parametren var?;degisken;claude_aug;auto-p1-0828;varyant:p1-0828
+aug-0499;bu cevbı hangi model üretti?;degisken;claude_aug;auto-p1-0829;varyant:p1-0829
+aug-0500;bugün kendini nasıl hissediyorsun ?;degisken;claude_aug;auto-p1-0830;varyant:p1-0830
+aug-0501;Bana rastgele bir sayi soyle.;degisken;claude_aug;auto-p1-0832;varyant:p1-0832
+aug-0502;bir zar at.;degisken;claude_aug;auto-p1-0834;varyant:p1-0834
+aug-0503;1 ile 6 arasinda sayi tut.;degisken;claude_aug;auto-p1-0835;varyant:p1-0835
+aug-0504;bana rastegle bir isim öner.;degisken;claude_aug;auto-p1-0836;varyant:p1-0836
+aug-0505;rastgele bir renk söyle.;degisken;claude_aug;auto-p1-0838;varyant:p1-0838
+aug-0506;Bana rastegle 3 kelime ver.;degisken;claude_aug;auto-p1-0839;varyant:p1-0839
+aug-0507;her seferinde farkli bir motivasyon cumlesi soyle.;degisken;claude_aug;auto-p1-0841;varyant:p1-0841
+aug-0508;her sorduğumda yeni bir bilgi ver.;degisken;claude_aug;auto-p1-0842;varyant:p1-0842
+aug-0509;Bugun icin bana bir gorev ver;degisken;claude_aug;auto-p1-0843;varyant:p1-0843
+aug-0510;bana bir soru sor.;degisken;claude_aug;auto-p1-0844;varyant:p1-0844
+aug-0511;benimle kelime oyunu oyna.;degisken;claude_aug;auto-p1-0845;varyant:p1-0845
+aug-0512;benimle 20 soru oyunu oynarmısın?;degisken;claude_aug;auto-p1-0846;varyant:p1-0846
+aug-0513;Örnek bir veri seti oluştur;degisken;claude_aug;auto-p1-0852;varyant:p1-0852
+aug-0514;rastgele bir antrenman programı oluştur.;degisken;claude_aug;auto-p1-0857;varyant:p1-0857
+aug-0515;bu cümleye devam et: bir zaanlar;degisken;claude_aug;auto-p1-0860;varyant:p1-0860
+aug-0516;Gelecek yil hangi meslekler one cikacak ?;degisken;claude_aug;auto-p1-0862;varyant:p1-0862
+aug-0517;2030'da dünya nasıl olcak ?;degisken;claude_aug;auto-p1-0863;varyant:p1-0863
+aug-0518;Yakında hangi teknolojiler hayatımıza girecek ?;degisken;claude_aug;auto-p1-0864;varyant:p1-0864
+aug-0519;Bu yıl hangi moda trendleri popüler;degisken;claude_aug;auto-p1-0865;varyant:p1-0865
+aug-0520;Twitter'da bugün ne konuşuluyor;degisken;claude_aug;auto-p1-0868;varyant:p1-0868
+aug-0521;dünyanın en dğerli şirketi şu an hangisi?;degisken;claude_aug;auto-p1-0873;varyant:p1-0873
+aug-0522;Şu an hangi ülkeler savaşta;degisken;claude_aug;auto-p1-0874;varyant:p1-0874
+aug-0523;ABD baskani su an kim?;degisken;claude_aug;auto-p1-0875;varyant:p1-0875
+aug-0524;milli eğitim bakanı kim?;degisken;claude_aug;auto-p1-0877;varyant:p1-0877
+aug-0525;ıstanbul buyuksehir belediye baskani kim?;degisken;claude_aug;auto-p1-0878;varyant:p1-0878
+aug-0526;Türkiyenin nüfusu şu an ne kadar?;degisken;claude_aug;auto-p1-0879;varyant:p1-0879
+aug-0527;istanbul'un nüfusu kaç ?;degisken;claude_aug;auto-p1-0880;varyant:p1-0880
+aug-0528;Türkiye'de işsizlik oranı ne kadar;degisken;claude_aug;auto-p1-0882;varyant:p1-0882
+aug-0529;Öğremten maaşı kaç TL?;degisken;claude_aug;auto-p1-0886;varyant:p1-0886
+aug-0530;Garson maaşları ne kadar ?;degisken;claude_aug;auto-p1-0887;varyant:p1-0887
+aug-0531;Kurye olarak ne kadar kazanılır ?;degisken;claude_aug;auto-p1-0888;varyant:p1-0888
+aug-0532;Kira fiyatları neden bu kadar arttı;degisken;claude_aug;auto-p1-0889;varyant:p1-0889
+aug-0533;Ikinci el araba fiyatlari dustu mu;degisken;claude_aug;auto-p1-0892;varyant:p1-0892
+aug-0534;Elektrikli arac sarj ucreti ne kadar?;degisken;claude_aug;auto-p1-0895;varyant:p1-0895
+aug-0535;market fiyatları bu ay ne kadar arttı?;degisken;claude_aug;auto-p1-0901;varyant:p1-0901
+aug-0536;yumurta fiyatı ne kadar?;degisken;claude_aug;auto-p1-0902;varyant:p1-0902
+aug-0537;et fiyatları düşecek mi?;degisken;claude_aug;auto-p1-0904;varyant:p1-0904
+aug-0538;Spor salonu uyelik ucretleri ne kadar?;degisken;claude_aug;auto-p1-0905;varyant:p1-0905
+aug-0539;YouTube Premium kaç TL;degisken;claude_aug;auto-p1-0907;varyant:p1-0907
+aug-0540;Yeni cikan oyunlar neler;degisken;claude_aug;auto-p1-0911;varyant:p1-0911
+aug-0541;bu yılın en iyi filmleri hangileri?;degisken;claude_aug;auto-p1-0912;varyant:p1-0912
+aug-0542;Su an en iyi dizi hangisi ?;degisken;claude_aug;auto-p1-0913;varyant:p1-0913
+aug-0543;Imdb'de en yüksek puanlı yeni dizi hangisi ?;degisken;claude_aug;auto-p1-0914;varyant:p1-0914
+aug-0544;Orhan Pamuk'un son kitabı ne ?;degisken;claude_aug;auto-p1-0918;varyant:p1-0918
+aug-0545;Hakan Fidan şu an hangi görevde;degisken;claude_aug;auto-p1-0920;varyant:p1-0920
+aug-0546;babalar günü için kısa bir şiir yaz.;sanatsal;claude_aug;auto-p1-0921;varyant:p1-0921
+aug-0547;Özlem teamlı bir şiir yaz;sanatsal;claude_aug;auto-p1-0929;varyant:p1-0929
+aug-0548;pazartesi sendromunu anlatan komik bir şiir yaz.;sanatsal;claude_aug;auto-p1-0933;varyant:p1-0933
+aug-0549;Hece olcusuyle bir kosma yaz.;sanatsal;claude_aug;auto-p1-0937;varyant:p1-0937
+aug-0550;Bana iki satırlık bir beyit yaz;sanatsal;claude_aug;auto-p1-0940;varyant:p1-0940
+aug-0551;Haiku yaz, konsuu kar olsun.;sanatsal;claude_aug;auto-p1-0941;varyant:p1-0941
+aug-0552;Uyaklı bir çcuk şiiri yaz.;sanatsal;claude_aug;auto-p1-0943;varyant:p1-0943
+aug-0553;Yaz tatili temali neseli bir sarki yaz.;sanatsal;claude_aug;auto-p1-0949;varyant:p1-0949
+aug-0554;Rap tarzıda bir kıta yaz.;sanatsal;claude_aug;auto-p1-0950;varyant:p1-0950
+aug-0555;Aabesk tarzinda bir sarki sozu yaz.;sanatsal;claude_aug;auto-p1-0951;varyant:p1-0951
+aug-0556;Doğum günü şakısı yaz.;sanatsal;claude_aug;auto-p1-0953;varyant:p1-0953
+aug-0557;Futbol takimi icin bir mars yaz.;sanatsal;claude_aug;auto-p1-0954;varyant:p1-0954
+aug-0558;Bana bir msaal anlatir misin?;sanatsal;claude_aug;auto-p1-0958;varyant:p1-0958
+aug-0559;Uyku oncesi cocuklar icin bir masal yaz.;sanatsal;claude_aug;auto-p1-0959;varyant:p1-0959
+aug-0560;Zaman yolculugu yapan bir cocugun oykusunu yaz;sanatsal;claude_aug;auto-p1-0961;varyant:p1-0961
+aug-0561;mars'ta geçen bir hikae yaz.;sanatsal;claude_aug;auto-p1-0965;varyant:p1-0965
+aug-0562;Robotlarn dunyayi ele gecirdigi bir distopya yaz.;sanatsal;claude_aug;auto-p1-0966;varyant:p1-0966
+aug-0563;Kayıp bir yüzüğün peşindeki adaımn hikayesini yaz.;sanatsal;claude_aug;auto-p1-0968;varyant:p1-0968
+aug-0564;Fabl yaz, ana karakterler tilki ve karga olsun;sanatsal;claude_aug;auto-p1-0972;varyant:p1-0972
+aug-0565;Nasreddin Hoca tarzında yeni bir fıkra yaz;sanatsal;claude_aug;auto-p1-0973;varyant:p1-0973
+aug-0566;Bana bir espi yap.;sanatsal;claude_aug;auto-p1-0976;varyant:p1-0976
+aug-0567;Bir sitcom bölümü için sahne yaz;sanatsal;claude_aug;auto-p1-0981;varyant:p1-0981
+aug-0568;Bir süper kahraman karakteri yarat;sanatsal;claude_aug;auto-p1-0984;varyant:p1-0984
+aug-0569;bir mektup yaz, gelecege gonderilecek.;sanatsal;claude_aug;auto-p1-0987;varyant:p1-0987
+aug-0570;Bir deneme yaz, konusu sabir.;sanatsal;claude_aug;auto-p1-0991;varyant:p1-0991
+aug-0571;Bir parfüm için şiirsel bir tanıtım yazsı yaz.;sanatsal;claude_aug;auto-p1-0998;varyant:p1-0998
+aug-0572;düğün davetiyesi için şiirsel bir metin yaz;sanatsal;claude_aug;auto-p1-1003;varyant:p1-1003
+aug-0573;emekli olan bir öğremene veda yazısı yaz.;sanatsal;claude_aug;auto-p1-1004;varyant:p1-1004
+aug-0574;Mesnevi tarzinda bir hikaye anlat.;sanatsal;claude_aug;auto-p1-1007;varyant:p1-1007
+aug-0575;Nazim Hikmet tarzinda serbest bir siir yaz.;sanatsal;claude_aug;auto-p1-1009;varyant:p1-1009
+aug-0576;Cemal Sureya tarzinda bir ask siiri yaz;sanatsal;claude_aug;auto-p1-1011;varyant:p1-1011
+aug-0577;Shakespeare tarzında bir monolog yaz;sanatsal;claude_aug;auto-p1-1012;varyant:p1-1012
+aug-0578;Alfabe şarısı yaz.;sanatsal;claude_aug;auto-p1-1018;varyant:p1-1018
+aug-0579;Bir karakterin iç monloğunu yaz.;sanatsal;claude_aug;auto-p1-1019;varyant:p1-1019
+aug-0580;Kayip bir kedinin eve donsu hikayesini yaz;sanatsal;claude_aug;auto-p1-1022;varyant:p1-1022
+aug-0581;Bulutla güneşin arkadaşlığını anlatan bir hikaye yaz;sanatsal;claude_aug;auto-p1-1024;varyant:p1-1024
+aug-0582;cadilar bayrami icin urkutucu bir siir yaz.;sanatsal;claude_aug;auto-p1-1030;varyant:p1-1030
+aug-0583;Yeni bir kelime uydur ve anlamını şiirle anlat;sanatsal;claude_aug;auto-p1-1036;varyant:p1-1036
+aug-0584;Bir kelime oyunu içeren şiir yaz;sanatsal;claude_aug;auto-p1-1037;varyant:p1-1037
+aug-0585;bir resmi betimleyen şiir yaz.;sanatsal;claude_aug;auto-p1-1039;varyant:p1-1039
+aug-0586;Hiciv yaz, konusu burokrasi.;sanatsal;claude_aug;auto-p1-1043;varyant:p1-1043
+aug-0587;Bir stand-up gotserisi icin kisa bir bolum yaz.;sanatsal;claude_aug;auto-p1-1045;varyant:p1-1045
+aug-0588;Bir doğm günü kartı için yaratıcı bir not yaz.;sanatsal;claude_aug;auto-p1-1046;varyant:p1-1046
+aug-0589;Sevgilime romanitk bir not yaz.;sanatsal;claude_aug;auto-p1-1047;varyant:p1-1047
+aug-0590;Bir şarkının nakaratını yaz, konusu özgürlük;sanatsal;claude_aug;auto-p1-1051;varyant:p1-1051
+aug-0591;Bir oyun karakteri için repliği yaz;sanatsal;claude_aug;auto-p1-1053;varyant:p1-1053
+aug-0592;Bir sovalyenin son svaasini anlatan destan yaz.;sanatsal;claude_aug;auto-p1-1055;varyant:p1-1055
+aug-0593;Ay'a giden ilk Turk astronotun hikayesini kurgula;sanatsal;claude_aug;auto-p1-1058;varyant:p1-1058
+aug-0594;yıldızlara sesleen bir şiir yaz.;sanatsal;claude_aug;auto-p1-1067;varyant:p1-1067
+aug-0595;kuşlar hakkında kısa bir şiir yaz.;sanatsal;claude_aug;auto-p1-1068;varyant:p1-1068
+aug-0596;19 mayıs için bir şiir yaz;sanatsal;claude_aug;auto-p1-1072;varyant:p1-1072
+aug-0597;ayrılık üzerine hüzünlü bir şiir yaz;sanatsal;claude_aug;auto-p1-1074;varyant:p1-1074
+aug-0598;Kirmizi baslikli kizi modern zamanda yeniden yaz.;sanatsal;claude_aug;auto-p1-1078;varyant:p1-1078
+aug-0599;bir kahramanlık destanı kaleme al;sanatsal;claude_aug;auto-p1-1080;varyant:p1-1080
+aug-0600;bir kuyruklu yıldızın dünyaya selamını şiirle anlat;sanatsal;claude_aug;auto-p1-1086;varyant:p1-1086
+aug-0601;Yalnız bir yıldızın hikayesini msal gibi anlat.;sanatsal;claude_aug;auto-p1-1087;varyant:p1-1087
+aug-0602;Kplumbağa ile tavşanın yeni bir yarışını anlat.;sanatsal;claude_aug;auto-p1-1091;varyant:p1-1091
+aug-0603;Bir hayaletin kendi evine geri dönüşünü anlatan öykü yaz;sanatsal;claude_aug;auto-p1-1093;varyant:p1-1093
+aug-0604;Gelecekten gelen bir haber bulteni yaz, mizahi olsun;sanatsal;claude_aug;auto-p1-1095;varyant:p1-1095
+aug-0605;hayali bir hayvanı ansiklopedi maddesi gibi anlat.;sanatsal;claude_aug;auto-p1-1098;varyant:p1-1098
+aug-0606;bir yapay zekanın şiir yazmaya çalışmasını anlatan şiir yaz.;sanatsal;claude_aug;auto-p1-1100;varyant:p1-1100
+aug-0607;bir ressamın son tablosunu anlatan öykü yaz;sanatsal;claude_aug;auto-p1-1101;varyant:p1-1101
+aug-0608;bir balerinin sahne korkusunu anlatan hikaye yaz;sanatsal;claude_aug;auto-p1-1102;varyant:p1-1102
+aug-0609;bir kalemin defterle arkadasligini anlatan masal yaz;sanatsal;claude_aug;auto-p1-1106;varyant:p1-1106
+aug-0610;Kar altindaki bir sehri betimleyen bir metin yaz.;sanatsal;claude_aug;auto-p1-1112;varyant:p1-1112
+aug-0611;Dört mevsiim anlatan dört dörtlükten oluşan bir şiir yaz.;sanatsal;claude_aug;auto-p1-1114;varyant:p1-1114
+aug-0612;Bir kral ile bir çobanın yer değiştirdiği masalı yaz;sanatsal;claude_aug;auto-p1-1124;varyant:p1-1124
+aug-0613;gökkuşağıınn renklerini kaybettiği bir masal yaz.;sanatsal;claude_aug;auto-p1-1125;varyant:p1-1125
+aug-0614;bir hava durumu sunucusu gibi duygularımı anlatan komik metin yaz;sanatsal;claude_aug;auto-p1-1127;varyant:p1-1127
+aug-0615;Bir kahve fincaninin sbah monologunu yaz.;sanatsal;claude_aug;auto-p1-1128;varyant:p1-1128
+aug-0616;bir kum saatinin zamanla tartışmasını yaz.;sanatsal;claude_aug;auto-p1-1130;varyant:p1-1130
+aug-0617;Yorgun bir şehrin uykuya dalışnıı anlatan şiir yaz.;sanatsal;claude_aug;auto-p1-1131;varyant:p1-1131
+aug-0618;bir dağın sabrını anlatan felsefi bir şiir yaz.;sanatsal;claude_aug;auto-p1-1132;varyant:p1-1132
+aug-0619;Yocluluk temalı bir şarkı sözü yaz.;sanatsal;claude_aug;auto-p1-1135;varyant:p1-1135
+aug-0620;dostluk temalı bir rap sözü yaz.;sanatsal;claude_aug;auto-p1-1136;varyant:p1-1136
+aug-0621;Bir kamp ateşi şarkııs yaz.;sanatsal;claude_aug;auto-p1-1137;varyant:p1-1137
+aug-0622;doğa sevgisi üzerine bir destan yaz.;sanatsal;claude_aug;auto-p1-1140;varyant:p1-1140
+aug-0623;kuantum fiziğini şiirle anlat.;sanatsal;claude_aug;auto-p1-1142;varyant:p1-1142
+aug-0624;Bir dedektifin son vakasını anltan polisiye öykü yaz.;sanatsal;claude_aug;auto-p1-1148;varyant:p1-1148
+aug-0625;Balina memelimi;genel;claude_aug;auto-p2-0001;varyant:p2-0001
+aug-0626;yarasa kus mu;genel;claude_aug;auto-p2-0002;varyant:p2-0002
+aug-0627;Fistik kuruyemis mi baklagil mi;genel;claude_aug;auto-p2-0004;varyant:p2-0004
+aug-0628;Ay bir gezegen mi;genel;claude_aug;auto-p2-0009;varyant:p2-0009
+aug-0629;su bir elementmi;genel;claude_aug;auto-p2-0011;varyant:p2-0011
+aug-0630;elmas krbondan mı oluşur;genel;claude_aug;auto-p2-0012;varyant:p2-0012
+aug-0631;Altın paslanır mı;genel;claude_aug;auto-p2-0013;varyant:p2-0013
+aug-0632;Kedi gece göreiblirmi;genel;claude_aug;auto-p2-0022;varyant:p2-0022
+aug-0633;bitikler nefes alır mı;genel;claude_aug;auto-p2-0026;varyant:p2-0026
+aug-0634;agaclar konusurmu;genel;claude_aug;auto-p2-0027;varyant:p2-0027
+aug-0635;insan beyni yüzde kaçnıı kullanır;genel;claude_aug;auto-p2-0028;varyant:p2-0028
+aug-0636;kan neden kirmizi;genel;claude_aug;auto-p2-0030;varyant:p2-0030
+aug-0637;Gözyaşı neden tuzlu;genel;claude_aug;auto-p2-0031;varyant:p2-0031
+aug-0638;esnemek neden bulasici;genel;claude_aug;auto-p2-0033;varyant:p2-0033
+aug-0639;ampulü kim budu;genel;claude_aug;auto-p2-0037;varyant:p2-0037
+aug-0640;matbaayı kim bldu;genel;claude_aug;auto-p2-0039;varyant:p2-0039
+aug-0641;Yerçekimini kim keşftti;genel;claude_aug;auto-p2-0042;varyant:p2-0042
+aug-0642;amerikayi kim kesfetti;genel;claude_aug;auto-p2-0043;varyant:p2-0043
+aug-0643;Dünyanın yuvarlak olduğunu kim buldu;genel;claude_aug;auto-p2-0044;varyant:p2-0044
+aug-0644;aisyi kim buldu;genel;claude_aug;auto-p2-0045;varyant:p2-0045
+aug-0645;Uçağı kim icat etti;genel;claude_aug;auto-p2-0047;varyant:p2-0047
+aug-0646;kâgidi kim buldu;genel;claude_aug;auto-p2-0049;varyant:p2-0049
+aug-0647;Pusulayı kim icat etti;genel;claude_aug;auto-p2-0050;varyant:p2-0050
+aug-0648;istiklal maşrını kim yazdı;genel;claude_aug;auto-p2-0051;varyant:p2-0051
+aug-0649;Nutuk ne zaman okundu;genel;claude_aug;auto-p2-0052;varyant:p2-0052
+aug-0650;Göktürk yazıtları nerede;genel;claude_aug;auto-p2-0054;varyant:p2-0054
+aug-0651;ilk kadin pilot kim;genel;claude_aug;auto-p2-0055;varyant:p2-0055
+aug-0652;Ilk türk kadın milletvekilleri kimlerdir;genel;claude_aug;auto-p2-0056;varyant:p2-0056
+aug-0653;osamnlı padişahları kimlerdir;genel;claude_aug;auto-p2-0057;varyant:p2-0057
+aug-0654;Fatih sultan mehmet kidir;genel;claude_aug;auto-p2-0058;varyant:p2-0058
+aug-0655;yavuz sultan selim ne yapti;genel;claude_aug;auto-p2-0060;varyant:p2-0060
+aug-0656;mimra sinan kimdir;genel;claude_aug;auto-p2-0061;varyant:p2-0061
+aug-0657;ibn-i sina kimdri;genel;claude_aug;auto-p2-0063;varyant:p2-0063
+aug-0658;farabi kmdir;genel;claude_aug;auto-p2-0064;varyant:p2-0064
+aug-0659;aşık veysel kimdr;genel;claude_aug;auto-p2-0068;varyant:p2-0068
+aug-0660;nazım hikmet kimidr;genel;claude_aug;auto-p2-0070;varyant:p2-0070
+aug-0661;Sabahattin ali kimdir;genel;claude_aug;auto-p2-0071;varyant:p2-0071
+aug-0662;Yaşar kemal kidir;genel;claude_aug;auto-p2-0072;varyant:p2-0072
+aug-0663;caht arf kimdir;genel;claude_aug;auto-p2-0073;varyant:p2-0073
+aug-0664;newton kimir;genel;claude_aug;auto-p2-0076;varyant:p2-0076
+aug-0665;tesla kimdri;genel;claude_aug;auto-p2-0077;varyant:p2-0077
+aug-0666;Darwin kimdir;genel;claude_aug;auto-p2-0079;varyant:p2-0079
+aug-0667;Tolstoy kimdir;genel;claude_aug;auto-p2-0086;varyant:p2-0086
+aug-0668;osmanlı tarihini ksaca anlat;genel;claude_aug;auto-p2-0090;varyant:p2-0090
+aug-0669;Cumhuriyet tarihini anlat;genel;claude_aug;auto-p2-0091;varyant:p2-0091
+aug-0670;ronesansi anlat;genel;claude_aug;auto-p2-0094;varyant:p2-0094
+aug-0671;sanayi devrimii anlat;genel;claude_aug;auto-p2-0095;varyant:p2-0095
+aug-0672;ikinci dunya savasini anlat;genel;claude_aug;auto-p2-0096;varyant:p2-0096
+aug-0673;soguk savasi anlat;genel;claude_aug;auto-p2-0097;varyant:p2-0097
+aug-0674;fotoentezi anlat;genel;claude_aug;auto-p2-0098;varyant:p2-0098
+aug-0675;hucre bolunmesini anlat;genel;claude_aug;auto-p2-0099;varyant:p2-0099
+aug-0676;Evriim anlat;genel;claude_aug;auto-p2-0100;varyant:p2-0100
+aug-0677;kuantum fiziğini basitçe anlta;genel;claude_aug;auto-p2-0101;varyant:p2-0101
+aug-0678;büyük patlamyaı anlat;genel;claude_aug;auto-p2-0103;varyant:p2-0103
+aug-0679;Iklim değişikliğini anlta;genel;claude_aug;auto-p2-0104;varyant:p2-0104
+aug-0680;Blockchaini anlat;genel;claude_aug;auto-p2-0106;varyant:p2-0106
+aug-0681;makine öğrenmesni anlat;genel;claude_aug;auto-p2-0107;varyant:p2-0107
+aug-0682;ktalar nelerdir;genel;claude_aug;auto-p2-0118;varyant:p2-0118
+aug-0683;Türkiyenin bölgeleri nelerdir;genel;claude_aug;auto-p2-0120;varyant:p2-0120
+aug-0684;duyu oranları nelerdir;genel;claude_aug;auto-p2-0124;varyant:p2-0124
+aug-0685;Kan gruplari nelerdir;genel;claude_aug;auto-p2-0127;varyant:p2-0127
+aug-0686;sindirim sitsemi organları nelerdir;genel;claude_aug;auto-p2-0128;varyant:p2-0128
+aug-0687;iskelet sistmeinin görevleri nelerdir;genel;claude_aug;auto-p2-0129;varyant:p2-0129
+aug-0688;basit makneler nelerdir;genel;claude_aug;auto-p2-0134;varyant:p2-0134
+aug-0689;geometrk şekiller nelerdir;genel;claude_aug;auto-p2-0136;varyant:p2-0136
+aug-0690;Açı çeşitleri nelerdir;genel;claude_aug;auto-p2-0137;varyant:p2-0137
+aug-0691;sayi kumeleri nelerdir;genel;claude_aug;auto-p2-0139;varyant:p2-0139
+aug-0692;noktalama işraetleri nelerdir;genel;claude_aug;auto-p2-0140;varyant:p2-0140
+aug-0693;türçkedeki ekler nelerdir;genel;claude_aug;auto-p2-0141;varyant:p2-0141
+aug-0694;cümlenin ögleri nelerdir;genel;claude_aug;auto-p2-0143;varyant:p2-0143
+aug-0695;divan edebiyaıt nazım şekilleri nelerdir;genel;claude_aug;auto-p2-0146;varyant:p2-0146
+aug-0696;müzik türleri neelrdir;genel;claude_aug;auto-p2-0150;varyant:p2-0150
+aug-0697;Türk halk müziği çalgıları nelerdir;genel;claude_aug;auto-p2-0151;varyant:p2-0151
+aug-0698;osmanlı mimarisinin özellikleri nelredir;genel;claude_aug;auto-p2-0153;varyant:p2-0153
+aug-0699;cocuk haklari nelerdir;genel;claude_aug;auto-p2-0156;varyant:p2-0156
+aug-0700;Devletin organları nelerdir;genel;claude_aug;auto-p2-0159;varyant:p2-0159
+aug-0701;Programlama dilleri türleri nelerdir;genel;claude_aug;auto-p2-0161;varyant:p2-0161
+aug-0702;Sıralama algoritmaları nelerdir;genel;claude_aug;auto-p2-0163;varyant:p2-0163
+aug-0703;linux temel komutları nelerdri;genel;claude_aug;auto-p2-0168;varyant:p2-0168
+aug-0704;Javascript veri tipleri nelerdir;genel;claude_aug;auto-p2-0170;varyant:p2-0170
+aug-0705;Css seçcileri nelerdir;genel;claude_aug;auto-p2-0172;varyant:p2-0172
+aug-0706;Ağ topolojileri nelerdir;genel;claude_aug;auto-p2-0175;varyant:p2-0175
+aug-0707;osi katmanlari nelerdir;genel;claude_aug;auto-p2-0176;varyant:p2-0176
+aug-0708;siber saldiri turleri nelerdir;genel;claude_aug;auto-p2-0177;varyant:p2-0177
+aug-0709;Iklim tipleri nelerdir;genel;claude_aug;auto-p2-0181;varyant:p2-0181
+aug-0710;Bulut türleri nelerdir;genel;claude_aug;auto-p2-0184;varyant:p2-0184
+aug-0711;ilk yardımın teel ilkeleri nelerdir;genel;claude_aug;auto-p2-0186;varyant:p2-0186
+aug-0712;d vitamini eksikliği belirtileri nelrdir;genel;claude_aug;auto-p2-0189;varyant:p2-0189
+aug-0713;Inmenin belirtilrei nelerdir;genel;claude_aug;auto-p2-0192;varyant:p2-0192
+aug-0714;kitap okumanın faydalraı nelerdir;genel;claude_aug;auto-p2-0194;varyant:p2-0194
+aug-0715;Yürüyüşün faydaları nelerir;genel;claude_aug;auto-p2-0195;varyant:p2-0195
+aug-0716;znecefilin faydalari nelerdir;genel;claude_aug;auto-p2-0198;varyant:p2-0198
+aug-0717;Sabah kahvaltısının öneim nedir;genel;claude_aug;auto-p2-0199;varyant:p2-0199
+aug-0718;iyi uyku için öneiler;genel;claude_aug;auto-p2-0200;varyant:p2-0200
+aug-0719;Evde zaman geçirmek için aktivite önerileri;genel;claude_aug;auto-p2-0203;varyant:p2-0203
+aug-0720;cocuklarla yapilacak etkinlik onerileri;genel;claude_aug;auto-p2-0205;varyant:p2-0205
+aug-0721;proje konusu onerileri;genel;claude_aug;auto-p2-0209;varyant:p2-0209
+aug-0722;Sunum konusu önerileri;genel;claude_aug;auto-p2-0211;varyant:p2-0211
+aug-0723;tez konusu nsaıl seçilir;genel;claude_aug;auto-p2-0212;varyant:p2-0212
+aug-0724;Siyah pnatolonun üstüne ne giyilir;genel;claude_aug;auto-p2-0218;varyant:p2-0218
+aug-0725;sac bakimi icin dogal yontemler;genel;claude_aug;auto-p2-0220;varyant:p2-0220
+aug-0726;Tırnak kırılmasına karşı öneriler;genel;claude_aug;auto-p2-0221;varyant:p2-0221
+aug-0727;sivilceye karşı neer yapılabilir;genel;claude_aug;auto-p2-0222;varyant:p2-0222
+aug-0728;Bel fıtığına iyi gelen hareketler;genel;claude_aug;auto-p2-0225;varyant:p2-0225
+aug-0729;Boğaz ağrısına ne iyi gelir;genel;claude_aug;auto-p2-0227;varyant:p2-0227
+aug-0730;bas agrisina ne iyi gelir;genel;claude_aug;auto-p2-0230;varyant:p2-0230
+aug-0731;stresi azaltmak için ne yapılabilr;genel;claude_aug;auto-p2-0231;varyant:p2-0231
+aug-0732;mtoivasyon nasıl artırılır;genel;claude_aug;auto-p2-0232;varyant:p2-0232
+aug-0733;özgüven nasıl kazaılır;genel;claude_aug;auto-p2-0233;varyant:p2-0233
+aug-0734;evcil hayvan bakimi nasil yaplir;genel;claude_aug;auto-p2-0237;varyant:p2-0237
+aug-0735;Akvaryum nasıl kurulur;genel;claude_aug;auto-p2-0240;varyant:p2-0240
+aug-0736;ev nasıl daha düzenil tutulur;genel;claude_aug;auto-p2-0243;varyant:p2-0243
+aug-0737;kucuk ev nasil dekore edilir;genel;claude_aug;auto-p2-0245;varyant:p2-0245
+aug-0738;yatırım çeşitleir nelerdir;genel;claude_aug;auto-p2-0249;varyant:p2-0249
+aug-0739;hisse senedi nsail alinir;genel;claude_aug;auto-p2-0250;varyant:p2-0250
+aug-0740;telif hakki nedir;genel;claude_aug;auto-p2-0262;varyant:p2-0262
+aug-0741;guvenli internet kullanimi icin oneriler;genel;claude_aug;auto-p2-0267;varyant:p2-0267
+aug-0742;Çouklar için ekran süresi önerileri;genel;claude_aug;auto-p2-0268;varyant:p2-0268
+aug-0743;Öğrenci vizesi nasıl alınır;genel;claude_aug;auto-p2-0272;varyant:p2-0272
+aug-0744;yurtdisnida yuksek lisans nasil yapilir;genel;claude_aug;auto-p2-0274;varyant:p2-0274
+aug-0745;Tus nedir;genel;claude_aug;auto-p2-0277;varyant:p2-0277
+aug-0746;yandal ile cift anadal farki nedir;genel;claude_aug;auto-p2-0280;varyant:p2-0280
+aug-0747;Staj defteri nasıl doldurulur;genel;claude_aug;auto-p2-0284;varyant:p2-0284
+aug-0748;portfoy nasil hazirlanir;genel;claude_aug;auto-p2-0286;varyant:p2-0286
+aug-0749;Stack overflowda nasıl soru sorulur;genel;claude_aug;auto-p2-0289;varyant:p2-0289
+aug-0750;code revew nedir;genel;claude_aug;auto-p2-0292;varyant:p2-0292
+aug-0751;Agile nedir;genel;claude_aug;auto-p2-0293;varyant:p2-0293
+aug-0752;Scrum nedir;genel;claude_aug;auto-p2-0294;varyant:p2-0294
+aug-0753;kanan nedir;genel;claude_aug;auto-p2-0295;varyant:p2-0295
+aug-0754;Figma nedir;genel;claude_aug;auto-p2-0297;varyant:p2-0297
+aug-0755;renk torisi nedir;genel;claude_aug;auto-p2-0299;varyant:p2-0299
+aug-0756;tpiografi nedir;genel;claude_aug;auto-p2-0300;varyant:p2-0300
+aug-0757;arabam 150 bin kmde triger değiştirmli miyim;kisisel;claude_aug;auto-p2-0308;varyant:p2-0308
+aug-0758;evimde nem var duvarlar kufleniyor ne yapayim;kisisel;claude_aug;auto-p2-0310;varyant:p2-0310
+aug-0759;muahbbet kuşum tüy döküyor neden;kisisel;claude_aug;auto-p2-0315;varyant:p2-0315
+aug-0760;Balığım akvaryumun dibinde yatıyor;kisisel;claude_aug;auto-p2-0316;varyant:p2-0316
+aug-0761;Emeklilik için birikim yapmalı mıyım 30 yaşındayım;kisisel;claude_aug;auto-p2-0320;varyant:p2-0320
+aug-0762;sevgilimle evlenmelimiyim;kisisel;claude_aug;auto-p2-0322;varyant:p2-0322
+aug-0763;yüksek lisansa bşalamalı mıyım;kisisel;claude_aug;auto-p2-0324;varyant:p2-0324
+aug-0764;Bölüm değiştirmeli miyim;kisisel;claude_aug;auto-p2-0326;varyant:p2-0326
+aug-0765;spor salonuna mi gitsem evde mi calissam;kisisel;claude_aug;auto-p2-0329;varyant:p2-0329
+aug-0766;oğluma hani oyuncağı alayım 5 yaşında;kisisel;claude_aug;auto-p2-0336;varyant:p2-0336
+aug-0767;Çocuğuma nasıl ders çalıştırayım;kisisel;claude_aug;auto-p2-0337;varyant:p2-0337
+aug-0768;çocuğum yaan söylüyor ne yapmalıyım;kisisel;claude_aug;auto-p2-0338;varyant:p2-0338
+aug-0769;arkadaşım bana borcnu ödemiyor;kisisel;claude_aug;auto-p2-0341;varyant:p2-0341
+aug-0770;kardesimle aram bozuk barismak istiyorum;kisisel;claude_aug;auto-p2-0342;varyant:p2-0342
+aug-0771;yeni bir şehe taşındım kimseyi tanımıyorum;kisisel;claude_aug;auto-p2-0346;varyant:p2-0346
+aug-0772;kirami odeyemiyorum ne yapayim;kisisel;claude_aug;auto-p2-0351;varyant:p2-0351
+aug-0773;borçlarım çok fazla nsaıl kurtulurum;kisisel;claude_aug;auto-p2-0352;varyant:p2-0352
+aug-0774;vergi bocrum var mı nasıl öğrenirim;kisisel;claude_aug;auto-p2-0354;varyant:p2-0354
+aug-0775;Sgk primlerim eksikmi;kisisel;claude_aug;auto-p2-0355;varyant:p2-0355
+aug-0776;emekli olmama kac gun kaldi;kisisel;claude_aug;auto-p2-0356;varyant:p2-0356
+aug-0777;pasaportumun suresi doldu mu;kisisel;claude_aug;auto-p2-0358;varyant:p2-0358
+aug-0778;Ehliyetimin cezası var mı;kisisel;claude_aug;auto-p2-0359;varyant:p2-0359
+aug-0779;e devletime giremyorum;kisisel;claude_aug;auto-p2-0360;varyant:p2-0360
+aug-0780;Bu linke tıklamalımıyım;kisisel;claude_aug;auto-p2-0365;varyant:p2-0365
+aug-0781;Bu kodda nerede hata var;kisisel;claude_aug;auto-p2-0367;varyant:p2-0367
+aug-0782;bu fonksiyonu düzeltirmisin;kisisel;claude_aug;auto-p2-0368;varyant:p2-0368
+aug-0783;bu sorguyu hızlandrı;kisisel;claude_aug;auto-p2-0369;varyant:p2-0369
+aug-0784;bu hatayı nasıl çöerim;kisisel;claude_aug;auto-p2-0370;varyant:p2-0370
+aug-0785;şu kodu açıka;kisisel;claude_aug;auto-p2-0371;varyant:p2-0371
+aug-0786;bunu trkçeye çevir;kisisel;claude_aug;auto-p2-0372;varyant:p2-0372
+aug-0787;Bunu ingilizceye cevir;kisisel;claude_aug;auto-p2-0373;varyant:p2-0373
+aug-0788;bunu özele;kisisel;claude_aug;auto-p2-0374;varyant:p2-0374
+aug-0789;bunu daha kisa yaz;kisisel;claude_aug;auto-p2-0375;varyant:p2-0375
+aug-0790;Bunu madde madde yaz;kisisel;claude_aug;auto-p2-0376;varyant:p2-0376
+aug-0791;Bunu nasıl yaparım;kisisel;claude_aug;auto-p2-0379;varyant:p2-0379
+aug-0792;Bu doğru mu;kisisel;claude_aug;auto-p2-0380;varyant:p2-0380
+aug-0793;Bunun cevabı ne;kisisel;claude_aug;auto-p2-0383;varyant:p2-0383
+aug-0794;yukarıdaknii tekrar yaz;kisisel;claude_aug;auto-p2-0384;varyant:p2-0384
+aug-0795;yukarıdaki metinden soru çıar;kisisel;claude_aug;auto-p2-0386;varyant:p2-0386
+aug-0796;önceki koda yorm satırı ekle;kisisel;claude_aug;auto-p2-0388;varyant:p2-0388
+aug-0797;Son yazdığın şeyi açıkla;kisisel;claude_aug;auto-p2-0390;varyant:p2-0390
+aug-0798;dveam eder misin;kisisel;claude_aug;auto-p2-0391;varyant:p2-0391
+aug-0799;kaldigin yerden devam et;kisisel;claude_aug;auto-p2-0392;varyant:p2-0392
+aug-0800;Ikinci maddeyi aç;kisisel;claude_aug;auto-p2-0397;varyant:p2-0397
+aug-0801;bunlardan biini seç benim için;kisisel;claude_aug;auto-p2-0399;varyant:p2-0399
+aug-0802;Hangisini almalıyım;kisisel;claude_aug;auto-p2-0400;varyant:p2-0400
+aug-0803;Bu program bilgisayarımda çlışır mı;kisisel;claude_aug;auto-p2-0402;varyant:p2-0402
+aug-0804;bu oyun bilgisayraımı kaldırırmı;kisisel;claude_aug;auto-p2-0403;varyant:p2-0403
+aug-0805;Bu yemeği yiyebilir miyim diyetteyim;kisisel;claude_aug;auto-p2-0406;varyant:p2-0406
+aug-0806;Gözüm seğiriyor neden;kisisel;claude_aug;auto-p2-0413;varyant:p2-0413
+aug-0807;hamile olabilirmiyim;kisisel;claude_aug;auto-p2-0415;varyant:p2-0415
+aug-0808;Tahlil sonucum kötümü;kisisel;claude_aug;auto-p2-0416;varyant:p2-0416
+aug-0809;kaç klaori yemeliyim kilo vermek için 75 kiloyum;kisisel;claude_aug;auto-p2-0420;varyant:p2-0420
+aug-0810;hatfada kac kilo verebilirim;kisisel;claude_aug;auto-p2-0421;varyant:p2-0421
+aug-0811;ortalaammı hesapla;kisisel;claude_aug;auto-p2-0423;varyant:p2-0423
+aug-0812;notlarım yeterlimi;kisisel;claude_aug;auto-p2-0424;varyant:p2-0424
+aug-0813;puanimla hangi bolumler gelir;kisisel;claude_aug;auto-p2-0426;varyant:p2-0426
+aug-0814;bursu alabilirmiyim;kisisel;claude_aug;auto-p2-0427;varyant:p2-0427
+aug-0815;iş bşvurum kabul edilir mi;kisisel;claude_aug;auto-p2-0429;varyant:p2-0429
+aug-0816;ön yazmı düzenle;kisisel;claude_aug;auto-p2-0431;varyant:p2-0431
+aug-0817;işten çıkaırldım haklarım ne;kisisel;claude_aug;auto-p2-0434;varyant:p2-0434
+aug-0818;tazminat alabilirmiyim;kisisel;claude_aug;auto-p2-0435;varyant:p2-0435
+aug-0819;Ev sahibim beni çıkarabilirmi;kisisel;claude_aug;auto-p2-0437;varyant:p2-0437
+aug-0820;komsumun agci bahceme giriyor;kisisel;claude_aug;auto-p2-0438;varyant:p2-0438
+aug-0821;aracima capran kacti ne yapayim;kisisel;claude_aug;auto-p2-0439;varyant:p2-0439
+aug-0822;telefonum çalıdnı ne yapmalıyım;kisisel;claude_aug;auto-p2-0440;varyant:p2-0440
+aug-0823;Bugün ne yapsam;kisisel;claude_aug;auto-p2-0444;varyant:p2-0444
+aug-0824;akaşma ne pişireyim;kisisel;claude_aug;auto-p2-0445;varyant:p2-0445
+aug-0825;Hafta sonu nereye gideyim;kisisel;claude_aug;auto-p2-0447;varyant:p2-0447
+aug-0826;hagni diziye başlasam;kisisel;claude_aug;auto-p2-0450;varyant:p2-0450
+aug-0827;Hangi dili öğreneyim;kisisel;claude_aug;auto-p2-0453;varyant:p2-0453
+aug-0828;nerden baslasam;kisisel;claude_aug;auto-p2-0455;varyant:p2-0455
+aug-0829;Ne yapmalıyım bilmiyorum;kisisel;claude_aug;auto-p2-0456;varyant:p2-0456
+aug-0830;Çok skıldım;kisisel;claude_aug;auto-p2-0457;varyant:p2-0457
+aug-0831;canım skkın;kisisel;claude_aug;auto-p2-0458;varyant:p2-0458
+aug-0832;Çok stresliyim;kisisel;claude_aug;auto-p2-0459;varyant:p2-0459
+aug-0833;Uyuyaiyorum;kisisel;claude_aug;auto-p2-0460;varyant:p2-0460
+aug-0834;ilk ranedvum var ne konuşayım;kisisel;claude_aug;auto-p2-0468;varyant:p2-0468
+aug-0835;annemin dğoum gününe ne alayım;kisisel;claude_aug;auto-p2-0472;varyant:p2-0472
+aug-0836;esme yil donumu icin ne yapayim;kisisel;claude_aug;auto-p2-0475;varyant:p2-0475
+aug-0837;benim hakkimda ne dusunuyorsun;kisisel;claude_aug;auto-p2-0476;varyant:p2-0476
+aug-0838;beni tniyor musun;kisisel;claude_aug;auto-p2-0477;varyant:p2-0477
+aug-0839;en son ne konustuk;kisisel;claude_aug;auto-p2-0480;varyant:p2-0480
+aug-0840;dun sana ne demistim;kisisel;claude_aug;auto-p2-0481;varyant:p2-0481
+aug-0841;yaşımı hatırlıyro musun;kisisel;claude_aug;auto-p2-0485;varyant:p2-0485
+aug-0842;benim icin not al;kisisel;claude_aug;auto-p2-0487;varyant:p2-0487
+aug-0843;bunu hatila;kisisel;claude_aug;auto-p2-0488;varyant:p2-0488
+aug-0844;yarın bana haırlat;kisisel;claude_aug;auto-p2-0490;varyant:p2-0490
+aug-0845;Alarm kur;kisisel;claude_aug;auto-p2-0491;varyant:p2-0491
+aug-0846;takviimme ekle;kisisel;claude_aug;auto-p2-0493;varyant:p2-0493
+aug-0847;mesj gönder anneme;kisisel;claude_aug;auto-p2-0494;varyant:p2-0494
+aug-0848;Konumumu paylas;kisisel;claude_aug;auto-p2-0496;varyant:p2-0496
+aug-0849;yakinimdaki eczane nerede;kisisel;claude_aug;auto-p2-0497;varyant:p2-0497
+aug-0850;Evime nasıl giderim;kisisel;claude_aug;auto-p2-0499;varyant:p2-0499
+aug-0851;Bulundugum yerde hava nasil;kisisel;claude_aug;auto-p2-0500;varyant:p2-0500
+aug-0852;su an bulundugum yerin adi ne;kisisel;claude_aug;auto-p2-0501;varyant:p2-0501
+aug-0853;Eski bir laptopum var photoshop çalıştırır mı;kisisel;claude_aug;auto-p2-0502;varyant:p2-0502
+aug-0854;bisikletim var ise bisikletle gitmeli miyim;kisisel;claude_aug;auto-p2-0504;varyant:p2-0504
+aug-0855;kahve makineis fiyatları nedir ?;degisken;claude_aug;auto-p2-0508;varyant:p2-0508
+aug-0856;bulaşık makinesi fiyatı ne kaadr;degisken;claude_aug;auto-p2-0509;varyant:p2-0509
+aug-0857;çamaşır makinesi ne kadara alınr;degisken;claude_aug;auto-p2-0510;varyant:p2-0510
+aug-0858;dershane fiyalari nedir;degisken;claude_aug;auto-p2-0517;varyant:p2-0517
+aug-0859;Diş teli maliyeti ne kadardır;degisken;claude_aug;auto-p2-0521;varyant:p2-0521
+aug-0860;lazer epilasyon fiyatlaı nedir;degisken;claude_aug;auto-p2-0522;varyant:p2-0522
+aug-0861;saç ekimi ne kdar tutar;degisken;claude_aug;auto-p2-0523;varyant:p2-0523
+aug-0862;Göz ameliyatı ücreti ne kadar;degisken;claude_aug;auto-p2-0524;varyant:p2-0524
+aug-0863;Kedi maması fiyatları nedir;degisken;claude_aug;auto-p2-0526;varyant:p2-0526
+aug-0864;uçak blieti neden bu kadar pahalı;degisken;claude_aug;auto-p2-0530;varyant:p2-0530
+aug-0865;kahve neden pahalandi;degisken;claude_aug;auto-p2-0534;varyant:p2-0534
+aug-0866;lastik fiyatalrı ne durumda;degisken;claude_aug;auto-p2-0535;varyant:p2-0535
+aug-0867;kasko ucreti ne kadar tutar;degisken;claude_aug;auto-p2-0536;varyant:p2-0536
+aug-0868;Pasaport çıkamak kaça mal olur;degisken;claude_aug;auto-p2-0539;varyant:p2-0539
+aug-0869;Yurtdışına çıkış harcı ne kadar;degisken;claude_aug;auto-p2-0541;varyant:p2-0541
+aug-0870;Noter ücretleri nedir;degisken;claude_aug;auto-p2-0542;varyant:p2-0542
+aug-0871;kombi baikmi ne kadar;degisken;claude_aug;auto-p2-0545;varyant:p2-0545
+aug-0872;Fiber internet ücreti ne kadar;degisken;claude_aug;auto-p2-0548;varyant:p2-0548
+aug-0873;telefon faurası tarifeleri nelerdir;degisken;claude_aug;auto-p2-0549;varyant:p2-0549
+aug-0874;Oyun konsolu fiyatları ne durumda;degisken;claude_aug;auto-p2-0550;varyant:p2-0550
+aug-0875;Bisiklet fiyatlari nedir;degisken;claude_aug;auto-p2-0555;varyant:p2-0555
+aug-0876;çiçek fiyatları ndir;degisken;claude_aug;auto-p2-0559;varyant:p2-0559
+aug-0877;Simit kac lira;degisken;claude_aug;auto-p2-0562;varyant:p2-0562
+aug-0878;Konser biletleri neden pahalı;degisken;claude_aug;auto-p2-0565;varyant:p2-0565
+aug-0879;stayum bileti fiyatları nedir;degisken;claude_aug;auto-p2-0567;varyant:p2-0567
+aug-0880;spor salonu aylık ne kadra;degisken;claude_aug;auto-p2-0568;varyant:p2-0568
+aug-0881;aaprt fiyatları ne durumda;degisken;claude_aug;auto-p2-0576;varyant:p2-0576
+aug-0882;bir uçağın maliyeti ne kadra;degisken;claude_aug;auto-p2-0577;varyant:p2-0577
+aug-0883;bir film çekmenin mailyeti ne kadar;degisken;claude_aug;auto-p2-0580;varyant:p2-0580
+aug-0884;hemsire maasi ne kadar;degisken;claude_aug;auto-p2-0582;varyant:p2-0582
+aug-0885;Polis maaşları ne durumda;degisken;claude_aug;auto-p2-0583;varyant:p2-0583
+aug-0886;Pilot maaşı nedir;degisken;claude_aug;auto-p2-0585;varyant:p2-0585
+aug-0887;avukat maaslari ne kadar;degisken;claude_aug;auto-p2-0586;varyant:p2-0586
+aug-0888;elektrikli arac modelleri nelerdir;degisken;claude_aug;auto-p2-0593;varyant:p2-0593
+aug-0889;piyasadaki en iyi roobt süpürgeler hangileri;degisken;claude_aug;auto-p2-0595;varyant:p2-0595
+aug-0890;En çok indirilen uygulamalar hangileri;degisken;claude_aug;auto-p2-0598;varyant:p2-0598
+aug-0891;En iyi kod editörleri hangileri;degisken;claude_aug;auto-p2-0600;varyant:p2-0600
+aug-0892;vizyodaki filmler nelerdir;degisken;claude_aug;auto-p2-0603;varyant:p2-0603
+aug-0893;cem ylmaz filmleri nelerdir;degisken;claude_aug;auto-p2-0610;varyant:p2-0610
+aug-0894;Kıvanç tatlıtuğ dizileri nelerdir;degisken;claude_aug;auto-p2-0612;varyant:p2-0612
+aug-0895;haluk bilginer filmleri nelrdir;degisken;claude_aug;auto-p2-0613;varyant:p2-0613
+aug-0896;Canan tan kitapları nelerdir;degisken;claude_aug;auto-p2-0616;varyant:p2-0616
+aug-0897;en cok satan kitaplar hangileri;degisken;claude_aug;auto-p2-0618;varyant:p2-0618
+aug-0898;Istanbulda yeni açılan restoranlar nelerdir;degisken;claude_aug;auto-p2-0619;varyant:p2-0619
+aug-0899;ankarada yeni acilan avm ler;degisken;claude_aug;auto-p2-0620;varyant:p2-0620
+aug-0900;türkiyedeki uniconr şirketler nelerdir;degisken;claude_aug;auto-p2-0622;varyant:p2-0622
+aug-0901;Yeni çıkan kripto paralar hangileri;degisken;claude_aug;auto-p2-0625;varyant:p2-0625
+aug-0902;Galatasarayın kadrosu nasıl;degisken;claude_aug;auto-p2-0629;varyant:p2-0629
+aug-0903;Super ligdeki yabanci oyuncular kimler;degisken;claude_aug;auto-p2-0631;varyant:p2-0631
+aug-0904;mecliste kac milletvekili hangi partiden;degisken;claude_aug;auto-p2-0634;varyant:p2-0634
+aug-0905;Vizeisz gidilen ülkeler nelerdir;degisken;claude_aug;auto-p2-0637;varyant:p2-0637
+aug-0906;dunyanin en buyuk sirketleri hangileri;degisken;claude_aug;auto-p2-0641;varyant:p2-0641
+aug-0907;En zengin futbol kulübü hangisi;degisken;claude_aug;auto-p2-0642;varyant:p2-0642
+aug-0908;Din gerekli midir;degisken;claude_aug;auto-p2-0644;varyant:p2-0644
+aug-0909;kürtaj doğrumu;degisken;claude_aug;auto-p2-0650;varyant:p2-0650
+aug-0910;hyvan deneyleri etik midir;degisken;claude_aug;auto-p2-0651;varyant:p2-0651
+aug-0911;Ozgur irade var midir;degisken;claude_aug;auto-p2-0654;varyant:p2-0654
+aug-0912;kader degistirilebilir mi;degisken;claude_aug;auto-p2-0656;varyant:p2-0656
+aug-0913;elilik gerekli midir;degisken;claude_aug;auto-p2-0657;varyant:p2-0657
+aug-0914;cocuk yapmak bencillik midir;degisken;claude_aug;auto-p2-0658;varyant:p2-0658
+aug-0915;Okullar gereksiz mi;degisken;claude_aug;auto-p2-0660;varyant:p2-0660
+aug-0916;en iyi devlet başkanı kidi;degisken;claude_aug;auto-p2-0665;varyant:p2-0665
+aug-0917;windowsmu mac mi;degisken;claude_aug;auto-p2-0670;varyant:p2-0670
+aug-0918;Sence hayatın amacı ne;degisken;claude_aug;auto-p2-0675;varyant:p2-0675
+aug-0919;Sen bir inasn mısın;degisken;claude_aug;auto-p2-0678;varyant:p2-0678
+aug-0920;kaç yaındasın;degisken;claude_aug;auto-p2-0681;varyant:p2-0681
+aug-0921;bilgilerin ne kadar güncle;degisken;claude_aug;auto-p2-0683;varyant:p2-0683
+aug-0922;sana nasil ulasabilirim;degisken;claude_aug;auto-p2-0684;varyant:p2-0684
+aug-0923;lodos ne zmaan bitecek;degisken;claude_aug;auto-p2-0687;varyant:p2-0687
+aug-0924;denize girmek için hava uygunmu bugün;degisken;claude_aug;auto-p2-0689;varyant:p2-0689
+aug-0925;Deprem riski su an yuksek mi;degisken;claude_aug;auto-p2-0690;varyant:p2-0690
+aug-0926;Bayram tatili kac gun olacak;degisken;claude_aug;auto-p2-0693;varyant:p2-0693
+aug-0927;kurban byramı bu yıl ne zaman;degisken;claude_aug;auto-p2-0695;varyant:p2-0695
+aug-0928;Seçim ne zaman yapılacak;degisken;claude_aug;auto-p2-0699;varyant:p2-0699
+aug-0929;Yeni anayasa çıkacak mı;degisken;claude_aug;auto-p2-0700;varyant:p2-0700
+aug-0930;emeklilikte yasa takilanlar ne olacak;degisken;claude_aug;auto-p2-0701;varyant:p2-0701
+aug-0931;Memur zammı ne zaman belli olacak;degisken;claude_aug;auto-p2-0704;varyant:p2-0704
+aug-0932;krdei kartı limitleri düşürülecek mi;degisken;claude_aug;auto-p2-0705;varyant:p2-0705
+aug-0933;Faizler düşecek mi;degisken;claude_aug;auto-p2-0706;varyant:p2-0706
+aug-0934;Lgs ne zaman yapılacak;degisken;claude_aug;auto-p2-0710;varyant:p2-0710
+aug-0935;e-devlet şifrei neden çalışmıyor şu an;degisken;claude_aug;auto-p2-0713;varyant:p2-0713
+aug-0936;Whatsapp nedne açılmıyor şu an;degisken;claude_aug;auto-p2-0715;varyant:p2-0715
+aug-0937;Youtube erişim sorunu var mı;degisken;claude_aug;auto-p2-0716;varyant:p2-0716
+aug-0938;Transfer dönemi ne zaman kapanıyor;degisken;claude_aug;auto-p2-0723;varyant:p2-0723
+aug-0939;bana şans sayısı söye;degisken;claude_aug;auto-p2-0727;varyant:p2-0727
+aug-0940;Rastgele bir hayvan soyle;degisken;claude_aug;auto-p2-0728;varyant:p2-0728
+aug-0941;bugun ne yesem rastgele soyle;degisken;claude_aug;auto-p2-0734;varyant:p2-0734
+aug-0942;Türev soruları hazırla;degisken;claude_aug;auto-p2-0739;varyant:p2-0739
+aug-0943;ingilizce kelime testi hazılra;degisken;claude_aug;auto-p2-0741;varyant:p2-0741
+aug-0944;bir aknet olustur;degisken;claude_aug;auto-p2-0744;varyant:p2-0744
+aug-0945;sahte isim lsitesi oluştur;degisken;claude_aug;auto-p2-0747;varyant:p2-0747
+aug-0946;lorem ipsum benzeri turkce metin uret;degisken;claude_aug;auto-p2-0749;varyant:p2-0749
+aug-0947;gelecke yıl dolar kaç olur;degisken;claude_aug;auto-p2-0754;varyant:p2-0754
+aug-0948;Bu sezon şampiyon kim olacak;degisken;claude_aug;auto-p2-0756;varyant:p2-0756
+aug-0949;seçimde hangi parti kazaacak;degisken;claude_aug;auto-p2-0757;varyant:p2-0757
+aug-0950;bitcoin bu yil kac dolar olur;degisken;claude_aug;auto-p2-0758;varyant:p2-0758
+aug-0951;Bir aşk şiiri yaz;sanatsal;claude_aug;auto-p2-0763;varyant:p2-0763
+aug-0952;Istanbul şiiri yaz;sanatsal;claude_aug;auto-p2-0768;varyant:p2-0768
+aug-0953;Kradesime siir yaz;sanatsal;claude_aug;auto-p2-0771;varyant:p2-0771
+aug-0954;arkadasim icin siir yaz;sanatsal;claude_aug;auto-p2-0772;varyant:p2-0772
+aug-0955;Sevgilime şiir yaz;sanatsal;claude_aug;auto-p2-0774;varyant:p2-0774
+aug-0956;Kediye şiir yaz;sanatsal;claude_aug;auto-p2-0775;varyant:p2-0775
+aug-0957;kis siiir yaz;sanatsal;claude_aug;auto-p2-0777;varyant:p2-0777
+aug-0958;ay ile iligli şiir;sanatsal;claude_aug;auto-p2-0780;varyant:p2-0780
+aug-0959;Çiek şiiri yaz;sanatsal;claude_aug;auto-p2-0782;varyant:p2-0782
+aug-0960;Şehitler için şiir yaz;sanatsal;claude_aug;auto-p2-0785;varyant:p2-0785
+aug-0961;Kitap hakknda şiir yaz;sanatsal;claude_aug;auto-p2-0788;varyant:p2-0788
+aug-0962;Kahve şiiri yaz;sanatsal;claude_aug;auto-p2-0789;varyant:p2-0789
+aug-0963;Hasret siiri yaz;sanatsal;claude_aug;auto-p2-0792;varyant:p2-0792
+aug-0964;Kardeşlik şiiri yaz;sanatsal;claude_aug;auto-p2-0794;varyant:p2-0794
+aug-0965;Doğa şiiri yaz;sanatsal;claude_aug;auto-p2-0796;varyant:p2-0796
+aug-0966;hayvan sevgisi siiri yaz;sanatsal;claude_aug;auto-p2-0797;varyant:p2-0797
+aug-0967;bir hikaye yaazr misin;sanatsal;claude_aug;auto-p2-0799;varyant:p2-0799
+aug-0968;korku hiayesi yaz;sanatsal;claude_aug;auto-p2-0801;varyant:p2-0801
+aug-0969;ask hikayesi yaz;sanatsal;claude_aug;auto-p2-0804;varyant:p2-0804
+aug-0970;çocuk hikaysi yaz;sanatsal;claude_aug;auto-p2-0805;varyant:p2-0805
+aug-0971;Hayvanli bir hikaye yaz;sanatsal;claude_aug;auto-p2-0806;varyant:p2-0806
+aug-0972;Masal yaz;sanatsal;claude_aug;auto-p2-0807;varyant:p2-0807
+aug-0973;Uzay hikayesi yaz;sanatsal;claude_aug;auto-p2-0812;varyant:p2-0812
+aug-0974;robot hikaysi yaz;sanatsal;claude_aug;auto-p2-0814;varyant:p2-0814
+aug-0975;okul hikaysi yaz;sanatsal;claude_aug;auto-p2-0815;varyant:p2-0815
+aug-0976;köy hkiayesi yaz;sanatsal;claude_aug;auto-p2-0816;varyant:p2-0816
+aug-0977;Deniz hikayesi yaz;sanatsal;claude_aug;auto-p2-0817;varyant:p2-0817
+aug-0978;orman hikaesi yaz;sanatsal;claude_aug;auto-p2-0818;varyant:p2-0818
+aug-0979;Gizemli bir hikaye anlat;sanatsal;claude_aug;auto-p2-0821;varyant:p2-0821
+aug-0980;zaman makinesi hkayesi;sanatsal;claude_aug;auto-p2-0822;varyant:p2-0822
+aug-0981;Süper kahraman hikayesi yaz;sanatsal;claude_aug;auto-p2-0823;varyant:p2-0823
+aug-0982;bir msaal uydur;sanatsal;claude_aug;auto-p2-0826;varyant:p2-0826
+aug-0983;Hüzünlü şarkı sözü yaz;sanatsal;claude_aug;auto-p2-0832;varyant:p2-0832
+aug-0984;Çocuk şarkısı yaz;sanatsal;claude_aug;auto-p2-0837;varyant:p2-0837
+aug-0985;Bir jingle yaz;sanatsal;claude_aug;auto-p2-0840;varyant:p2-0840
+aug-0986;Ninni sözü uydur;sanatsal;claude_aug;auto-p2-0841;varyant:p2-0841
+aug-0987;Tekerleme uyudr;sanatsal;claude_aug;auto-p2-0842;varyant:p2-0842
+aug-0988;bir saka yap;sanatsal;claude_aug;auto-p2-0846;varyant:p2-0846
+aug-0989;Komik bir replik yaz;sanatsal;claude_aug;auto-p2-0847;varyant:p2-0847
+aug-0990;Snaryo yaz;sanatsal;claude_aug;auto-p2-0848;varyant:p2-0848
+aug-0991;Tiyatro oyunu yaz;sanatsal;claude_aug;auto-p2-0850;varyant:p2-0850
+aug-0992;diylog yaz;sanatsal;claude_aug;auto-p2-0852;varyant:p2-0852
+aug-0993;gunluk yaz bir karakterin gozunden;sanatsal;claude_aug;auto-p2-0855;varyant:p2-0855
+aug-0994;Deneme yaz;sanatsal;claude_aug;auto-p2-0856;varyant:p2-0856
+aug-0995;slogn yaz;sanatsal;claude_aug;auto-p2-0859;varyant:p2-0859
+aug-0996;slogan uret;sanatsal;claude_aug;auto-p2-0860;varyant:p2-0860
+aug-0997;Logo için isim uydru;sanatsal;claude_aug;auto-p2-0862;varyant:p2-0862
+aug-0998;Şirket ismi bul;sanatsal;claude_aug;auto-p2-0863;varyant:p2-0863
+aug-0999;marak ismi uydur;sanatsal;claude_aug;auto-p2-0865;varyant:p2-0865
+aug-1000;Oyun karakteri yarat;sanatsal;claude_aug;auto-p2-0867;varyant:p2-0867
+aug-1001;bir süper güç udur;sanatsal;claude_aug;auto-p2-0874;varyant:p2-0874
+aug-1002;Hayali bir hayvan uydur;sanatsal;claude_aug;auto-p2-0875;varyant:p2-0875
+aug-1003;Bir efsane uydur;sanatsal;claude_aug;auto-p2-0876;varyant:p2-0876
+aug-1004;Haiku yaz;sanatsal;claude_aug;auto-p2-0879;varyant:p2-0879
+aug-1005;Dörtlük yaz;sanatsal;claude_aug;auto-p2-0880;varyant:p2-0880
+aug-1006;gzael yaz;sanatsal;claude_aug;auto-p2-0883;varyant:p2-0883
+aug-1007;anlamli bir soz uydur;sanatsal;claude_aug;auto-p2-0890;varyant:p2-0890
+aug-1008;yilbasi mesaji yaz siirsel olsnu;sanatsal;claude_aug;auto-p2-0894;varyant:p2-0894
+aug-1009;dugun icin siir yaz;sanatsal;claude_aug;auto-p2-0896;varyant:p2-0896
+aug-1010;Nişan için şiir yaz;sanatsal;claude_aug;auto-p2-0897;varyant:p2-0897
+aug-1011;futbol hakknda şiir yaz;sanatsal;claude_aug;auto-p2-0904;varyant:p2-0904
+aug-1012;yemek hakkinda komik siir yaz;sanatsal;claude_aug;auto-p2-0905;varyant:p2-0905
+aug-1013;Sınav hakkında komik şiir yaz;sanatsal;claude_aug;auto-p2-0907;varyant:p2-0907
+aug-1014;kod yazmak hakkinda siir yaz;sanatsal;claude_aug;auto-p2-0910;varyant:p2-0910
+aug-1015;tarih hkakında hikaye yaz;sanatsal;claude_aug;auto-p2-0913;varyant:p2-0913
+aug-1016;ruzgar hakkinda siir yaz;sanatsal;claude_aug;auto-p2-0916;varyant:p2-0916

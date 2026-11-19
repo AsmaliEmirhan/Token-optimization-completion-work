@@ -1,0 +1,5 @@
+outputs/
+models/
+data/splits/
+__pycache__/
+*.zip

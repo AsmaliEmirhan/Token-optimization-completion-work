@@ -1,0 +1,3 @@
+# Colab'da torch zaten kurulu gelir; bu dosya eksikleri tamamlar.
+transformers>=4.40
+scikit-learn>=1.3

@@ -9,7 +9,9 @@
     "server": "tsx server/index.ts",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "tsx tests/runAllTests.ts",
+    "test:cost": "tsx server/services/cost/costEngine.test.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -18,6 +20,7 @@
     "express": "^5.2.1",
     "groq-sdk": "^1.6.0",
     "lucide-react": "^1.50.0",
+    "mysql2": "^3.24.6",
     "openai": "^7.27.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

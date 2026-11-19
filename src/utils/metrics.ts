@@ -227,3 +227,53 @@ export const calculateCostAggregate = (records: ExperimentRecord[]): CostAggrega
   };
 };
 
+export interface L1OptimizationStats {
+  hitCount: number;
+  missCount: number;
+  bypassCount: number;
+  hitRate: number; // percentage 0-100
+  totalAvoidedCost: number;
+  hasAvoidedCost: boolean;
+}
+
+/**
+ * Calculates L1 Exact Cache metrics across given records.
+ * Strictly calculates avoided chat costs without any classifier cost subtraction.
+ */
+export const calculateL1OptimizationStats = (records: ExperimentRecord[]): L1OptimizationStats => {
+  let hitCount = 0;
+  let missCount = 0;
+  let bypassCount = 0;
+  let totalAvoidedCost = 0;
+  let hasAvoidedCost = false;
+
+  for (const r of records) {
+    const isHit = r.telemetry?.cacheHit || r.metrics.cacheStatus === 'HIT';
+    const status = r.metrics.cacheStatus || (r.telemetry?.cacheHit ? 'HIT' : 'BYPASS');
+
+    if (isHit) {
+      hitCount++;
+      const avoided = r.metrics.estimatedAvoidedCost ?? r.telemetry?.estimatedAvoidedCost;
+      if (typeof avoided === 'number' && !Number.isNaN(avoided) && avoided > 0) {
+        totalAvoidedCost += avoided;
+        hasAvoidedCost = true;
+      }
+    } else if (status === 'MISS') {
+      missCount++;
+    } else {
+      bypassCount++;
+    }
+  }
+
+  const evaluated = hitCount + missCount;
+  const hitRate = evaluated > 0 ? Number(((hitCount / evaluated) * 100).toFixed(1)) : 0;
+
+  return {
+    hitCount,
+    missCount,
+    bypassCount,
+    hitRate,
+    totalAvoidedCost: Number(totalAvoidedCost.toFixed(8)),
+    hasAvoidedCost,
+  };
+};

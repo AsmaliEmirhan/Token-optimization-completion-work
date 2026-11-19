@@ -8,10 +8,13 @@ import {
   Sun, 
   Moon, 
   Check,
-  KeyRound
+  KeyRound,
+  Database,
+  ShieldCheck
 } from 'lucide-react';
 import { SparkleIcon } from './SparkleIcon';
 import { useTheme } from '../context/useTheme';
+import { getSessionId, getUserClassifierConsent, setUserClassifierConsent } from '../utils/session';
 
 type SettingsTab = 'genel' | 'api' | 'gorunum' | 'bildirimler' | 'hakkinda';
 
@@ -49,6 +52,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [isSaving, setIsSaving] = useState<Record<string, boolean>>({});
   const [saveErrors, setSaveErrors] = useState<Record<string, string | null>>({});
 
+  // TokenAI Classifier Consent & Status state
+  const [classifierConsent, setClassifierConsent] = useState(getUserClassifierConsent());
+  const [classifierStatus, setClassifierStatus] = useState<{ configured: boolean; model: string; enabled: boolean } | null>(null);
+
   const loadProviders = useCallback(async (signal?: AbortSignal) => {
     if (signal?.aborted) return;
     setIsLoadingProviders(true);
@@ -59,7 +66,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     const timeoutId = window.setTimeout(() => requestController.abort(), 8_000);
 
     try {
-      const res = await fetch('/api/providers', { signal: requestController.signal });
+      const res = await fetch('/api/providers', {
+        signal: requestController.signal,
+        headers: { 'x-session-id': getSessionId() },
+      });
       if (!res.ok) {
         throw new Error(`Provider listesi alınamadı (${res.status})`);
       }
@@ -85,11 +95,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     if (!isOpen) return;
     const controller = new AbortController();
     const timerId = window.setTimeout(() => void loadProviders(controller.signal), 0);
+
+    // Fetch classifier status
+    fetch('/api/classifier/status')
+      .then(res => res.json())
+      .then(data => setClassifierStatus(data))
+      .catch(() => {});
+
     return () => {
       window.clearTimeout(timerId);
       controller.abort();
     };
   }, [isOpen, loadProviders]);
+
+  const handleToggleClassifierConsent = () => {
+    const next = !classifierConsent;
+    setClassifierConsent(next);
+    setUserClassifierConsent(next);
+  };
 
   const handleSaveKey = async (providerId: string) => {
     const apiKey = keyInputs[providerId];
@@ -101,8 +124,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     try {
       const res = await fetch(`/api/providers/${providerId}/configure`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey })
+        headers: {
+          'Content-Type': 'application/json',
+          'x-session-id': getSessionId(),
+        },
+        body: JSON.stringify({ apiKey, sessionId: getSessionId() })
       });
       const data = await res.json();
       
@@ -111,7 +137,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         setKeyInputs(prev => ({ ...prev, [providerId]: '' }));
         window.dispatchEvent(new Event('providers-updated'));
       } else {
-        setSaveErrors(prev => ({ ...prev, [providerId]: data.error || 'Gemini API anahtarı doğrulanamadı.' }));
+        setSaveErrors(prev => ({ ...prev, [providerId]: data.error || 'API anahtarı doğrulanamadı.' }));
       }
     } catch (err) {
       console.error('Error saving key:', err);
@@ -394,6 +420,65 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                         Kullanılabilir API sağlayıcısı bulunamadı.
                       </div>
                     )}
+                  </div>
+
+                  {/* TokenAI Central Classifier Notice and Consent Card */}
+                  <div className="mt-5 pt-4 border-t border-[#EAE7DC] dark:border-white/[0.08]">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Database size={15} className="text-[#1677FF]" />
+                        <h4 className="text-[13px] font-semibold text-[#071A3D] dark:text-[#F4F4F5]">
+                          TokenAI L1 Önbellek & BERTurk Sınıflandırıcısı
+                        </h4>
+                      </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                        TokenAI Altyapısı
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#14171C] border border-[#E8E5DC] dark:border-white/[0.08] shadow-2xs space-y-3">
+                      <p className="text-[12px] text-[#596E8A] dark:text-[#9299A6] leading-relaxed">
+                        Sistem, tekrarlanan genel soruları (bilimsel ve teknik açıklamalar, tanımlar vb.) sağlayıcı bağımsız L1 MySQL önbelleğinde saklamak için sorularınızı TokenAI'nin yerel BERTurk modeliyle sınıflandırır. Sorularınız sınıflandırma için hiçbir dış servise gönderilmez. Kişisel, değişken ve sanatsal sorular önbelleğe alınmaz.
+                      </p>
+
+                      <div className="flex items-center gap-2 text-[11.5px] text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-500/10 dark:bg-emerald-500/15 p-2 rounded-xl border border-emerald-500/20">
+                        <ShieldCheck size={14} className="shrink-0" />
+                        <span>Sınıflandırıcının hiçbir maliyeti veya tokenı sizin sohbet API bakiyenize yansıtılmaz.</span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <div>
+                          <span className="text-[12.5px] font-semibold text-[#071A3D] dark:text-[#F4F4F5] block">
+                            Akıllı Soru Sınıflandırma Onayı
+                          </span>
+                          <span className="text-[11px] text-[#596E8A] dark:text-[#9299A6]">
+                            Kapalıysa sorular sınıflandırıcıya gönderilmez ve L1 önbelleğe alınmaz.
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={classifierConsent}
+                          onClick={handleToggleClassifierConsent}
+                          className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 shrink-0 ${
+                            classifierConsent ? 'bg-[#1677FF]' : 'bg-[#D1D5DB] dark:bg-[#2A2E37]'
+                          }`}
+                        >
+                          <span className={`w-4 h-4 rounded-full bg-white shadow-xs transform transition-transform duration-200 ${
+                            classifierConsent ? 'translate-x-5' : 'translate-x-0'
+                          }`} />
+                        </button>
+                      </div>
+
+                      {classifierStatus && (
+                        <div className="text-[10.5px] text-[#596E8A] dark:text-[#9299A6] pt-1 border-t border-[#EAE7DC]/60 dark:border-white/[0.04] flex items-center justify-between">
+                          <span>Sınıflandırıcı: {classifierStatus.model}</span>
+                          <span className={classifierStatus.configured ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-amber-600'}>
+                            {classifierStatus.configured ? '● Servis Hazır' : '○ Sınıflandırıcı servisi çalışmıyor'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
